@@ -1,0 +1,10 @@
+<?php
+require_once("dbaseconfig.php");
+require_once("staticvar.php");
+require_once("user.php");
+require_once("art.php");
+require_once("basefunction.php");
+require_once("control.php");
+require_once("modules.php");
+require_once("menus.php");
+?>
