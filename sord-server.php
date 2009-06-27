@@ -79,6 +79,9 @@ while ( !$mainexit ) {
     case 'K':
       module_arthurs();
       break;
+    case 'Y':
+      module_bank();
+      break;
   }
 
 }

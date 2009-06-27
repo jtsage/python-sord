@@ -13,6 +13,18 @@ function user_exist ($username) {
 	}
 }
 
+function user_fexist ($fullname) {
+        global $db, $MYSQL_PREFIX;
+        $sql = "SELECT * FROM {$MYSQL_PREFIX}users WHERE fullname = '{$fullname}'";
+        $result = mysql_query($sql, $db);
+        if ( mysql_num_rows($result) == 0 ) {
+                return false;
+        } else {
+                return true;
+        }
+}
+
+
 function user_getid ($username) {
 	global $db, $MYSQL_PREFIX;
 	$sql = "SELECT userid FROM {$MYSQL_PREFIX}users WHERE username = '{$username}'";
@@ -20,6 +32,16 @@ function user_getid ($username) {
 	$line = mysql_fetch_array($result);
 	return $line['userid'];
 }
+
+
+function user_fgetid ($fullname) {
+        global $db, $MYSQL_PREFIX;
+        $sql = "SELECT userid FROM {$MYSQL_PREFIX}users WHERE fullname = '{$fullname}'";
+        $result = mysql_query($sql, $db);
+        $line = mysql_fetch_array($result);
+        return $line['userid']; 
+}
+
 
 function user_gethandle ( $userid ) {
 	global $db, $MYSQL_PREFIX;
@@ -51,6 +73,14 @@ function user_getgold ( $userid ) {
         $result = mysql_query($sql, $db);
         $line = mysql_fetch_array($result);
         return $line['gold'];
+}
+
+function user_getbank ( $userid ) {
+        global $db, $MYSQL_PREFIX;
+        $sql = "SELECT bank FROM {$MYSQL_PREFIX}stats WHERE userid = {$userid}";
+        $result = mysql_query($sql, $db);
+        $line = mysql_fetch_array($result);
+        return $line['bank'];
 }
 
 function user_getdef ( $userid ) {
@@ -162,6 +192,19 @@ function user_takegold ( $userid, $ins ) {
         $sql = "UPDATE {$MYSQL_PREFIX}stats SET gold = ( gold - {$ins} ) WHERE userid = {$userid}";
         $result = mysql_query($sql, $db);
 }
+
+function user_givebank ( $userid, $ins ) {
+        global $db, $MYSQL_PREFIX;
+        $sql = "UPDATE {$MYSQL_PREFIX}stats SET bank = ( bank + {$ins} ) WHERE userid = {$userid}";
+        $result = mysql_query($sql, $db);
+}
+
+function user_takebank ( $userid, $ins ) {
+        global $db, $MYSQL_PREFIX;
+        $sql = "UPDATE {$MYSQL_PREFIX}stats SET bank = ( bank - {$ins} ) WHERE userid = {$userid}";
+        $result = mysql_query($sql, $db);
+}
+
 
 function user_givedef ( $userid, $ins ) {
         global $db, $MYSQL_PREFIX;

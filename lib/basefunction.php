@@ -22,7 +22,7 @@ function func_colorcode($text) {
 }
 
 function func_normmenu($text) {
-        $bclrstr = "    \033[0m\033[32m(\033[35m";
+        $bclrstr = "  \033[0m\033[32m(\033[1;35m";
         $nclrstr = "\033[0m\033[32m)";
         $replacement = $bclrstr . '${1}' . $nclrstr;
         $retval = preg_replace("/\(([A-Z:<>])\)/", $replacement, $text);

@@ -68,6 +68,74 @@ function module_list() {
 	return $output . "\n";
 }
 
+function module_bank() {
+	GLOBAL $userid;
+        $quitter = 0;
+	while (!$quitter) {
+		slowecho(menu_bank());
+		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+                switch ($choice) {
+			case 'Q':
+				$quitter = 1;
+				break;
+			case 'R':
+				$quitter = 1;
+				break;
+			case '?':
+				break;
+			case 'D':
+				slowecho("\n  \033[32mDeposit how much? \033[1;30m(1 for all) \033[1;32m:\033[0m ");
+				$number = preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN))));
+  				if ( $number > user_getgold($userid) ) { slowecho(func_casebold("\n  You don't have that much gold!\n", 1)); pauser();
+				} else {
+					if ( $number == 1 ) { $number = user_getgold($userid); }
+					user_givebank($userid, $number);
+					user_takegold($userid, $number);
+					slowecho(func_casebold("\n  Gold deposited\n", 2));
+					pauser();
+				}
+				break;
+			case 'W':
+                                slowecho("\n  \033[32mWithdraw how much? \033[1;30m(1 for all) \033[1;32m:\033[0m ");
+                                $number = preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN))));
+                                if ( $number > user_getbank($userid) ) { slowecho(func_casebold("\n  You don't have that much gold!\n", 1)); pauser();
+                                } else {
+                                        if ( $number == 1 ) { $number = user_getbank($userid); }
+                                        user_givegold($userid, $number);
+                                        user_takebank($userid, $number);
+                                        slowecho(func_casebold("\n  Gold widthdrawn\n", 2));
+                                        pauser();
+                                }
+				break;
+			case 'T':
+				slowecho("\n  \033[32mTransfer to which player? \033[1;32m:\033[0m ");
+				$name = mysql_real_escape_string(preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN)))));
+				if ( user_fexist($name) ) {
+					$sendto = user_fgetid($name); $sendtofn = user_gethandle($sendto); 
+					if ( $sendto == $userid ) { slowecho(func_casebold("\n  You cannot transfer to yourself!\n", 1)); pauser(); 
+					} else {
+						slowecho("\n  \033[32mDid you mean \033[1m{$sendtofn}\033[0m \033[1;30m(Y/N)\033[0m\033[32m ?\033[0m ");
+						$yesno = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+	        	                        if ( $yesno == "Y" ) {
+							slowecho("\n  \033[32mTransfer how much? \033[1;30m(1 for all) \033[1;32m:\033[0m ");
+	                		                $number = preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN))));
+							if ( $number > user_getgold($userid) ) { slowecho(func_casebold("\n  You don't have that much gold!\n", 1)); pauser();
+                                			} else {
+		                                        	if ( $number == 1 ) { $number = user_getgold($userid); }
+		        	                                user_givegold($sendto, $number);
+			                                        user_takegold($userid, $number);
+        			                                slowecho(func_casebold("\n  Gold transfered\n", 2));
+                			                        pauser();
+                        			        }
+						}
+					}
+				} else { slowecho(func_casebold("\n  No User by that name found!\n", 1)); pauser(); }
+				break;
+		}
+
+	}
+}
+
 function module_abduls() {
 	GLOBAL $db, $MYSQL_PREFIX, $armor, $xprt, $userid, $armorprice, $armorndef, $armordef;
         $quitter = 0;

@@ -11,8 +11,29 @@ function menu_2col($text1, $text2, $col1, $col2) {
   return "  " . $text1col . padnumcol($text1, 36) . $text2col . "\033[0m\n";
 }
 
+function menu_bank() {
+  GLOBAL $userid, $logontime;
+  $currenttime = time(); $ontime = $currenttime - $logontime;
+  $sec = $ontime % 60;
+  $min = ( $ontime - $sec ) / 60;
+  $psec = ( $sec < 10 ) ? "0{$sec}" : $sec;
+
+  $thismenu  = "\n\n  \033[1;37mSaga of the Red Dragon - \033[0m\033[32mBank\033[0m\n";
+  $thismenu .= art_line();
+  $thismenu .= "  \033[32mA polite clerk approaches. \033[1;35m\"Can I help you sir?\"\033[0m\n\n";
+  $thismenu .= func_normmenu("(D)eposit Gold");
+  $thismenu .= func_normmenu("(W)ithdraw Gold");
+  $thismenu .= func_normmenu("(T)ransfer Gold");
+  $thismenu .= func_normmenu("(R)eturn to Town");
+  $thismenu .= "\n\n\033[32m  Gold In Hand: \033[1m" . user_getgold($userid);
+  $thismenu .= "\033[0m\033[32m Gold In Bank: \033[1m" . user_getbank($userid). "\n";
+  $thismenu .= "\033[35m  The Bank \033[1;30m(W,D,R,T,Q) (? for menu)\033[0m\n\n";
+  $thismenu .= "  \033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[1;37m[\033[22m{$min}:{$psec}\033[1m] \033[0m\033[32m:-: \033[0m";
+  return $thismenu;
+}
+
 function menu_mainlong($noprmpt) {
-  $thismenu  = "\n\n\033[1;37m  Saga Of The Red Dragon - \033[0m\033[32mTown Square\033[0m\n";
+  $thismenu  = "\n\n\033[1;37m  Saga of the Red Dragon - \033[0m\033[32mTown Square\033[0m\n";
   $thismenu .= art_line();
   $thismenu .= "\033[32m  The streets are crowded, it is difficult to\n  push your way through the mob....\n\n";
   $thismenu .= menu_2col("(F)orest", "(S)laughter other players", 5, 5);
