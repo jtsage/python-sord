@@ -4,11 +4,11 @@ function control_getlogin() {
 	$gotname = 0; $ittr = 0;
 	while ( !$gotname ) {
 		$ittr++; if ( $ittr > 3 ) { die(func_casebold("Disconnecting - Too Many Login Attempts\n", 1)); }
-		slowecho(func_casebold("Welcome Warrior!  Enter Your Login Name (OR '\033[1m\033[31mnew\033[32m') :-: ", 2));
+		slowecho(func_casebold("\nWelcome Warrior!  Enter Your Login Name (OR '\033[1m\033[31mnew\033[32m') :-: ", 2));
 		$uname = substr(fgets(STDIN), 0, 12);
 		$uname = preg_replace("/\r\n/", "", $uname); 
 		if ( user_exist($uname) ) { 
-	                slowecho(func_casebold("Password :-: ",2));  
+	                slowecho(func_casebold("\nPassword :-: ",2));  
         	        $userid = user_getid($uname);
                 	$password = preg_replace("/\r\n/", "", substr(fgets(STDIN), 0, 12));
 	                if ( user_chkpass($userid, $password) ) { return $userid; }

@@ -29,6 +29,15 @@ function user_gethandle ( $userid ) {
 	return $line['fullname'];
 }
 
+function user_getarmor ( $userid ) {
+        global $db, $MYSQL_PREFIX;
+        $sql = "SELECT armor FROM {$MYSQL_PREFIX}stats WHERE userid = {$userid}";
+        $result = mysql_query($sql, $db);
+        $line = mysql_fetch_array($result);
+        return $line['armor'];
+}
+
+
 function user_chkpass ($userid, $pass) {
 	global $db, $MYSQL_PREFIX;
 	$sql = "SELECT password FROM {$MYSQL_PREFIX}users WHERE userid = {$userid}";

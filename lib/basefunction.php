@@ -43,6 +43,7 @@ function pauser() {
 
 function slowecho($text) {
 	global $SORDDELAY;
+	$text = preg_replace("/\\n/", "\r\n", $text);
 	foreach( str_split($text) as $char ) { echo $char; usleep($SORDDELAY); }
 }
 

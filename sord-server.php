@@ -2,10 +2,15 @@
 <?
 
 $SORDVERSION = "0.0.1";
-$SORDDELAY = 3000;
-$SORDDELAY = 0;
+$SORDDELAY = 1000;
+#$SORDDELAY = 0;
 require_once("config.php");
 require_once("lib/functions-load.php");
+
+echo chr(255) . chr(253) . chr(3);
+# This enables bidirectional communication
+# NO LOCAL ECHO.
+echo chr(255) . chr(252) . chr(1);
 
 declare(ticks=1);
 $logontime = time();
@@ -15,8 +20,8 @@ pcntl_signal(SIGINT, "signal_handler");
 pcntl_signal(SIGALRM, "signal_handler");
 
 #pcntl_alarm(30);
-
 slowecho(art_header()); pauser(); $next = 0;
+
 while ( !$next ) {
   slowecho(art_banner());
   $choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
@@ -67,6 +72,9 @@ while ( !$mainexit ) {
     case 'L':
       slowecho(module_list());
       pauser();
+      break;
+    case 'A':
+      module_abduls();
       break;
   }
 

@@ -68,6 +68,36 @@ function module_list() {
 	return $output . "\n";
 }
 
-
+function module_abduls() {
+	GLOBAL $db, $MYSQL_PREFIX, $armor, $xprt, $userid;
+        $quitter = 0;
+        while ( !$quitter ) {
+ 		if ( !$xprt ) { slowecho(art_abdul()); }
+		slowecho(menu_abdul());
+		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+		switch ($choice) {
+			case 'B':
+				slowecho(control_noimp());
+				break;
+			case 'S':
+				slowecho(control_noimp());
+				break;
+			case '?':
+				if ( !$xprt ) { slowecho(art_abdul()); }
+				break;
+			case 'Y':
+				slowecho(module_viewstats($userid));
+				pauser();
+				break;
+			case 'Q':
+				$quitter = 1;
+				break;
+			case 'R':
+				$quitter = 1;
+				break;
+		}
+	}
+}
+	
 
 ?>
