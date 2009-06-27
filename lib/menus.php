@@ -51,8 +51,28 @@ function menu_abdul() {
   $thisarmour = user_getarmor($userid);
   $thismenu  = "\n  \033[32mCurrent armour: \033[1m{$armor[$thisarmour]}\033[0m\n";
   $thismenu .= "  \033[1;35mAbduls Armour \033[1;30m(B,S,Y,R) (? for menu)\n\n";
-  $thismenu .= "  \033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[1;37m[\033[22m{$min}:{$psec}\033[1m] \033[0m\033[32m:-: \033[0m";
+  $thismenu .= "  \033[0m\033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[1;37m[\033[22m{$min}:{$psec}\033[1m] \033[0m\033[32m:-: \033[0m";
+
   return $thismenu;
 }
+
+
+function menu_arthur() {
+  GLOBAL $userid, $weapon, $logontime;
+  $currenttime = time(); $ontime = $currenttime - $logontime;
+  $sec = $ontime % 60;
+  $min = ( $ontime - $sec ) / 60;
+  $psec = ( $sec < 10 ) ? "0{$sec}" : $sec;
+
+  $thisweapon = user_getweapon($userid);
+  $thismenu  = "\n  \033[32mCurrent weapon: \033[1m{$weapon[$thisweapon]}\033[0m\n";
+  $thismenu .= "  \033[1;35mKing Arthur's Weapons \033[1;30m(B,S,Y,R) (? for menu)\n\n";
+  $thismenu .= "  \033[0m\033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[1;37m[\033[22m{$min}:{$psec}\033[1m] \033[0m\033[32m:-: \033[0m";
+
+  return $thismenu;
+}
+
+
+
 
 ?>

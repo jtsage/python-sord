@@ -3,7 +3,7 @@
 
 $SORDVERSION = "0.0.1";
 $SORDDELAY = 1000;
-#$SORDDELAY = 0;
+$SORDDELAY = 0;
 require_once("config.php");
 require_once("lib/functions-load.php");
 
@@ -20,8 +20,8 @@ pcntl_signal(SIGINT, "signal_handler");
 pcntl_signal(SIGALRM, "signal_handler");
 
 #pcntl_alarm(30);
-slowecho(art_header()); pauser(); $next = 0;
-
+#slowecho(art_header()); pauser(); $next = 0;
+$next=1;
 while ( !$next ) {
   slowecho(art_banner());
   $choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
@@ -29,13 +29,13 @@ while ( !$next ) {
   if ( $choice == "L" ) { slowecho(module_list()); pauser(); } else { $next = 1; }
 }
 
-#$userid = 1; 
-echo "\n\n"; $userid = control_getlogin();
+$userid = 1; 
+#echo "\n\n"; $userid = control_getlogin();
 
 $logonsql = "INSERT INTO {$MYSQL_PREFIX}online ( `userid` ) VALUES ( {$userid} )";
 $results = mysql_query($logonsql, $db);
 
-$ctrl = 0; #$ctrl = 1; #SKIP TODAY
+$ctrl = 0; $ctrl = 1; #SKIP TODAY
 while ( !$ctrl ) {
 	slowecho(module_dailyhappen(0));
 	$choice =  preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
@@ -75,6 +75,9 @@ while ( !$mainexit ) {
       break;
     case 'A':
       module_abduls();
+      break;
+    case 'K':
+      module_arthurs();
       break;
   }
 

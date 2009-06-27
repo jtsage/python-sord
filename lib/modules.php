@@ -69,7 +69,7 @@ function module_list() {
 }
 
 function module_abduls() {
-	GLOBAL $db, $MYSQL_PREFIX, $armor, $xprt, $userid;
+	GLOBAL $db, $MYSQL_PREFIX, $armor, $xprt, $userid, $armorprice, $armorndef, $armordef;
         $quitter = 0;
         while ( !$quitter ) {
  		if ( !$xprt ) { slowecho(art_abdul()); }
@@ -77,10 +77,45 @@ function module_abduls() {
 		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
 		switch ($choice) {
 			case 'B':
-				slowecho(control_noimp());
+				slowecho(art_armbuy());
+				slowecho("\n\n\033[32mYour choice? \033[1m:\033[22m-\033[1m:\033[0m ");
+				$number = preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN))));
+				if ( $number > 0 && $number < 16 ) {
+					if ( user_getarmor($userid) > 0 ) { slowecho(func_casebold("\nYou cannot hold 2 sets of Armor!\n", 1)); pauser(); }
+					else {
+						if ( user_getgold($userid) < $armorprice[$number] ) { slowecho(func_casebold("\nYou do NOT have enough Gold!\n", 1)); pauser(); }
+						else {
+							if ( user_getdef($userid) < $armorndef[$number] ) { slowecho(func_casebold("\nYou are NOT strong enough for that!\n", 1)); pauser(); }
+							else {
+								slowecho(func_casebold("\nI'll sell you my Best {$armor[$number]} for {$armorprice[$number]} gold.  OK? ", 2)); 
+								$yesno = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+								if ( $yesno == "Y" ) {
+									user_setarmor($userid, $number);
+									user_takegold($userid, $armorprice[$number]);
+									user_givedef($userid, $armordef[$number]);
+									slowecho(func_casebold("\nPleasure doing business with you!\n", 2));
+									pauser();
+								} else { slowecho(func_casebold("\nFine then...\n", 2)); pauser(); }
+							}
+						}
+					}
+				}
 				break;
 			case 'S':
-				slowecho(control_noimp());
+				$sellpercent = 50 + rand(1, 10);
+				$sellarmor = user_getarmor($userid);
+				if ( $sellarmor > 0 ) {
+  					$sellprice = ( $sellpercent / 100 ) * $armorprice[$sellarmor];
+					slowecho(func_casebold("\nHmm...  I'll buy that {$armor[$sellarmor]} for {$sellprice} gold.  OK? ", 2));
+					$yesno = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+	                	        if ( $yesno == "Y" ) {
+						user_setarmor($userid, 0);
+						user_givegold($userid, $sellprice);
+						user_takedef($userid, $armordef[$sellarmor]);
+						slowecho(func_casebold("\nPleasure doing business with you!\n", 2));
+						pauser();
+	                                } else { slowecho(func_casebold("\nFine then...\n", 2)); }
+				} else { slowecho(func_casebold("\nYou have nothing I want!\n", 1)); pauser(); }
 				break;
 			case '?':
 				if ( !$xprt ) { slowecho(art_abdul()); }
@@ -98,6 +133,73 @@ function module_abduls() {
 		}
 	}
 }
+
+
 	
+function module_arthurs() {
+	GLOBAL $db, $MYSQL_PREFIX, $weapon, $xprt, $userid, $weaponprice, $weaponnstr, $weaponstr;
+        $quitter = 0;
+        while ( !$quitter ) {
+ 		if ( !$xprt ) { slowecho(art_arthur()); }
+		slowecho(menu_arthur());
+		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+		switch ($choice) {
+			case 'B':
+				slowecho(art_wepbuy());
+				slowecho("\n\n\033[32mYour choice? \033[1m:\033[22m-\033[1m:\033[0m ");
+				$number = preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN))));
+				if ( $number > 0 && $number < 16 ) {
+					if ( user_getweapon($userid) > 0 ) { slowecho(func_casebold("\nYou cannot hold 2 weapons!\n", 1)); pauser(); }
+					else {
+						if ( user_getgold($userid) < $weaponprice[$number] ) { slowecho(func_casebold("\nYou do NOT have enough Gold!\n", 1)); pauser(); }
+						else {
+							if ( user_getstr($userid) < $weaponnstr[$number] ) { slowecho(func_casebold("\nYou are NOT strong enough for that!\n", 1)); pauser(); }
+							else {
+								slowecho(func_casebold("\nI'll sell you my Favorite {$weapon[$number]} for {$weaponprice[$number]} gold.  OK? ", 2)); 
+								$yesno = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+								if ( $yesno == "Y" ) {
+									user_setweapon($userid, $number);
+									user_takegold($userid, $weaponprice[$number]);
+									user_givestr($userid, $weaponstr[$number]);
+									slowecho(func_casebold("\nPleasure doing business with you!\n", 2));
+									pauser();
+								} else { slowecho(func_casebold("\nFine then...\n", 2)); pauser(); }
+							}
+						}
+					}
+				}
+				break;
+			case 'S':
+				$sellpercent = 50 + rand(1, 10);
+				$sellweapon = user_getweapon($userid);
+				if ( $sellweapon > 0 ) {
+  					$sellprice = ( $sellpercent / 100 ) * $weaponprice[$sellweapon];
+					slowecho(func_casebold("\nHmm...  I'll buy that {$armor[$sellweapon]} for {$sellprice} gold.  OK? ", 2));
+					$yesno = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+	                	        if ( $yesno == "Y" ) {
+						user_setweapon($userid, 0);
+						user_givegold($userid, $sellprice);
+						user_takestr($userid, $weaponstr[$sellweapon]);
+						slowecho(func_casebold("\nPleasure doing business with you!\n", 2));
+						pauser();
+	                                } else { slowecho(func_casebold("\nFine then...\n", 2)); }
+				} else { slowecho(func_casebold("\nYou have nothing I want!\n", 1)); pauser(); }
+				break;
+			case '?':
+				if ( !$xprt ) { slowecho(art_weapon()); }
+				break;
+			case 'Y':
+				slowecho(module_viewstats($userid));
+				pauser();
+				break;
+			case 'Q':
+				$quitter = 1;
+				break;
+			case 'R':
+				$quitter = 1;
+				break;
+		}
+	}
+}
 
 ?>
