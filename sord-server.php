@@ -48,6 +48,7 @@ if ( !$SORDDEBUG ) { slowecho(module_viewstats($userid)); pauser(); }
 
 $mainexit = 0; $xprt = 0;
 while ( !$mainexit ) {
+  control_readmail($userid);
   if ( !$xprt ) { slowecho(menu_mainlong(0)); } else { slowecho(menu_mainshort()); }
   $key = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
   switch ($key) {
@@ -91,6 +92,13 @@ while ( !$mainexit ) {
     case 'F':
       module_forest();
       break;
+    case 'M':
+      module_announce();
+      break;
+    case 'W':
+      control_sendmail($userid);
+      break;
+
   }
 
 }

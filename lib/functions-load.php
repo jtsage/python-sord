@@ -3,6 +3,7 @@ require_once("dbaseconfig.php");
 require_once("staticvar.php");
 require_once("monsters.php");
 require_once("user.php");
+require_once("skills.php");
 require_once("art.php");
 require_once("basefunction.php");
 require_once("control.php");

@@ -14,11 +14,11 @@ function module_viewstats($userid) {
 	$output .= "\033[32m Armor         : \033[1m{$armor[$line['armor']]}\033[0m"   . padnumcol($armor[$line['armor']], 20)   . "\033[32mDefensive Strength : \033[1m{$line['def']}\033[0m\n";
 	$output .= "\033[32m Charm         : \033[1m{$line['charm']}\033[0m"   . padnumcol($line['charm'], 20)   . "\033[32mGems               : \033[1m{$line['gems']}\033[0m\n\n";
 	if ( $line['class'] == 1 || $line['spcld'] > 0 ) {
-		$output .= "\033[32m The {$classes[1]} Skills: \033[1m" . ( $line['spcld'] > 0 ? $line['spcld'] : "NONE" ) . padnumcol(($line['spcld'] > 0 ? $line['spcld'] : "NONE"), 11) . "\033[0m\033[32mUses Today: (\033[1m{$line['skilluse']}\033[22m)\033[0m\n"; }
+		$output .= "\033[32m The {$classes[1]} Skills: \033[1m" . ( $line['spcld'] > 0 ? $line['spcld'] : "NONE" ) . padnumcol(($line['spcld'] > 0 ? $line['spcld'] : "NONE"), 11) . "\033[0m\033[32mUses Today: (\033[1m{$line['used']}\033[22m)\033[0m\n"; }
 	if ( $line['class'] == 2 || $line['spclm'] > 0 ) {
-		$output .= "\033[32m The {$classes[2]} Skills: \033[1m" . ( $line['spclm'] > 0 ? $line['spclm'] : "NONE" ) . padnumcol(($line['spclm'] > 0 ? $line['spclm'] : "NONE"), 15) . "\033[0m\033[32mUses Today: (\033[1m{$line['skilluse']}\033[22m)\033[0m\n"; }
+		$output .= "\033[32m The {$classes[2]} Skills: \033[1m" . ( $line['spclm'] > 0 ? $line['spclm'] : "NONE" ) . padnumcol(($line['spclm'] > 0 ? $line['spclm'] : "NONE"), 15) . "\033[0m\033[32mUses Today: (\033[1m{$line['usem']}\033[22m)\033[0m\n"; }
 	if ( $line['class'] == 3 || $line['spclt'] > 0 ) {
-		$output .= "\033[32m The {$classes[3]} Skills: \033[1m" . ( $line['spclt'] > 0 ? $line['spclt'] : "NONE" ) . padnumcol(($line['spclt'] > 0 ? $line['spclt'] : "NONE"), 18) . "\033[0m\033[32mUses Today: (\033[1m{$line['skilluse']}\033[22m)\033[0m\n"; }
+		$output .= "\033[32m The {$classes[3]} Skills: \033[1m" . ( $line['spclt'] > 0 ? $line['spclt'] : "NONE" ) . padnumcol(($line['spclt'] > 0 ? $line['spclt'] : "NONE"), 18) . "\033[0m\033[32mUses Today: (\033[1m{$line['uset']}\033[22m)\033[0m\n"; }
 	$output .= "\n \033[1;32mYou are currently interested in \033[37mThe {$classes[$line['class']]} \033[32mskills.\n\n";
 	return $output;
 }
@@ -55,18 +55,37 @@ function module_who() {
 
 function module_list() {
 	GLOBAL $db, $MYSQL_PREFIX, $classes;
-	$sql = "SELECT u.userid, fullname, exp, level, class, alive FROM {$MYSQL_PREFIX}users u, {$MYSQL_PREFIX}stats s WHERE u.userid = s.userid ORDER BY exp DESC";
+	$sql = "SELECT u.userid, fullname, exp, level, class, spclm, spcld, spclt, sex, alive FROM {$MYSQL_PREFIX}users u, {$MYSQL_PREFIX}stats s WHERE u.userid = s.userid ORDER BY exp DESC";
         $result = mysql_query($sql, $db);
-        $output = "\n\n\033[1;37mWarrior List\033[22;32m....\033[0m\n";
+	$output .= "\n\n\033[32m    Name                    Experience    Level    Mastered    Status\033[0m\n";
         $output .= art_line();
-        $output .= "\033[1;32mName" . padnumcol("Name", 20) . "Class" . padnumcol("class", 20);
-        $output .= "Experience" . padnumcol("experience", 20) . "Level\033[0m\n";
         while ( $line = mysql_fetch_array($result) ) {
-	        $output .= "\033[32m" . $line['fullname'] . padnumcol($line['fullname'], 20) . $classes[$line['class']] . padnumcol($classes[$line['class']], 20);
-                $output .= $line['exp'] . padnumcol($line['exp'], 20) . $line['level'];
-		$output .= padnumcol($line['level'], 10) . (($line['alive'])?"":"\033[1;31mdead") . "\033[0m\n";
+		$sex = ( $line['sex'] == 2 ) ? "\033[1;35mF\033[0m " : "  ";
+		$class = ( $line['class'] == 1 ) ? "\033[1;31mD\033[0m " : (( $line['class'] == 2 ) ? "\033[1;34mM\033[0m " : "\033[1;33mT\033[0m " );
+		$master .= ( $line['spcld'] > 39 ) ? "\033[37mD \033[0m" : (( $line['spcld'] > 19 ) ? "\033[1;37mD \033[0m" : "");
+		$master .= ( $line['spclm'] > 39 ) ? "\033[37mM \033[0m" : (( $line['spclm'] > 19 ) ? "\033[1;37mM \033[0m" : "");
+		$master .= ( $line['spclt'] > 39 ) ? "\033[37mT \033[0m" : (( $line['spclt'] > 19 ) ? "\033[1;37mT \033[0m" : "");
+		$masterpad .= ( $line['spcld'] > 19 ) ? "  " : "";
+		$masterpad .= ( $line['spclm'] > 19 ) ? "  " : "";
+		$masterpad .= ( $line['spclt'] > 19 ) ? "  " : "";
+		$exp = number_format($line['exp'], 0);
+		$status = ( $line['alive'] == 1 ) ? "\033[1;32mAlive\033[0m" : "\033[31mDead\033[0m";
+
+		$output .= $sex . $class . "\033[32m{$line['fullname']}" . padnumcol($line['fullname'], 23) . padright($exp, 11);
+		$output .= padright($line['level'], 6) . "        {$master}" . padnumcol($masterpad, 12) . $status . "\n";
 	}
 	return $output . "\n";
+}
+
+function module_announce() {
+	GLOBAL $db, $MYSQL_PREFIX;
+	slowecho(func_casebold("\n  Your announcment? :-: ", 2));
+	$ann = preg_replace("/\r\n/", "", chop(fgets(STDIN)));
+	$insann = mysql_real_escape_string($ann);
+	$sql = "INSERT INTO {$MYSQL_PREFIX}daily ( `data` ) VALUES ('{$ann}')";
+	$result = mysql_query($sql, $db);
+	slowecho(func_casebold("\n  Announcment Made!\n", 2));
+	pauser();
 }
 
 function module_heal() {
@@ -164,6 +183,18 @@ function module_forest() {
 				if ( $happening == 3 ) { forest_special(); }
 				else { forest_fight(); }
 				break;
+			case 'A':
+				slowecho(func_casebold("  You brandish your weapon dramatically.\n", 2));
+				break;
+			case 'D':
+				slowecho(func_casebold("  Your Death Knight skills cannot help your here.\n", 2));
+				break;
+                        case 'M':
+                                slowecho(func_casebold("  Your Mystical skills cannot help your here.\n", 2));
+                                break;
+                        case 'T':
+                                slowecho(func_casebold("  Your Thieving skills cannot help your here.\n", 2));
+                                break;
 		}
 	}
 }

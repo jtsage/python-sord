@@ -182,14 +182,6 @@ function user_getpfight ( $userid ) {
         return $line['pfight'];
 }
 
-function user_getskilluse ( $userid ) {
-        global $db, $MYSQL_PREFIX;
-        $sql = "SELECT skilluse FROM {$MYSQL_PREFIX}stats WHERE userid = {$userid}";
-        $result = mysql_query($sql, $db);
-        $line = mysql_fetch_array($result);
-        return $line['skilluse'];
-}
-
 function user_setarmor ( $userid, $ins ) {
         global $db, $MYSQL_PREFIX;
         $sql = "UPDATE {$MYSQL_PREFIX}stats SET armor = {$ins} WHERE userid = {$userid}";
@@ -338,18 +330,6 @@ function user_givepfight ( $userid, $ins ) {
 function user_takepfight ( $userid, $ins ) {
         global $db, $MYSQL_PREFIX;
         $sql = "UPDATE {$MYSQL_PREFIX}stats SET pfight = ( pfight - {$ins} ) WHERE userid = {$userid}";
-        $result = mysql_query($sql, $db);
-}
-
-function user_giveskilluse ( $userid, $ins ) {
-        global $db, $MYSQL_PREFIX;
-        $sql = "UPDATE {$MYSQL_PREFIX}stats SET skilluse = ( skilluse + {$ins} ) WHERE userid = {$userid}";
-        $result = mysql_query($sql, $db);
-}
-
-function user_takeskilluse ( $userid, $ins ) {
-        global $db, $MYSQL_PREFIX;
-        $sql = "UPDATE {$MYSQL_PREFIX}stats SET skilluse = ( skilluse - {$ins} ) WHERE userid = {$userid}";
         $result = mysql_query($sql, $db);
 }
 

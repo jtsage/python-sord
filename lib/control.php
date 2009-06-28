@@ -74,10 +74,70 @@ function control_newuser() {
 	$userid = mysql_insert_id();
 	$sql2 = "INSERT INTO {$MYSQL_PREFIX}stats (`userid`, `sex`, `class`) VALUES ({$userid}, {$newsexnum}, {$newclassnum})";
 	$result = mysql_query($sql2, $db);
+	skill_giveuse($userid, $newclassnum, 1);
+	skill_giveskill($userid, $newclassnum, 1);
 	return $userid;
 }
 
 function control_noimp() {
 	slowecho(func_casebold("Function not yet implemented, Sorry\n", 1));
 }
+
+function control_finduser($prompt) {
+	global $userid;
+	$prompt = $prompt . " \033[1;32m:\033[22m-\033[1;32m:\033[0m ";
+	slowecho($prompt);
+        $name = mysql_real_escape_string(preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN)))));
+        if ( user_fexist($name) ) {
+	        $sendto = user_fgetid($name); $sendtofn = user_gethandle($sendto);
+                if ( $sendto == $userid ) { return false; 
+                } else {
+                	slowecho("\n  \033[32mDid you mean \033[1m{$sendtofn}\033[0m \033[1;30m(Y/N)\033[0m\033[32m ?\033[0m ");
+                        $yesno = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+                        if ( $yesno == "Y" ) {
+				return $sendto;
+			} else { return false; }
+		}
+	} else { return false; }
+}
+
+function control_readmail($userid) {
+	GLOBAL $db, $MYSQL_PREFIX;
+	$sql = "SELECT `id`, `from`, `message`, DATE_FORMAT(sent, '%W %M %Y, %H:%i') as sent FROM {$MYSQL_PREFIX}mail WHERE `to` = {$userid}";
+	$result = mysql_query($sql, $db);
+	if ( mysql_num_rows($result) > 0 ) {
+		while ( $line = mysql_fetch_array($result) ) {
+			$thismail .= "\n  \033[1;37mNew Mail...\033[0m\n";
+			$thismail .= art_line();
+			$thismail .= "\033[32m  From: \033[1m" . user_gethandle($line['from']) . "\033[0m\n";
+			$thismail .= "\033[32m  Date: \033[1m" . $line['sent'] . "\033[0m\n";
+			$thismail .= "\033[32m  Message: " . func_colorcode($line['message']) . "\033[0m\n\n";
+			slowecho($thismail);
+			control_nukemail($line['id']);
+			pauser();
+		}
+	} else { return false; }
+}
+
+function control_nukemail($msgid) {
+	GLOBAL $db, $MYSQL_PREFIX;
+	$sql .= "DELETE FROM {$MYSQL_PREFIX}mail WHERE `id` = {$msgid}";
+	$result = mysql_query($sql, $db);
+}
+
+function control_sendmail($userid) {
+	GLOBAL $db, $MYSQL_PREFIX;
+	$fromid = $userid;
+	$toid = control_finduser("\n  \033[32mSend mail to which user?");
+	if ( $toid == 0 ) { return false; 
+	} else {
+		slowecho("\n  \033[32mYour message \033[1m:\033[0m ");
+		$msg = mysql_real_escape_string(preg_replace("/\r\n/", "", chop(fgets(STDIN))));
+		$sql = "INSERT INTO {$MYSQL_PREFIX}mail (`to`, `from`, `message`) VALUES ('{$toid}', '{$fromid}', '{$msg}')";
+		$result = mysql_query($sql, $db);
+		slowecho(func_casebold("\n  Message Sent\n"), 2);
+		pauser();
+	}
+}
+
 ?>

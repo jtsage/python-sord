@@ -36,6 +36,14 @@ function padnumcol($text, $col) {
 	return $retval;
 }
 
+function padright($text, $col) {
+	$col = $col - strlen($text);
+	$ittr = 0; $retval = "";
+        while ( $ittr < $col ) { $retval .= " "; $ittr++; }
+	$retval .= $text;
+	return $retval;
+}
+
 function pauser() {
 	slowecho(func_casebold(":-: Press Any Key :-:", 2));
 	$dumper = fgets(STDIN);
