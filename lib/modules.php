@@ -55,7 +55,7 @@ function module_who() {
 
 function module_list() {
 	GLOBAL $db, $MYSQL_PREFIX, $classes;
-	$sql = "SELECT u.userid, fullname, exp, level, class FROM {$MYSQL_PREFIX}users u, {$MYSQL_PREFIX}stats s WHERE u.userid = s.userid ORDER BY exp";
+	$sql = "SELECT u.userid, fullname, exp, level, class, alive FROM {$MYSQL_PREFIX}users u, {$MYSQL_PREFIX}stats s WHERE u.userid = s.userid ORDER BY exp DESC";
         $result = mysql_query($sql, $db);
         $output = "\n\n\033[1;37mWarrior List\033[22;32m....\033[0m\n";
         $output .= art_line();
@@ -63,10 +63,111 @@ function module_list() {
         $output .= "Experience" . padnumcol("experience", 20) . "Level\033[0m\n";
         while ( $line = mysql_fetch_array($result) ) {
 	        $output .= "\033[32m" . $line['fullname'] . padnumcol($line['fullname'], 20) . $classes[$line['class']] . padnumcol($classes[$line['class']], 20);
-                $output .= $line['exp'] . padnumcol($line['exp'], 20) . $line['level'] . "\033[0m\n";
+                $output .= $line['exp'] . padnumcol($line['exp'], 20) . $line['level'];
+		$output .= padnumcol($line['level'], 10) . (($line['alive'])?"":"\033[1;31mdead") . "\033[0m\n";
 	}
 	return $output . "\n";
 }
+
+function module_heal() {
+	GLOBAL $userid;
+        $quitter = 0;
+        while (!$quitter) {
+                slowecho(menu_heal());
+                $choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+                switch ($choice) {
+                        case 'Q':
+                                $quitter = 1;
+                                break;
+                        case 'R':
+                                $quitter = 1;
+                                break;
+                        case '?':
+                                break;
+			case 'H':
+				$hptoheal = user_gethpmax($userid) - user_gethp($userid);
+				if ( $hptoheal < 1 ) { slowecho(func_casebold("\n  You do not need healing!\n", 2)); 
+				} else {
+ 					$usergold = user_getgold($userid);
+					$userlvl = user_getlevel($userid);
+					$perhpgold = $userlvl * 5;
+					if ( $usergold < ($userlvl * $perhpgold) ) { slowecho(func_casebold("\nYou're poor!\n", 2)); 
+					} else {
+						$costtoheal = $hptoheal * $perhpgold;
+						$userafford = ( $usergold - ( $usergold % $perhpgold ) ) / $perhpgold;
+						if ( $userafford > $hptoheal ) { $userafford = $hptoheal; }
+						$usercost = $userafford * $perhpgold;
+						user_takegold($userid, $usercost);
+						user_givehp($userid, $userafford);
+						slowecho("\n  \033[32m\033[1m{$userafford} \033[22mHitPoints are healed and you feel much better!\033[0m\n");
+						pauser(); $quitter = 1;
+					}
+				}
+				break;
+			case 'C':
+                                $hptoheal = user_gethpmax($userid) - user_gethp($userid);
+                                if ( $hptoheal < 1 ) { slowecho(func_casebold("\n  You do not need healing!\n", 2)); 
+				} else {
+					slowecho("\n  \033[32mHow much to heal warrior? \033[1m: \033[0m");
+					$number = preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN))));
+					if ( !is_numeric($number) ) { break; }
+					if ( $number > $hptoheal ) { $number = $hptoheal; }
+					if ( $number > 0 ) {
+						$usergold = user_getgold($userid);
+						$userlvl = user_getlevel($userid);
+						$perhpgold = $userlvl * 5;
+						$costforaction = $perhpgold * $number;
+						if ( $costforaction > $usergold ) { slowecho(func_casebold("\n  You do not have enough gold for that!\n", 1));
+						} else {
+							user_takegold($userid, $costforaction);
+							user_givehp($userid, $number);
+							slowecho("\n  \033[32m\033[1m{$number} \033[22mHitPoints are healed and you feel much better!\033[0m\n");
+							pauser();
+						}
+					}
+				}
+				break;
+
+					
+		}
+	}
+}
+
+function module_forest() {
+	GLOBAL $userid, $xprt;
+        $quitter = 0;
+        while (!$quitter) {
+                if ( !$xprt ) { slowecho(art_forest()); }
+		slowecho(menu_forest());
+                $choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+                switch ($choice) {
+			case 'Q':
+				$quitter = 1;
+				break;
+			case 'R':
+				$quitter = 1;
+				break;
+			case '?':
+				if ( $xprt ) { slowecho(art_forest()); }
+				break;
+			case 'H':
+				module_heal();
+				break;
+			case 'Y':
+				module_viewstats($userid);
+				break;
+			case 'V':
+				module_viewstats($userid);
+				break;
+			case 'L':
+				$happening = rand(1, 8);
+				if ( $happening == 3 ) { forest_special(); }
+				else { forest_fight(); }
+				break;
+		}
+	}
+}
+
 
 function module_bank() {
 	GLOBAL $userid;

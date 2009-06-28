@@ -24,6 +24,25 @@ function user_fexist ($fullname) {
         }
 }
 
+function user_setdead ( $userid ) {
+	global $db, $MYSQL_PREFIX;
+	$sql = "UPDATE {$MYSQL_PREFIX}users SET alive = 0 WHERE userid = {$userid}";
+	$result = mysql_query($sql, $db);
+}
+
+function user_isdead ( $userid ) {
+	global $db, $MYSQL_PREFIX;
+	$sql = "SELECT alive FROM {$MYSQL_PREFIX}users WHERE userid = {$userid}";
+	$result = mysql_query($sql, $db);
+	$line = mysql_fetch_array($result);
+	if ( $line['alive'] ) { return false; } else { return true; }
+}
+
+function user_logintime ( $userid ) {
+	global $db, $MYSQL_PREFIX;
+	$sql = "UPDATE {$MYSQL_PREFIX}users SET last = CURRENT_TIMESTAMP WHERE userid = {$userid}";
+	$result = mysql_query($sql, $db);
+}
 
 function user_getid ($username) {
 	global $db, $MYSQL_PREFIX;
@@ -49,6 +68,14 @@ function user_gethandle ( $userid ) {
 	$result = mysql_query($sql, $db);
 	$line = mysql_fetch_array($result);
 	return $line['fullname'];
+}
+
+function user_getlevel ( $userid ) {
+        global $db, $MYSQL_PREFIX;
+        $sql = "SELECT level FROM {$MYSQL_PREFIX}stats WHERE userid = {$userid}";
+        $result = mysql_query($sql, $db);
+        $line = mysql_fetch_array($result);
+        return $line['level'];
 }
 
 function user_getarmor ( $userid ) {

@@ -157,7 +157,6 @@ $enemies = array(
 		array ('Great Ogre Of The North', 'Spiked Steel Mace', 1800, 2878, 524838, 112833, 'No one is going to call him The "Great" Ogre Of The North again.')
 	)
 );
-print_r($enemies);
 
 
 ?>
