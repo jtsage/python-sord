@@ -105,4 +105,81 @@ function forest_menu($uhp, $ehp, $ename) {
 
 
 
+function master_fight() {
+	GLOBAL $userid, $masters, $masterwin, $db, $MYSQL_PREFIX;
+	$userlevel = user_getlevel($userid);
+	$thisunderdog = 0;
+	$userstr = user_getstr($userid);
+	$userdef = user_getdef($userid);
+	$userhstr = ($userstr - ($userstr % 2)) / 2;
+	$userhp = user_gethp($userid);
+	$dead = 0; $ran = 0; $win = 0;
+
+	$enemystr = $masters[$userlevel][7];
+	$enemydef = $masters[$userlevel][8];
+	$enemyhstr = ($enemystr - ($enemystr % 2)) / 2;
+	$enemyhp = $masters[$userlevel][6];
+	$enemyname = $masters[$userlevel][0];
+	$enemywep = $masters[$userlevel][1];
+	
+	slowecho("\n\n  \033[32m**\033[1;37mFIGHT\033[0m\033[32m**\n");
+	slowecho("\n  \033[32mYour skill allows you to get the first strike.\033[0m\n"); 
+	
+	while( $userhp > 0 && $enemyhp > 0 && !$dead && !$ran) {  ## FIGHT LOOP ##
+		$userhp = user_gethp($userid);
+		slowecho(forest_menu($userhp, $enemyhp, $enemyname));
+		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+                switch ($choice) {
+			case 'S':
+				module_viewstats($userid);
+				break;
+			case 'A':
+				$eattack =  (( $enemyhstr ) + rand(0, $enemyhstr) ) - $userdef;
+				$uattack =  (( $userhstr ) + rand(0, $userhstr)) - $enemydef;
+				if ( !$thisunderdog ) { if ( $uattack > $enemyhp ) { $eattack = 0; } }
+                                if ( $eattack > $userhp ) { $eattack = $userhp; $dead = 1;}
+				if ( $eattack > 0 ) {
+					slowecho("\n  \033[32m{$enemyname} hits you with {$enemywep} for \033[1;31m{$eattack}\033[0m\033[32m damage\033[0m\n"); 
+					user_takehp($userid, $eattack);
+				}
+				if ( $uattack > 0 && !$dead) { 
+					slowecho("\n  \033[32mYou hit {$enemyname} for \033[1;31m{$uattack}\033[0m\033[32m damage\n"); 
+					$enemyhp = $enemyhp - $uattack;
+					if ( $enemyhp < 1 ) { 
+						slowecho("  \033[31m{$masters[$userlevel][5]}\n"); 
+						$win = 1; }
+				}
+				break;
+			case 'R':
+				slowecho("\n  \033[32mYou retire from the field before getting yourself killed.\033[0m\n"); 
+				$resethp = "UPDATE {$MYSQL_PREFIX}stats set hp = hpmax WHERE userid = {$userid}";
+				$result = mysql_query($resethp, $db);
+				$ran = 1; 
+				break;
+		}
+	}
+	if ( $win ) {
+		$addexp = $masters[$userlevel][2] * .1;
+		user_giveexp($userid, $addexp);
+		user_givedef($userid, $masterwin[$userlevel][2]);
+		user_givestr($userid, $masterwin[$userlevel][1]);
+		user_givehpmax($userid, $masterwin[$userlevel][0]);
+		slowecho("\n  \033[32mYou have receieved \033[1m+{$masterwin[$userlevel][2]}\033[22m vitality, \033[1m+{$masterwin[$userlevel][1]}\033[22m strength, and \033[1m+{$masterwin[$userlevel][0]}\033[22m hitpoints.\033[0m\n");
+		$newlevel = user_getlevel($userid) + 1;
+		slowecho("  \033[32mYou have gained \033[1m{$addexp}\033[22m experience, and are now level \033[1m{$newlevel}\033[22m.\033[0m\n");
+		user_setlevel($userid, $newlevel);
+		$resethp = "UPDATE {$MYSQL_PREFIX}stats set hp = hpmax WHERE userid = {$userid}";
+		$result = mysql_query($resethp, $db);
+		pauser();
+	}
+	if ( $dead ) {
+		slowecho("\n  \033[31mTragically, you are horribly disfigured....  oh wait...\033[0m\n");
+		slowecho("  \033[31mYou always looked like that you say?...  That's unfortunate...\033[0m\n");
+		slowecho("  \033[32mAnyway, you lost.  Being the gracious master {$enemyname} is, he heals you and sends you away for the day.\033[0m\n");
+		$resethp = "UPDATE {$MYSQL_PREFIX}stats set hp = hpmax WHERE userid = {$userid}";
+		$masterql = "UPDATE {$MYSQL_PREFIX}stats SET master = 1 WHERE userid = {$userid}"; 
+		$result = mysql_query($resethp, $db);
+		pauser();
+	}
+}
 ?>

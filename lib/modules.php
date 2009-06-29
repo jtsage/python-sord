@@ -38,16 +38,14 @@ function module_dailyhappen($noprmpt) {
 }
 
 function module_who() {
-	GLOBAL $db, $MYSQL_PREFIX, $classes;
-	$sql = "SELECT o.userid, fullname, exp, level, class FROM {$MYSQL_PREFIX}users u, {$MYSQL_PREFIX}online o, {$MYSQL_PREFIX}stats s WHERE o.userid = u.userid AND o.userid = s.userid ORDER BY exp";
+	GLOBAL $db, $MYSQL_PREFIX;
+	$sql = "SELECT o.userid, fullname, DATE_FORMAT(whence, '%H:%i') as whence FROM {$MYSQL_PREFIX}users u, {$MYSQL_PREFIX}online o WHERE o.userid = u.userid ORDER BY whence ASC";
         $result = mysql_query($sql, $db);
-        $output = "\n\n\033[1;37mPeople Online Now\033[22;32m....\033[0m\n";
+        $output = "\n\n\033[1;37m                     Warriors In The Realm Now\033[22;32m\033[0m\n";
         $output .= art_line();
-        $output .= "\033[1;32mName" . padnumcol("Name", 20) . "Class" . padnumcol("class", 20);
-        $output .= "Experience" . padnumcol("experience", 20) . "Level\033[0m\n";
         while ( $line = mysql_fetch_array($result) ) {
-	        $output .= "\033[32m" . $line['fullname'] . padnumcol($line['fullname'], 20) . $classes[$line['class']] . padnumcol($classes[$line['class']], 20);
-                $output .= $line['exp'] . padnumcol($line['exp'], 20) . $line['level'] . "\033[0m\n";
+	        $output .= "  \033[1;32m" . $line['fullname'] . padnumcol($line['fullname'], 28);
+		$output .= "\033[0m\033[32mArrived At                    \033[1;37m" . $line['whence'] . "\033[0m\n";
 	}
 	return $output . "\n";
 }
@@ -405,4 +403,42 @@ function module_arthurs() {
 	}
 }
 
+function module_turgon() {
+        GLOBAL $db, $MYSQL_PREFIX, $masters, $userid;
+        $quitter = 0;
+        while ( !$quitter ) {
+                slowecho(menu_turgon());
+                $choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+                switch ($choice) {
+			case 'R':
+				$quitter = 1;
+				break;
+			case '?':
+				break;
+			case 'Q':
+				$ulvl = user_getlevel($userid);
+				$uexp = user_getexp($userid);
+				$nexp = $masters[$ulvl][2] - $uexp;
+				if ( $nexp < 0 ) { $nexp = 0; }
+				foreach ( $masters[$ulvl][3] as $wisdom ) {
+					slowecho("\n  \033[32m{$wisdom}\033[0m");
+				}
+				slowecho("\n\n  \033[1;37m{$masters[$ulvl][0]}\033[0m\033[32m looks at you closely and says...\n");
+				if ( $nexp == 0 ) { slowecho("  \033[32m{$masters[$ulvl][4]}\033[0m\n"); }
+				else { slowecho("  \033[32mYou need about \033[1;37m{$nexp}\033[0m\033[32m experience before you'll be as good as me.\033[0m\n"); }
+				pauser();
+				break;
+			case 'V':
+				control_noimp();
+				break;
+			case 'Y':
+				slowecho(module_viewstats($userid));
+				break;
+			case 'A':
+				master_fight();
+				break;
+
+		}
+	}
+}
 ?>

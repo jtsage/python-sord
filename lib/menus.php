@@ -11,6 +11,29 @@ function menu_2col($text1, $text2, $col1, $col2) {
   return "  " . $text1col . padnumcol($text1, 36) . $text2col . "\033[0m\n";
 }
 
+function menu_turgon() {
+  GLOBAL $userid, $logontime, $masters;
+  $currenttime = time(); $ontime = $currenttime - $logontime;
+  $sec = $ontime % 60;
+  $min = ( $ontime - $sec ) / 60;
+  $psec = ( $sec < 10 ) ? "0{$sec}" : $sec;
+
+  $userlevel = user_getlevel($userid);
+  $thismenu  = "\n\n  \033[1;37mSaga of the Red Dragon - \033[0m\033[32mTurgons Warrior Training\033[0m\n";
+  $thismenu .= art_blueline();
+  $thismenu .= "  \033[32mYou enter the mighty Training Center.  Hundreds of warriors, young,\033[0m\n";
+  $thismenu .= "  \033[32mas well as old, are sparring.  Every few seconds you hear someone\033[0m\n";
+  $thismenu .= "  \033[32mshriek in pain.  Obviously some novice who let his gaurd down.\033[0m\n\n";
+  $thismenu .= func_normmenu("(Q)uestion Master");
+  $thismenu .= func_normmenu("(A)ttack Master");
+  $thismenu .= "  \033[32m(\033[1;37mV\033[0m\033[32m)\033[1;37misit The Hall Of Honor\033[0m\n";
+  $thismenu .= func_normmenu("(R)eturn to Town");
+  $thismenu .= "\n  \033[32mYour master is \033[1;37m{$masters[$userlevel][0]}\033[0m\033[32m.\033[0m\n\n";
+  $thismenu .= "\033[1;35m  Turgon's Warrior Training \033[1;30m(Q,A,V,R) (? for menu)\033[0m\n\n";
+  $thismenu .= "  \033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[1;37m[\033[22m{$min}:{$psec}\033[1m] \033[0m\033[32m:-: \033[0m";
+  return $thismenu;
+}
+
 function menu_bank() {
   GLOBAL $userid, $logontime;
   $currenttime = time(); $ontime = $currenttime - $logontime;
