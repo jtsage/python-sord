@@ -3,7 +3,7 @@
 echo "PRESS ENTER TO CONNECT"; $dumper = fgets(STDIN);
 $SORDDEBUG = 0;
 #$SORDDEBUG = 1;
-$SORDVERSION = "0.0.1";
+$SORDVERSION = "0.9.9";
 $SORDDELAY = ( $SORDDEBUG ) ? 0 : 700;
 require_once("config.php");
 require_once("lib/functions-load.php");
@@ -98,11 +98,14 @@ while ( !$mainexit ) {
     case 'W':
       control_sendmail($userid);
       break;
+    case 'I':
+      inn_logic();
+      break;
 
   }
 
 }
-slowecho(func_casebold("\n\n .....Quitting to the Fields... GoodBye!\n", 3));
+slowecho(func_casebold("\n\n   Quitting to the Fields... GoodBye!\n", 7));
 $logoutsql = "DELETE FROM {$MYSQL_PREFIX}online WHERE userid = {$userid}";
 $results = mysql_query($logoutsql, $db);
 

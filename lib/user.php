@@ -78,6 +78,14 @@ function user_getlevel ( $userid ) {
         return $line['level'];
 }
 
+function user_getsex ( $userid ) {
+        global $db, $MYSQL_PREFIX;
+        $sql = "SELECT sex FROM {$MYSQL_PREFIX}stats WHERE userid = {$userid}";
+        $result = mysql_query($sql, $db);
+        $line = mysql_fetch_array($result);
+        return $line['sex'];
+}
+
 function user_getarmor ( $userid ) {
         global $db, $MYSQL_PREFIX;
         $sql = "SELECT armor FROM {$MYSQL_PREFIX}stats WHERE userid = {$userid}";

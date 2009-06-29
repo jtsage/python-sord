@@ -10,4 +10,5 @@ require_once("control.php");
 require_once("modules.php");
 require_once("menus.php");
 require_once("forest.php");
+require_once("inn.php");
 ?>

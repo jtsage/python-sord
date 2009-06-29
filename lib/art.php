@@ -1,12 +1,19 @@
 <?php
 
 function art_banner() {
-    $thismsg  = "\033[32m                           Saga Of The Red Dragon\n\n";
-    $thismsg .= "\033[32m                    Compiled June 25, 2009: Version \033[1;37m1.00\n";
+    GLOBAL $SORDVERSION, $SORD_DELINACT, $SORD_DAYLENGTH, $SORD_BANKINT, $SORD_FFIGHT, $SORD_PFIGHT, $SORD_HOST, $SORD_ADMIN;
+    $rundays = control_getruntime();
+    $thismsg  = "\033[32m                           Saga Of The Red Dragon\n";
+    $thismsg .= "\033[32m			       {$SORD_HOST}\n\n";
+    $thismsg .= "\033[32m                    Compiled June 25, 2009: Version \033[1;37m{$SORDVERSION}\n";
     $thismsg .= "\033[22;32m                        (c) pre-2009 by Someone Else\n\n";
-    $thismsg .= "\033[32m                        \033[1;37mREGISTERED \033[0m\033[32m(AND INCOMPLETE!)\n\n";
-    $thismsg .= "\033[32m                The current game has been running for a while.\n";
-    $thismsg .= "\033[32m               Players are deleted after \033[1m30\033[22m days of inactivity.\n\n";
+    $thismsg .= "\033[32m                           \033[1;37mREGISTERED TO \033[0m\033[1;34m{$SORD_ADMIN}\033[0m\n\n";
+    $thismsg .= "\033[32m             The current game has been running for \033[1m{$rundays}\033[22m game days.\n";
+    $thismsg .= "\033[32m            Players are deleted after \033[1m{$SORD_DELINACT}\033[22m real days of inactivity.\n";
+    $thismsg .= "\033[32m               Players are enjoying \033[1m{$SORD_FFIGHT}\033[22m forest fights per day.\n";
+    $thismsg .= "\033[32m               Players are enjoying \033[1m{$SORD_PFIGHT}\033[22m player fights per day.\n";
+    $thismsg .= "\033[32m            Players are enjoying \033[1m{$SORD_BANKINT}%\033[22m interest at the bank per day.\n";
+    $thismsg .= "\033[32m                   The current game day is \033[1m{$SORD_DAYLENGTH}\033[22m real hours long.\n\n";
     $thismsg .= "\033[32m                         (\033[1mE\033[22m)nter the realm of the Dragon\n";
     $thismsg .= "\033[32m                         (\033[1mL\033[22m)ist Warriors\n";
     $thismsg .= "\033[32m                         (\033[1mQ\033[22m)uit the game server\n\n";
@@ -18,6 +25,10 @@ function art_line() {
     return "\033[32m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n";
 }
     
+function art_blueline() {
+    return "\033[34m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n";
+}
+
 function art_header() {
     $thismsg .= "\033[31;41mллллллллллл\033[30;41mп\033[37;40m \033[30;41mмм\033[31;41mллллл\033[30;41mмлп\033[31;41mлллллллллллллллллллллллллллллллллллллллллллллллллллллллл\033[0m\n";
     $thismsg .= "\033[31;41m              \033[37;40m         \033[31;40mппл\033[31;41m          \033[31;40mллллллллллллллллллллллллллллллллллллллллллл\033[0m\n";

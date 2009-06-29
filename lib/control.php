@@ -125,6 +125,14 @@ function control_nukemail($msgid) {
 	$result = mysql_query($sql, $db);
 }
 
+function control_getruntime() {
+	GLOBAL $db, $MYSQL_PREFIX;
+	$sql .= "SELECT valueint FROM {$MYSQL_PREFIX}setup WHERE `name` = 'gdays'";
+	$result = mysql_query($sql, $db);
+	$line = mysql_fetch_array($result);
+	return $line['valueint'];
+}
+
 function control_sendmail($userid) {
 	GLOBAL $db, $MYSQL_PREFIX;
 	$fromid = $userid;
