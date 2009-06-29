@@ -15,10 +15,10 @@ echo chr(255) . chr(253) . chr(3);
 
 declare(ticks=1);
 $logontime = time();
-pcntl_signal(SIGTERM, "signal_handler");
-pcntl_signal(SIGQUIT, "signal_handler");
-pcntl_signal(SIGINT, "signal_handler");
-pcntl_signal(SIGALRM, "signal_handler");
+#pcntl_signal(SIGTERM, "signal_handler");
+#pcntl_signal(SIGQUIT, "signal_handler");
+#pcntl_signal(SIGINT, "signal_handler");
+#pcntl_signal(SIGALRM, "signal_handler");
 
 if ( !$SORDDEBUG ) { slowecho(art_header()); pauser(); }
 
@@ -44,6 +44,7 @@ while ( !$ctrl ) {
 	if ( !($choice == "T") ) { $ctrl = 1; }
 }
 
+if ( !$SORDDEBUG ) { slowecho(module_who()); pauser(); }
 if ( !$SORDDEBUG ) { slowecho(module_viewstats($userid)); pauser(); }
 
 $mainexit = 0; $xprt = 0;
@@ -100,6 +101,9 @@ while ( !$mainexit ) {
       break;
     case 'I':
       inn_logic();
+      break;
+    case 'T':
+      module_turgon();
       break;
 
   }

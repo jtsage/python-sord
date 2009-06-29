@@ -23,7 +23,7 @@ $sql2 = "UPDATE {$MYSQL_PREFIX}stats SET pfight = {$SORD_PFIGHT} WHERE pfight < 
 $sql3 = "UPDATE {$MYSQL_PREFIX}stats SET usem = spclm";
 $sql4 = "UPDATE {$MYSQL_PREFIX}stats SET used = (spcld DIV 5) + 1 WHERE spcld > 0";
 $sql5 = "UPDATE {$MYSQL_PREFIX}stats SET uset = (spclt DIV 5) + 1 WHERE spclt > 0";
-$sql6 = "INSERT INTO {$MYSQL_PREFIX}daily ( `data` ) VALUES ( '{$dailysayings[$randsaying]}' )";
+$sql6 = "INSERT INTO {$MYSQL_PREFIX}daily ( `data` ) VALUES ( '{31}{$dailysayings[$randsaying]}' )";
 $sql7 = "UPDATE {$MYSQL_PREFIX}users SET alive = 1 WHERE alive = 0";
 $sql8 = "UPDATE {$MYSQL_PREFIX}stats SET bank = ( bank * {$interest} ) WHERE bank > 0";
 $sql9 = "DELETE FROM {$MYSQL_PREFIX} WHERE last < ( CURRENT_TIMESTAMP - INTERVAL {$SORD_DELINACT} DAY )";
@@ -31,6 +31,7 @@ $sql0 = "UPDATE {$MYSQL_PREFIX}setup SET valueint = ( valueint + 1 ) WHERE `name
 
 $sqla = "UPDATE {$MYSQL_PREFIX}stats SET flirt = 0 WHERE 1";
 $sqlb = "UPDATE {$MYSQL_PREFIX}stats SET sung = 0 WHERE 1";
+$sqlc = "UPDATE {$MYSQL_PREFIX}stats SET master = 0 WHERE 1";
 
 
 $result = mysql_query($sql1, $db);
