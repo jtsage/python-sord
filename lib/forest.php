@@ -23,7 +23,7 @@ function forest_fight() {
 	$dead = 0; $ran = 0; $win = 0;
 
 	$enemystr = $enemies[$userlevel][$thisenemy][2];
-	$enemyhstr = ($enemystr - ($enemystr % 2)) / 2;  echo "STR: {$enemystr}  HSTR: {$enemyhstr}\n";
+	$enemyhstr = ($enemystr - ($enemystr % 2)) / 2;
 	$enemyhp = $enemies[$userlevel][$thisenemy][3];
 	$enemyname = $enemies[$userlevel][$thisenemy][0];
 	$enemywep = $enemies[$userlevel][$thisenemy][1];
@@ -50,12 +50,13 @@ function forest_fight() {
 				break;
 			case 'A':
 				$eattack =  (( $enemyhstr ) + rand(0, $enemyhstr) ) - $userdef;
+				$uattack =  (( $userhstr ) + rand(0, $userhstr));
+				if ( !$thisunderdog ) { if ( $uattack > $enemyhp ) { $eattack = 0; } }
                                 if ( $eattack > $userhp ) { $eattack = $userhp; $dead = 1;}
 				if ( $eattack > 0 ) {
 					slowecho("\n  \033[32m{$enemyname} hits you with {$enemywep} for \033[1;31m{$eattack}\033[0m\033[32m damage\033[0m\n"); 
 					user_takehp($userid, $eattack);
 				}
-				$uattack =  (( $userhstr ) + rand(0, $userhstr));
 				if ( $uattack > 0 && !$dead) { 
 					slowecho("\n  \033[32mYou hit {$enemyname} for \033[1;31m{$uattack}\033[0m\033[32m damage\n"); 
 					$enemyhp = $enemyhp - $uattack;

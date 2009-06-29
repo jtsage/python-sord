@@ -179,9 +179,12 @@ function module_forest() {
 				module_viewstats($userid);
 				break;
 			case 'L':
-				$happening = rand(1, 8);
-				if ( $happening == 3 ) { forest_special(); }
-				else { forest_fight(); }
+				$ffights = user_getffight($userid);
+				if ( $ffights > 0 ) {
+					$happening = rand(1, 8);
+					if ( $happening == 3 ) { forest_special(); }
+					else { forest_fight(); }
+				} else { slowecho(func_casebold("  You are mighty tired.  Try again tommorow\n", 2)); }
 				break;
 			case 'A':
 				slowecho(func_casebold("  You brandish your weapon dramatically.\n", 2));

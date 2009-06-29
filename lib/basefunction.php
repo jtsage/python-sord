@@ -45,7 +45,7 @@ function padright($text, $col) {
 }
 
 function pauser() {
-	slowecho(func_casebold(":-: Press Any Key :-:", 2));
+	slowecho(func_casebold("\n    :-: Press Any Key :-:", 2));
 	$dumper = fgets(STDIN);
 }
 
