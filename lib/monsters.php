@@ -159,6 +159,102 @@ $enemies = array(
 );
 
 
+$masters = array (
+	1 => array(
+		'Halder', 'Short Sword', 100,
+		array ('"Hi there.  Although I may not look muscular, I ain\'t all', 'that weak.  You cannot advance to another Master until you', 'can best me in battle.  I don\'t really have any advice', 'except wear a groin cup at all times.  I learned the hard', 'way."'),
+		'"Gee, your muscles are getting bigger than mine...',
+		'Belar!!!  You are truly a great warrior!',
+		30, 15, 3
+	),
+	2 => array(
+		'Barak', 'Battle Axe', 400,
+		array ('"You are now level two, and a respected warrior.', 'Try talking to the Bartender, he will see you now.  He', 'is a worthy asset... Remember, your ultimate goal is', 'to reach Ultimate Warrior status, which is level twelve."'),
+		'"You know, you are actually getting pretty good with that thing..."',
+		'Children Of Mara!!!  You have bested me??!',
+		45, 22, 6
+	),
+	3 => array(
+		'Aragorn', 'Twin Swords', 1000,
+		array ('"You are now level three, and you are actually becoming', 'well known in the realm.  I heard your name being mentioned', 'by Violet.... Ye Gods she\'s hot...."'),
+		'"You have learned everything I can teach you."',
+		'Torak\'s Eye!!!  You are a great warrior!',
+		65, 32, 11
+	),
+	4 => array(
+		'Olodrin', 'Power Axe', 4000,
+		array ('"You are now level four.  But don\'t get cocky - There', 'are many in the realm that could kick your...  Nevermind,', 'I\'m just not good at being insperational."'),
+		'"You\'re becoming a very skilled warrior."',
+		'Ye Gods!!  You are a master warrior!',
+		95, 44, 21
+	),
+	5 => array(
+		'Sandtiger', 'Blessed Sword', 10000,
+		array ('"You are now level five..Not bad...Not bad at all..', 'I am called Sandtiger - Because.. Actually I can\'t', 'remember why people call me that.  Oh - Don\'t pay attention"', 'to that stupid bartender - I could make a much better one.'),
+		'"Gee - You really know how to handle your shaft!"',
+		'Very impressive...Very VERY impressive.',
+		145, 64, 36
+	),
+	6 => array(
+		'Sparhawk', 'Double Bladed Sword', 40000,
+  		array ('"You are level six!  Vengeance is yours!', 'You can now beat up on all those young punks that made', 'fun of you when you were level 1.  This patch?  Oh - I', 'lost my eye when I fell on my sword after tripping', 'over a gopher.  If you tell anyone this, I\'ll hunt you', 'down.'),
+		'"You\'re getting the hang of it now!"',
+		'This Battle is yours...You have fought with honor.',
+		220, 99, 58
+	),
+	7 => array(
+		'Atsuko Sensei', 'Huge Curved Blade', 100000,
+		array ('"Even in my country,  you would be considered a good', 'warrior.  But you have much to learn.  Remember to', 'always respect your teachers, for it is right."'),
+		'"You are ready to be tested on the battle field!"',
+		'Even though you beat me, I am proud of you.',
+		345, 149, 93
+	),
+	8 => array(
+		'Aladdin', 'Shiny Lamp', 400000,
+		array ('"You are now level eight.  Remember, do not use your', 'great strength in bullying the other warriors.  Do not', 'be a braggart.  Be humble, and remember, honor is everything."' ),
+		'"You REALLY know how to use your weapon!!!"',
+		'I don\'t need a genie to see that you beat me, man!',
+		530, 224, 153
+	),
+	9 => array(
+		'Prince Caspian', 'Flashing Rapier', 1000000,
+		array ('"You are now level nine.  You have traveled far on the', 'road of hardships,  but what doesn\'t kill you, only', 'makes you stronger.  Never stop fighting.' ),
+		'"Something tells me you are as good as I am now.."',
+		'Good show, chap!  Jolly good show!',
+		780, 334, 233
+	),
+	10 => array(
+		'Gabdalf', 'Huge Fireballs', 4000000,
+		array ('"You are now level ten.. A true honor!', 'Do not stop now... You may be the one to rid the realm', 'of the Red Dragon yet...  Only two more levels to go', 'until you are the greatest warrior in the land."' ),
+		'"You\'re becoming a very skilled warrior.',
+		'Torak\'s Tooth!  You are great!', 
+		1130, 484, 353
+	),
+	11 => array(
+		'Turgon', 'Ables Sword', 10000000,
+		array ('"I am Turgon, son.  The greatest warrior in the realm.', 'You are a great warrior, and if you best me, you must', 'find and kill the Red Dragon.  I have every faith in you."' ),
+		'"You are truly the BEST warrior in the realm."',
+		'You are a master warrior!',
+		1680, 684, 503
+	)
+);
+
+$masterwin = array(
+	1 => array(10, 5, 2),
+	2 => array(15, 7, 3),
+	3 => array(20, 10, 5),
+	4 => array(30, 12, 10),
+	5 => array(50, 20, 15),
+	6 => array(75, 35, 22),
+	7 => array(125, 50, 35),
+	8 => array(185, 75, 60),
+	9 => array(250, 110, 80),
+	10 => array(350, 150, 120),
+	11 => array(550, 200, 150)
+);
+
+
+
 ?>
 
 
