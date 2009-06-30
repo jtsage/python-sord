@@ -24,6 +24,12 @@ function user_fexist ($fullname) {
         }
 }
 
+function user_logout ( $userid ) {
+	global $db, $MYSQL_PREFIX;
+	$logoutsql = "DELETE FROM {$MYSQL_PREFIX}online WHERE userid = {$userid}";
+	$results = mysql_query($logoutsql, $db);
+}
+
 function user_setdead ( $userid ) {
 	global $db, $MYSQL_PREFIX;
 	$sql = "UPDATE {$MYSQL_PREFIX}users SET alive = 0 WHERE userid = {$userid}";
@@ -78,12 +84,36 @@ function user_getlevel ( $userid ) {
         return $line['level'];
 }
 
+function user_getclass ( $userid ) {
+        global $db, $MYSQL_PREFIX;
+        $sql = "SELECT class FROM {$MYSQL_PREFIX}stats WHERE userid = {$userid}";
+        $result = mysql_query($sql, $db);
+        $line = mysql_fetch_array($result);
+        return $line['class'];
+}
+
 function user_getsex ( $userid ) {
         global $db, $MYSQL_PREFIX;
         $sql = "SELECT sex FROM {$MYSQL_PREFIX}stats WHERE userid = {$userid}";
         $result = mysql_query($sql, $db);
         $line = mysql_fetch_array($result);
         return $line['sex'];
+}
+
+function user_didflirt ( $userid ) {
+        global $db, $MYSQL_PREFIX;
+        $sql = "SELECT flirt FROM {$MYSQL_PREFIX}stats WHERE userid = {$userid}";
+        $result = mysql_query($sql, $db);
+        $line = mysql_fetch_array($result);
+        return $line['flirt'];
+}
+
+function user_atinn ( $userid ) {
+        global $db, $MYSQL_PREFIX;
+        $sql = "SELECT atinn FROM {$MYSQL_PREFIX}stats WHERE userid = {$userid}";
+        $result = mysql_query($sql, $db);
+        $line = mysql_fetch_array($result);
+        return $line['atinn'];
 }
 
 function user_getarmor ( $userid ) {

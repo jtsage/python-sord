@@ -87,6 +87,7 @@ function forest_fight() {
 	}
 	if ( $dead ) {
 		user_setdead($userid);
+		user_logout($userid);
 		die(func_casebold("  Tragically, you died.  Returning to the mundane world for the day...\n"));
 	}
 }

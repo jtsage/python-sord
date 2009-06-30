@@ -102,4 +102,24 @@ $thebard = array(
 	)
 );
 
+
+$flirts = array(
+	1 => array(
+		array (1, '(W)ink', 5),
+		array (2, '(K)iss Her Hand', 10),
+		array (4, '(P)eck Her On The Lips', 20),
+		array (8, '(S)it Her On Your Lap', 30),
+		array (16, '(G)rab Her Backside', 40),
+		array (32, '(C)arry Her Upstairs', 40)
+	),
+	2 => array(
+		array (1, '(W)ink', 5),
+		array (2, '(F)lutter Eyelashes', 10),
+		array (4, '(D)rop Hankee', 20),
+		array (8, '(A)sk The Bard to Buy You a Drink', 30),
+		array (16, '(K)iss The Bard Soundly', 40),
+		array (32, '(C)ompletely Seduce The Bard', 40)
+	)
+);
+
 ?>

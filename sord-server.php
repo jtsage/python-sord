@@ -37,6 +37,8 @@ user_logintime($userid);
 $logonsql = "INSERT INTO {$MYSQL_PREFIX}online ( `userid` ) VALUES ( {$userid} )";
 $results = mysql_query($logonsql, $db);
 
+if ( user_atinn($userid) ) { slowecho(func_casebold("You awake from your warm bed, and wander out into the main road...", 2)); pauser(); }
+
 $ctrl = ( $SORDDEBUG ) ? 1 : 0;
 while ( !$ctrl ) {
 	slowecho(module_dailyhappen(0));

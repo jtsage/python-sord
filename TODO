@@ -1,28 +1,39 @@
+Major Items:
+
+  Player battle subsystem 
+  Player killing fields UI
+  Player bribe UI
+
+  Forest happenings
+    1.) gems
+    2.) gold
+    3.) old man
+    4.) ugly / pretty stick
+    5.) old hag
+    6.) fairies
+    7.) dark horse tavern
+    8.) lessons
+    9.) merry men
+    10.) rescue maiden
+    11.) flowers
+    12.) hammerstone
+
+  The dragon / winning / turgons hall of fame.
+
+
+By Menus:
 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
   the streets are crowded, it is difficult to
   push your way through the mob....
 
   (*)orest                            (S)laughter other players
   (*)nn                               
-
-
-
-  (F)lirt with Violet                 (T)alk to the Bartender
-  (G)et a Room                        
-
-
-(V)iolet
-(G)ems
-(B)ribes
-(C)hange Name
-(D)ragon (only lvl 12)
-(R)eturn
+    (B)ribes
            
 
 
 
-
-
+Extra keys:
 
 |  During Combat:
 | Q - You are in combat!  Try running.
