@@ -116,6 +116,12 @@ function user_atinn ( $userid ) {
         return $line['atinn'];
 }
 
+function user_leaveinn ( $userid ) {
+	global $db, $MYSQL_PREFIX;
+	$sql = "UPDATE {$MYSQL_PREFIX}stats SET atinn = 0 WHERE userid = {$userid}";
+	$result = mysql_query($sql, $db);
+}
+
 function user_getarmor ( $userid ) {
         global $db, $MYSQL_PREFIX;
         $sql = "SELECT armor FROM {$MYSQL_PREFIX}stats WHERE userid = {$userid}";

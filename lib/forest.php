@@ -1,10 +1,46 @@
 <?php
 function forest_special() {
-	GLOBAL $userid;
+	GLOBAL $userid, $db, $MYSQL_PREFIX;
 	$happening = rand(1, 12);
-	slowecho(func_casebold("Happening # {$happening}", 1)); pauser();
 	switch ( $happening ) {
-			
+		case 1:
+			$thisfind = rand(1, 4);
+			slowecho(art_line());
+			slowecho("  \033[32mFortune Smiles Upon You.  You find \033[1;37m{$thisfind}\033[0m\033[32m gems!\033[0m\n");
+			slowecho(art_line());
+			pauser();
+			user_givegems($userid, $thisfind);
+			break;
+		case 2:
+			$thisfind = rand(1, 4) * 200 * user_getlevel($userid);
+                        slowecho(art_line());
+                        slowecho("  \033[32mFortune Smiles Upon You.  You find a sack full of \033[1;37m");
+			slowecho(number_format($thisfind, 0));
+			slowecho("\033[0m\033[32m gold!\033[0m\n");
+                        slowecho(art_line());
+                        pauser();
+			user_givegold($userid, $thisfind);
+			break;
+		case 3:
+                        slowecho(art_line());
+                        slowecho("  \033[32mYou find a hammer stone.  You quickly hit it as hard as possible.\n \033[1mYour attack strength is raised by 1!\033[0m\n");
+                        slowecho(art_line());
+                        pauser();
+                        user_givestr($userid, 1);
+                        break;
+		case 4:
+                        slowecho(art_line());
+                        slowecho("  \033[32mYou stumble across a group of merry men.  They offer you ale you can't resist.\n \033[1mYou feel refreshed!\033[0m\n");
+                        slowecho(art_line());
+                        pauser();
+			$sql = "UPDATE {$MYSQL_PREFIX}stats SET hp = hpmax WHERE userid = {$USERID}";
+			$result = mysql_query($sql, $db);
+                        break;
+
+
+
+		default:
+			slowecho(func_casebold("Happening # {$happening}", 1)); pauser();
 	}
 }
 
@@ -76,6 +112,15 @@ function forest_fight() {
 				} else {
 					slowecho("\n  \033[32mYou narrowly escape harm.\033[0m\n"); 
 					$ran = 1; }
+				break;
+			case 'Q':
+				slowecho("\n  \033[31mYou are in Combat!  Try Running!\033[0m\n");
+				break;
+			case 'H':
+				slowecho("\n  \033[32mYou are in combat, and they don't make house calls!\033[0m\n");
+				break;
+			case 'L':
+				slowecho("\n  \033[32mWhat?!  You want to fight two at once?\033[0m\n");
 				break;
 		}
 	}

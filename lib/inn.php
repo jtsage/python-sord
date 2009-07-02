@@ -104,7 +104,7 @@ function inn_getroom() {
 
 function inn_converse() {
         GLOBAL $db, $MYSQL_PREFIX, $userid;
-        $sql = "SELECT data, nombre FROM {$MYSQL_PREFIX}patrons ORDER BY id ASC LIMIT 10";
+        $sql = "SELECT data, nombre FROM (SELECT * FROM {$MYSQL_PREFIX}patrons ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id";
         $result = mysql_query($sql, $db);
         $output = "\n\n  \033[1;37mConverse with the Patrons\033[22;32m....\033[0m\n";
         $output .= "\033[32m                                      -=-=-=-=-=-\033[0m\n";
