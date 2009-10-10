@@ -1,4 +1,24 @@
 <?php
+/**
+ * Static variables used through game.
+ * 
+ * Contains all non monster data for the game.
+ * 
+ * @package phpsord
+ * @subpackage phpsord-data
+ * @author J.T.Sage
+ * @staticvar array $armor Names of available armor.
+ * @staticvar array $armordef Defence added for each armor type.
+ * @staticvar array $armorndef Defence needed for armor purchase.
+ * @staticvar array $armorprice Price of each armor type.
+ * @staticvar array $classes Types of player classes.
+ * @staticvar array $flirts Flirting with violet - Charm needed, Text, Experience gained
+ * @staticvar array $thebard Asking the bard to sing - Song text, Song finish, mysql operation
+ * @staticvar array $weapon Names of available weapons.
+ * @staticvar array $weaponnstr Strength needed for each weapon type.
+ * @staticvar array $weaponprice Price of each weapon.
+ * @staticvar array $weaponstr Strength added for each weapon type.
+ */
 
 $classes = array(
 	1 => "Death Knight",

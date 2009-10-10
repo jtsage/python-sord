@@ -1,4 +1,14 @@
 <?php
+/**
+ * Function loader file.
+ * 
+ * Contains all linked library files.
+ * 
+ * @package phpsord
+ * @subpackage phpsord-system
+ * @author J.T.Sage
+ */
+
 require_once("dbaseconfig.php");
 require_once("staticvar.php");
 require_once("monsters.php");
