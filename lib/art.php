@@ -1,20 +1,17 @@
 <?php
-$a176 = html_entity_decode('&#9617;',ENT_QUOTES,'UTF-8');
-$a177 = html_entity_decode('&#9618;',ENT_QUOTES,'UTF-8');
-$a178 = html_entity_decode('&#9619;',ENT_QUOTES,'UTF-8');
-$a219 = html_entity_decode('&#9608;',ENT_QUOTES,'UTF-8');
-$a220 = html_entity_decode('&#9604;',ENT_QUOTES,'UTF-8');
-$a221 = html_entity_decode('&#9612;',ENT_QUOTES,'UTF-8');
-$a222 = html_entity_decode('&#9616;',ENT_QUOTES,'UTF-8');
-$a223 = html_entity_decode('&#9600;',ENT_QUOTES,'UTF-8');
+/**
+ * Artwork headers.
+ * 
+ * Contains all ANSI/ASCII art headers used throughout.
+ * 
+ * @package phpsord
+ */
 
-echo $a176 . $a177 . $a178 . $a219 . $a220 . $a221 . $a222 . $a223;
-//GLOBAL $a176, $a177, $a178, $a219, $a220, $a221, $a222, $a223;
-
-echo "\260\261\262\333\334\335\336\337";
-
-echo art_header();
-
+/**
+ * Logon Banner
+ * 
+ * @return string Pre-Logon Banner
+ */
 function art_banner() {
     GLOBAL $SORDVERSION, $SORD_DELINACT, $SORD_DAYLENGTH, $SORD_BANKINT, $SORD_FFIGHT, $SORD_PFIGHT, $SORD_HOST, $SORD_ADMIN;
     $rundays = control_getruntime();
