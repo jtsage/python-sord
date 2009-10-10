@@ -1,5 +1,18 @@
 <?php
+/**
+ * Fighting Subsystem.
+ * 
+ * Contains forest fights, events, player fights, leveling up
+ * 
+ * @package phpsord
+ * @subpackage phpsord-ui
+ * @author J.T.Sage
+ */
 
+/** Red Dragon Inn Main Menu
+ * 
+ * Contains all Inn Functions
+ */
 function inn_mainmenu() {
 	GLOBAL $userid;
 	$thismenu  = "\n\n  \033[1;37mSaga of the Red Dragon - \033[0m\033[32mThe Inn\033[0m\n";
@@ -16,31 +29,37 @@ function inn_mainmenu() {
 	$thismenu .= menu_2col("(G)et a Room", "(V)iew Your Stats", 5, 5);
 	$thismenu .= menu_2col("(H)ear Seth Able The Bard", "(M)ake Announcment", 5, 5);
 	$thismenu .= menu_2col("(R)eturn To Town", "", 5, 5);
-
 	return $thismenu;
 }
 
+/** Red Dragon Inn User Prompt
+ *
+ * User prompt for action
+ */
 function inn_prompt() {
-        GLOBAL $userid, $logontime;
-        $currenttime = time(); $ontime = $currenttime - $logontime;
-        $sec = $ontime % 60;
-        $min = ( $ontime - $sec ) / 60;
-        $psec = ( $sec < 10 ) ? "0{$sec}" : $sec;
-
+	GLOBAL $userid, $logontime;
+	$currenttime = time(); $ontime = $currenttime - $logontime;
+	$sec = $ontime % 60;
+	$min = ( $ontime - $sec ) / 60;
+	$psec = ( $sec < 10 ) ? "0{$sec}" : $sec;
 	$thismenu  = "\n  \033[1;35mThe Red Dragon Inn\033[0m\033[1;30m (? for menu)\033[0m\n";
 	$thismenu .= "  \033[1;30m(C,D,F,T,G,V,H,M,R)\033[0m\n\n";
 	$thismenu .= "  \033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[1;37m[\033[22m{$min}:{$psec}\033[1m] \033[0m\033[32m:-: \033[0m";
 	return $thismenu;
 }
 
+/** Red Dragon Inn Module Loop
+ * 
+ * Controls program flow for all RDI actions
+ */
 function inn_logic() {
-        GLOBAL $userid, $xprt;
-        $quitter = 0;
-        while (!$quitter) {
-                if ( !$xprt ) { slowecho(inn_mainmenu()); }
-                slowecho(inn_prompt());
-                $choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-                switch ($choice) {
+	GLOBAL $userid, $xprt;
+	$quitter = 0;
+	while (!$quitter) {
+		if ( !$xprt ) { slowecho(inn_mainmenu()); }
+		slowecho(inn_prompt());
+		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+		switch ($choice) {
 			case 'Q':
 				$quitter = 1;
 				break;
@@ -83,14 +102,18 @@ function inn_logic() {
 	}
 }
 
+/** Red Dragon Inn Get a Room
+ * 
+ * Pay for a room at the RDI
+ */
 function inn_getroom() {
 	GLOBAL $db, $MYSQL_PREFIX, $userid;
 	$price = user_getlevel($userid) * 400;
 	slowecho("\n  \033[32mThe bartender approaches you at the mention of a room.\033[0m\n");
 	slowecho("  \033[35m\"You want a room, eh?  That'll be {$price} gold!\"\033[0m\n");
 	slowecho("  \033[32mDo you agree? \033[1m: \033[0m");
-        $yesno = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-        if ( $yesno == "Y" ) {
+	$yesno = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+	if ( $yesno == "Y" ) {
 		if ( user_getgold($userid) < $price ) { slowecho("\n  \033[35m\"How bout you find yourself a nice stretch of cardboard box ya bum?\033[0m\n"); 
 		} else {
 			user_takegold($userid, $price);
@@ -102,35 +125,43 @@ function inn_getroom() {
 	} else { slowecho("\n  \033[35m\"Suit yourself...\"\033[0m\n"); }
 }
 
+/** Red Dragon Inn Converse with Patrons
+ * 
+ * Talk with the RDI Patrons
+ */
 function inn_converse() {
-        GLOBAL $db, $MYSQL_PREFIX, $userid;
-        $sql = "SELECT data, nombre FROM (SELECT * FROM {$MYSQL_PREFIX}patrons ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id";
-        $result = mysql_query($sql, $db);
-        $output = "\n\n  \033[1;37mConverse with the Patrons\033[22;32m....\033[0m\n";
-        $output .= "\033[32m                                      -=-=-=-=-=-\033[0m\n";
-        while ( $line = mysql_fetch_array($result) ) {
-                $output .= "    \033[32m{$line['nombre']} \033[1;37msays... \033[0m\033[32m" . func_colorcode($line['data']);
-                $output .= "\n\033[32m                                      -=-=-=-=-=-\033[0m\n";
-        }
+	GLOBAL $db, $MYSQL_PREFIX, $userid;
+	$sql = "SELECT data, nombre FROM (SELECT * FROM {$MYSQL_PREFIX}patrons ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id";
+	$result = mysql_query($sql, $db);
+	$output = "\n\n  \033[1;37mConverse with the Patrons\033[22;32m....\033[0m\n";
+	$output .= "\033[32m                                      -=-=-=-=-=-\033[0m\n";
+	while ( $line = mysql_fetch_array($result) ) {
+		$output .= "    \033[32m{$line['nombre']} \033[1;37msays... \033[0m\033[32m" . func_colorcode($line['data']);
+		$output .= "\033[0m\n\033[32m                                      -=-=-=-=-=-\033[0m\n";
+	}
 	$output .= "\n  \033[32mAdd to the conversation? \033[1m: \033[0m";
 	slowecho($output);
 	$yesno = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-        if ( $yesno == "Y" ) {
+	if ( $yesno == "Y" ) {
 		slowecho(func_casebold("\n  What say you? :-: ", 2));
 		$ann = preg_replace("/\r\n/", "", chop(fgets(STDIN)));
-	        $insann = mysql_real_escape_string($ann);
+		$insann = mysql_real_escape_string($ann);
 		$insnme = user_gethandle($userid);
-	        $sql = "INSERT INTO {$MYSQL_PREFIX}patrons ( `data`, `nombre` ) VALUES ('{$insann}', '{$insnme}')";
-	        $result = mysql_query($sql, $db);
-	        slowecho(func_casebold("\n  Wisdom added!\n", 2));
+		$sql = "INSERT INTO {$MYSQL_PREFIX}patrons ( `data`, `nombre` ) VALUES ('{$insann}', '{$insnme}')";
+		$result = mysql_query($sql, $db);
+		slowecho(func_casebold("\n  Wisdom added!\n", 2));
 		pauser();
 	}
 }
 
+/** Red Dragon Inn Bard Menu
+ * 
+ * Talk with Seth Able
+ */
 function inn_bardmenu() {
-	global $userid;
-        $thismenu  = "\n\n  \033[1;37mSaga of the Red Dragon - \033[0m\033[32mSeth Able\033[0m\n";
-        $thismenu .= art_blueline();
+	GLOBAL $userid;
+	$thismenu  = "\n\n  \033[1;37mSaga of the Red Dragon - \033[0m\033[32mSeth Able\033[0m\n";
+	$thismenu .= art_blueline();
 	$thismenu .= "  \033[32mYou stumble over to a dank corner of the Inn.\n  Seth able looks at you expectantly...\n\n";
 	$thismenu .= func_normmenu("(A)sk Seth Able to Sing");
 	$thismenu .= func_normmenu("(R)eturn to the Inn");
@@ -138,9 +169,9 @@ function inn_bardmenu() {
 	$thismenu .= "  \033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[0m\033[32m:-: \033[0m";
 	$miniquit = 0;
 	while ( !$miniquit ) {
-                slowecho($thismenu);
-                $minichoice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-                switch ($minichoice) {
+		slowecho($thismenu);
+		$minichoice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+		switch ($minichoice) {
 			case 'R':
 				$miniquit = 1;
 				break;
@@ -154,6 +185,10 @@ function inn_bardmenu() {
 	}
 }
 
+/** Red Dragon Inn Bard Song
+ * 
+ * Hear Seth Able sing a song
+ */
 function inn_hearbard() {
 	GLOBAL $db, $MYSQL_PREFIX, $userid, $thebard;
 	$sqldidhear = "SELECT sung FROM {$MYSQL_PREFIX}stats WHERE userid = {$userid}";
@@ -177,11 +212,15 @@ function inn_hearbard() {
 		$result = mysql_query($sqlupdate, $db);
 		$result = mysql_query($sqlsethear, $db);
 		pauser();
-
 	} else { slowecho(func_casebold("\n  Seth says:  I'm a bit tired, maybe tommorow...\n", 2)); }
 }
 
-
+/** Red Dragon Inn Flirt System
+ * 
+ * Player sex chooser, kicks to appropriate partner.
+ * 
+ * @todo write inn_flirt_seth()
+ */
 function inn_flirt() {
 	GLOBAL $userid, $flirts;
 	$sexo = user_getsex($userid);
@@ -190,13 +229,19 @@ function inn_flirt() {
 	if ( $sexo == 1 ) { inn_flirt_violet(); } else { inn_flirt_seth(); }
 }
 
+/** Red Dragon Inn Violet
+ * 
+ * Flirt with violet the barmaid
+ * 
+ * @todo Marriage System
+ */
 function inn_flirt_violet() {
 	GLOBAL $userid, $MYSQL_PREFIX, $db;
 	$minichoice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
 	$usercharm = user_getcharm($userid);
 	$userlevel = user_getlevel($userid);
 	$gexp = 0; $try = 0; $screw;
-        switch ($minichoice) {
+	switch ($minichoice) {
 		case 'W':
 			slowecho("\n  \033[32mYou pluck up your courage, catch Violet's eye,\n  and seductivly wink...\033[0m\n");
 			inn_flirt_and(); $try = 1;
@@ -206,51 +251,51 @@ function inn_flirt_violet() {
 				slowecho("  \033[32mYou gain \033[1m{$gexp}\033[22m experience.\033[0m\n");
 			} else { slowecho("\n  \033[1;31mViolet glares back and returns to her work.\n"); }
 			break;
-                case 'K':
-                        slowecho("\n  \033[32mAs Violet delivers your beer, you grab her hand,\n  pucker up and kiss it...\033[0m\n");
-                        inn_flirt_and(); $try = 1;
-                        if ( $usercharm > 1 ) {
-                                $gexp = 10 * $userlevel;
-                                slowecho("\n  \033[1;34mViolet giggles and blushes deeply.\n  Your relationship is taking off!\033[0m\n");
-                                slowecho("  \033[32mYou gain \033[1m{$gexp}\033[22m experience.\033[0m\n");
-                        } else { slowecho("\n  \033[1;31mViolet pulls her hand back and slaps you across the face.\n"); }
-                        break;
-                case 'P':
-                        slowecho("\n  \033[32mYou bolt up as Violet takes your hard earned gold,\n  smile, and plant one on her lips...\033[0m\n");
-                        inn_flirt_and(); $try = 1;
-                        if ( $usercharm > 3 ) {
-                                $gexp = 20 * $userlevel;
-                                slowecho("\n  \033[1;34mViolet gasps and hurries away.\n  Your relationship is starting to really move now!\033[0m\n");
-                                slowecho("  \033[32mYou gain \033[1m{$gexp}\033[22m experience.\033[0m\n");
-                        } else { slowecho("\n  \033[1;31mViolet knees you right in the family gem stones.\n"); }
-                        break;
-                case 'S':
-                        slowecho("\n  \033[32mYou beckon Violet over, and sit her on your lap...\033[0m\n");
-                        inn_flirt_and(); $try = 1;
-                        if ( $usercharm > 7 ) {
-                                $gexp = 30 * $userlevel; 
-                                slowecho("\n  \033[1;34mViolet snuggles down for a moment, then hurries back to work.\n  Very smooth ex-lax.\033[0m\n");
-                                slowecho("  \033[32mYou gain \033[1m{$gexp}\033[22m experience.\033[0m\n");
-                        } else { slowecho("\n  \033[1;31mViolet grabs a fork from the table and embeds it in your knee.\n"); }
-                        break;
-                case 'G':
-                        slowecho("\n  \033[32mAs you wander the bar, you spot Violet, and firmly caress\n  her glorious behind...\033[0m\n");
-                        inn_flirt_and(); $try = 1;
-                        if ( $usercharm > 15 ) {
-                                $gexp = 40 * $userlevel; 
-                                slowecho("\n  \033[1;34mViolet yalps, spins around and gives you a peck on the cheek.\n  Lovely moves son...\033[0m\n");
-                                slowecho("  \033[32mYou gain \033[1m{$gexp}\033[22m experience.\033[0m\n");
-                        } else { slowecho("\n  \033[1;31mViolet twists your arm behind your back, dumps a beer on\n  you, and walks away.  Ouch.\n"); }
-                        break;
-                case 'C':
-                        slowecho("\n  \033[32mYou slam your beer down, exclaim 'the hell with it', grab Violet,\n  and head upstairs to the nearest unused room...\033[0m\n");
-                        inn_flirt_and(); $try = 1; 
-                        if ( $usercharm > 31 ) {
-                                $gexp = 40 * $userlevel; $screw = 1;
-                                slowecho("\n  \033[1;34mViolet shifts in your arms, revealing that she\n  'forgot' to wear something this morning.\n  Unfortunatally, women's personal uh...  'hygiene' wasn't\n  what it is now in the dark ages.\033[0m\n");
-                                slowecho("  \033[32mYou gain \033[1m{$gexp}\033[22m experience.\033[0m\n");
-                        } else { slowecho("\n  \033[1;31mViolet tears off your pants, grabs a knife, and only your 'small stature'\n  prevents a Bobbit incident.  Bummer.\n"); }
-                        break;
+		case 'K':
+			slowecho("\n  \033[32mAs Violet delivers your beer, you grab her hand,\n  pucker up and kiss it...\033[0m\n");
+			inn_flirt_and(); $try = 1;
+			if ( $usercharm > 1 ) {
+				$gexp = 10 * $userlevel;
+				slowecho("\n  \033[1;34mViolet giggles and blushes deeply.\n  Your relationship is taking off!\033[0m\n");
+				slowecho("  \033[32mYou gain \033[1m{$gexp}\033[22m experience.\033[0m\n");
+			} else { slowecho("\n  \033[1;31mViolet pulls her hand back and slaps you across the face.\n"); }
+			break;
+		case 'P':
+			slowecho("\n  \033[32mYou bolt up as Violet takes your hard earned gold,\n  smile, and plant one on her lips...\033[0m\n");
+			inn_flirt_and(); $try = 1;
+			if ( $usercharm > 3 ) {
+				$gexp = 20 * $userlevel;
+				slowecho("\n  \033[1;34mViolet gasps and hurries away.\n  Your relationship is starting to really move now!\033[0m\n");
+				slowecho("  \033[32mYou gain \033[1m{$gexp}\033[22m experience.\033[0m\n");
+			} else { slowecho("\n  \033[1;31mViolet knees you right in the family gem stones.\n"); }
+			break;
+		case 'S':
+			slowecho("\n  \033[32mYou beckon Violet over, and sit her on your lap...\033[0m\n");
+			inn_flirt_and(); $try = 1;
+			if ( $usercharm > 7 ) {
+				$gexp = 30 * $userlevel; 
+				slowecho("\n  \033[1;34mViolet snuggles down for a moment, then hurries back to work.\n  Very smooth ex-lax.\033[0m\n");
+				slowecho("  \033[32mYou gain \033[1m{$gexp}\033[22m experience.\033[0m\n");
+			} else { slowecho("\n  \033[1;31mViolet grabs a fork from the table and embeds it in your knee.\n"); }
+			break;
+		case 'G':
+			slowecho("\n  \033[32mAs you wander the bar, you spot Violet, and firmly caress\n  her glorious behind...\033[0m\n");
+			inn_flirt_and(); $try = 1;
+			if ( $usercharm > 15 ) {
+				$gexp = 40 * $userlevel; 
+				slowecho("\n  \033[1;34mViolet yalps, spins around and gives you a peck on the cheek.\n  Lovely moves son...\033[0m\n");
+				slowecho("  \033[32mYou gain \033[1m{$gexp}\033[22m experience.\033[0m\n");
+			} else { slowecho("\n  \033[1;31mViolet twists your arm behind your back, dumps a beer on\n  you, and walks away.  Ouch.\n"); }
+			break;
+		case 'C':
+			slowecho("\n  \033[32mYou slam your beer down, exclaim 'the hell with it', grab Violet,\n  and head upstairs to the nearest unused room...\033[0m\n");
+			inn_flirt_and(); $try = 1; 
+			if ( $usercharm > 31 ) {
+				$gexp = 40 * $userlevel; $screw = 1;
+				slowecho("\n  \033[1;34mViolet shifts in your arms, revealing that she\n  'forgot' to wear something this morning.\n  Unfortunatally, women's personal uh...  'hygiene' wasn't\n  what it is now in the dark ages.\033[0m\n");
+				slowecho("  \033[32mYou gain \033[1m{$gexp}\033[22m experience.\033[0m\n");
+			} else { slowecho("\n  \033[1;31mViolet tears off your pants, grabs a knife, and only your 'small stature'\n  prevents a Bobbit incident.  Bummer.\n"); }
+			break;
 	}
 	if ( $try ) {
 		$sql = "UPDATE {$MYSQL_PREFIX}stats SET flirt = 1 WHERE userid = {$userid}";
@@ -263,16 +308,26 @@ function inn_flirt_violet() {
 		$vd = array('herpes', 'crabs', 'ghonnereah');
 		$vdc = rand(0, 2);
 		$namey = user_gethandle($userid);
-
 		$sql = "INSERT INTO {$MYSQL_PREFIX}daily ( `data` ) VALUES ( '{32}{1}{$namey}{0}{32} got a little somethin somethin today.  {34}And {$vd[$vdc]}.')";
 		$result = mysql_query($sql, $db);
 	}
 }
 
+/** Red Dragon Inn Flirt Pauser
+ * 
+ * Pause a few seconds during the flirting
+ */
 function inn_flirt_and() {
 	sleep(1); slowecho("\n  \033[1;37m..."); sleep(1); slowecho("\033[31mAND\033[37m"); sleep(1); slowecho("...\033[0m");
 }
 
+/** Red Dragon Inn Flirt Menu
+ * 
+ * Shows the choices of ways to flirt
+ * 
+ * @param int $sexy Player's sex.  1 = male, 2 = female
+ * @return string Fully formatted menu
+ */
 function inn_flirt_menu($sexy) {
 	GLOBAL $flirts;
 	foreach ( $flirts[$sexy] as $sayings ) {
@@ -281,17 +336,23 @@ function inn_flirt_menu($sexy) {
 	return $thismenu;
 }
 
+/** Red Dragon Inn Bartender Logic
+ * 
+ * Controls all bartender functions, excpet for get a room
+ * 
+ * @todo Bribe system
+ */
 function inn_bartend() {
-        GLOBAL $userid, $xprt, $MYSQL_PREFIX, $db;
+	GLOBAL $userid, $xprt, $MYSQL_PREFIX, $db;
 	$miniquit = 0;
 	if ( user_getlevel($userid) == 1 ) {
 		slowecho("\n  \033[32mNever heard of ya...  Come back when you've done something.\033[0m\n");
 		$miniquit = 1;
 	}
-        while (!$miniquit) {
-                slowecho(inn_bartendmenu());
-                $choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-                switch ($choice) {
+	while (!$miniquit) {
+		slowecho(inn_bartendmenu());
+		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+		switch ($choice) {
 			case '?':
 				break;
 			case 'R':
@@ -320,13 +381,13 @@ function inn_bartend() {
 				slowecho("\n  \033[35mit would cost ya {$price} gold... Deal?\"\033[0m");
 				slowecho("\n  \033[32mChange your name? [\033[1mN\033[22m]\033[0m ");
 				$yesno = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-                                if ( $yesno == "Y" ) { 
+				if ( $yesno == "Y" ) { 
 					if ( user_getgold($userid) < $price ) { slowecho("\n  \033[35m\"Then I suggest you go find some more gold...\"\033[0m\n"); 
 					} else {
 						$nope = 0;
 						slowecho("\n  \033[32mWhat'll it be? \033[1m: \033[0m");
 						$ann = preg_replace("/\r\n/", "", chop(fgets(STDIN)));
-					        $insann = mysql_real_escape_string($ann);
+						$insann = mysql_real_escape_string($ann);
 						if ( $insann == "" ) { $nope = 1; }
 						elseif ( preg_match("/barak/i", $insann) )       { $nope = 1; slowecho("\n  \033[31m** \033[35mNaw, the real Barak would decapitate you if he found out. \033[31m**\033[0m\n"); }
 						elseif ( preg_match("/seth able/i", $insann) )   { $nope = 1; slowecho("\n  \033[31m** \033[35mYou are not God! \033[31m**\033[0m\n"); }
@@ -337,7 +398,6 @@ function inn_bartend() {
 						elseif ( preg_match("/dragon/i", $insann) )      { $nope = 1; slowecho("\n  \033[31m** \033[35mYou ain't Bruce Lee, so get out! \033[31m**\033[0m\n"); }
 						elseif ( preg_match("/bartender/i", $insann) )   { $nope = 1; slowecho("\n  \033[31m** \033[35mNah, the bartender is smarter than you! \033[31m**\033[0m\n"); }
 						elseif ( preg_match("/chance/i", $insann) )      { $nope = 1; slowecho("\n  \033[31m** \033[35mWhy not go take a chance with a rattlesnake? \033[31m**\033[0m\n"); } 
-
 						if ( !$nope ) {
 							slowecho("\n  \033[32mName Changed.\033[0m\n");
 							$namesql = "UPDATE {$MYSQL_PREFIX}users SET fullname = '{$insname}' WHERE userid = {$userid}";
@@ -397,16 +457,19 @@ function inn_bartend() {
 	}
 }
 
+/** Red Dragon Inn Bardtender Menu
+ * 
+ * Show RDI Bartender menu
+ */
 function inn_bartendmenu() {
-        GLOBAL $userid, $logontime;
-        $currenttime = time(); $ontime = $currenttime - $logontime;
-        $sec = $ontime % 60;
-        $min = ( $ontime - $sec ) / 60;
-        $psec = ( $sec < 10 ) ? "0{$sec}" : $sec;
-
-        $thismenu  = "\n\n  \033[1;37mSaga of the Red Dragon - \033[0m\033[32mBartender\033[0m\n";
-        $thismenu .= art_blueline();
-        $thismenu .= "  \033[32mThe bartender escorts you into a back\033[0m\n";
+	GLOBAL $userid, $logontime;
+	$currenttime = time(); $ontime = $currenttime - $logontime;
+	$sec = $ontime % 60;
+	$min = ( $ontime - $sec ) / 60;
+	$psec = ( $sec < 10 ) ? "0{$sec}" : $sec;
+	$thismenu  = "\n\n  \033[1;37mSaga of the Red Dragon - \033[0m\033[32mBartender\033[0m\n";
+	$thismenu .= art_blueline();
+	$thismenu .= "  \033[32mThe bartender escorts you into a back\033[0m\n";
 	$thismenu .= "  \033[32mroom.  \033[35m\"I have heard yer name before kid...\033[0m\n";
 	$thismenu .= "  \033[35mwhat do ya want to talk about?\"\033[0m\n\n";
 	$thismenu .= func_normmenu("(V)iolet");
@@ -415,7 +478,7 @@ function inn_bartendmenu() {
 	$thismenu .= func_normmenu("(C)hange your name");
 	$thismenu .= func_normmenu("(R)eturn to Bar");
 	$thismenu .= "\n  \033[35m\"Well?\" \033[32mThe bartender inquires. \033[1;30m(V,G,B,C,R) (? for menu)\033[0m\n";
-        $thismenu .= "\n  \033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[1;37m[\033[22m{$min}:{$psec}\033[1m] \033[0m\033[32m:-: \033[0m";
+	$thismenu .= "\n  \033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[1;37m[\033[22m{$min}:{$psec}\033[1m] \033[0m\033[32m:-: \033[0m";
 	return $thismenu;
 }
 

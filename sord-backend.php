@@ -1,7 +1,21 @@
 #!/usr/bin/php
 <?php
+/**
+ * Saga of the Red Dragon - Backend Operations
+ * 
+ * A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.
+ * 
+ * 
+ * @package phpsord
+ * @author J.T.Sage
+ * @copyright 2009-2011
+ * @license http://sord.jtsage.com/LICENSE Disclaimer's License
+ * @version 0.9.9
+ */
 
+/** Server and Game configuration */
 require_once("config.php");
+/** Mysql Server connection */
 require_once("lib/dbaseconfig.php");
 
 $dailysayings = array (

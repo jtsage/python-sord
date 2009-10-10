@@ -1,4 +1,21 @@
 <?php
+/**
+ * Module System
+ * 
+ * Contains modules for everything except the Inn and the Fighting system.
+ * 
+ * @package phpsord
+ * @subpackage phpsord-ui
+ * @author J.T.Sage
+ */
+
+/** View Player Stats
+ * 
+ * View current player's stats.
+ * 
+ * @param int $userid User ID
+ * @return string Formatted output for display
+ */
 function module_viewstats($userid) {
 	GLOBAL $db, $MYSQL_PREFIX, $weapon, $armor, $classes;
 	$sql = "SELECT s.*, fullname FROM {$MYSQL_PREFIX}users u, {$MYSQL_PREFIX}stats s WHERE u.userid = {$userid} AND u.userid = s.userid";
@@ -23,6 +40,13 @@ function module_viewstats($userid) {
 	return $output;
 }
 
+/** View Daily Happenings
+ * 
+ * View the daily happenings
+ * 
+ * @param bool $noprmpt Do not prompt for additions.
+ * @return string Formatted output for display
+ */
 function module_dailyhappen($noprmpt) {
 	GLOBAL $db, $MYSQL_PREFIX;
 	$sql = "SELECT data FROM (SELECT * FROM {$MYSQL_PREFIX}daily ORDER BY id DESC LIMIT 10) AS tbl ORDER BY tbl.id";
@@ -37,27 +61,38 @@ function module_dailyhappen($noprmpt) {
 	return $output;
 }
 
+/** Who's Online
+ * 
+ * Show current users online
+ * 
+ * @return string Formatted output for display
+ */
 function module_who() {
 	GLOBAL $db, $MYSQL_PREFIX;
 	$sql = "SELECT o.userid, fullname, DATE_FORMAT(whence, '%H:%i') as whence FROM {$MYSQL_PREFIX}users u, {$MYSQL_PREFIX}online o WHERE o.userid = u.userid ORDER BY whence ASC";
-        $result = mysql_query($sql, $db);
-        $output = "\n\n\033[1;37m                     Warriors In The Realm Now\033[22;32m\033[0m\n";
-        $output .= art_line();
-        while ( $line = mysql_fetch_array($result) ) {
-	        $output .= "  \033[1;32m" . $line['fullname'] . padnumcol($line['fullname'], 28);
+	$result = mysql_query($sql, $db);
+	$output = "\n\n\033[1;37m                     Warriors In The Realm Now\033[22;32m\033[0m\n";
+	$output .= art_line();
+	while ( $line = mysql_fetch_array($result) ) {
+		$output .= "  \033[1;32m" . $line['fullname'] . padnumcol($line['fullname'], 28);
 		$output .= "\033[0m\033[32mArrived At                    \033[1;37m" . $line['whence'] . "\033[0m\n";
 	}
 	return $output . "\n";
 }
 
-
+/** Player List
+ * 
+ * List all players
+ * 
+ * @return string Formatted output for display
+ */
 function module_list() {
 	GLOBAL $db, $MYSQL_PREFIX, $classes;
 	$sql = "SELECT u.userid, fullname, exp, level, class, spclm, spcld, spclt, sex, alive FROM {$MYSQL_PREFIX}users u, {$MYSQL_PREFIX}stats s WHERE u.userid = s.userid ORDER BY exp DESC";
-        $result = mysql_query($sql, $db);
+	$result = mysql_query($sql, $db);
 	$output .= "\n\n\033[32m    Name                    Experience    Level    Mastered    Status\033[0m\n";
-        $output .= art_line();
-        while ( $line = mysql_fetch_array($result) ) {
+	$output .= art_line();
+	while ( $line = mysql_fetch_array($result) ) {
 		$sex = ( $line['sex'] == 2 ) ? "\033[1;35mF\033[0m " : "  ";
 		$class = ( $line['class'] == 1 ) ? "\033[1;31mD\033[0m " : (( $line['class'] == 2 ) ? "\033[1;34mM\033[0m " : "\033[1;33mT\033[0m " );
 		$master .= ( $line['spcld'] > 39 ) ? "\033[37mD \033[0m" : (( $line['spcld'] > 19 ) ? "\033[1;37mD \033[0m" : "");
@@ -68,13 +103,16 @@ function module_list() {
 		$masterpad .= ( $line['spclt'] > 19 ) ? "  " : "";
 		$exp = number_format($line['exp'], 0);
 		$status = ( $line['alive'] == 1 ) ? "\033[1;32mAlive\033[0m" : "\033[31mDead\033[0m";
-
 		$output .= $sex . $class . "\033[32m{$line['fullname']}" . padnumcol($line['fullname'], 23) . padright($exp, 11);
 		$output .= padright($line['level'], 6) . "        {$master}" . padnumcol($masterpad, 12) . $status . "\n";
 	}
 	return $output . "\n";
 }
 
+/** Make announcment
+ * 
+ * Make an announcment in the daily happenings.
+ */
 function module_announce() {
 	GLOBAL $db, $MYSQL_PREFIX;
 	slowecho(func_casebold("\n  Your announcment? :-: ", 2));
@@ -86,22 +124,24 @@ function module_announce() {
 	pauser();
 }
 
+/** Healers Hut Logic
+ * 
+ * Visit and use the healers hut
+ */
 function module_heal() {
 	GLOBAL $userid;
-        $quitter = 0;
-        while (!$quitter) {
-                slowecho(menu_heal());
-                $choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-                switch ($choice) {
-                        case 'Q':
-                                $quitter = 1;
-                                break;
-                        case 'R':
-                                $quitter = 1;
-                                break;
-                        case '?':
-                                break;
-			case 'H':
+	$quitter = 0;
+	while (!$quitter) {
+		slowecho(menu_heal());
+		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+		switch ($choice) {
+			case 'Q': // QUIT
+				$quitter = 1; break;
+			case 'R': // QUIT
+				$quitter = 1; break;
+			case '?': // SHOW MENU
+				break;
+			case 'H': // HEAL ALL POSSIBLE
 				$hptoheal = user_gethpmax($userid) - user_gethp($userid);
 				if ( $hptoheal < 1 ) { slowecho(func_casebold("\n  You do not need healing!\n", 2)); 
 				} else {
@@ -121,9 +161,9 @@ function module_heal() {
 					}
 				}
 				break;
-			case 'C':
-                                $hptoheal = user_gethpmax($userid) - user_gethp($userid);
-                                if ( $hptoheal < 1 ) { slowecho(func_casebold("\n  You do not need healing!\n", 2)); 
+			case 'C': // HEAL CERTAIN AMOUNT
+				$hptoheal = user_gethpmax($userid) - user_gethp($userid);
+				if ( $hptoheal < 1 ) { slowecho(func_casebold("\n  You do not need healing!\n", 2)); 
 				} else {
 					slowecho("\n  \033[32mHow much to heal warrior? \033[1m: \033[0m");
 					$number = preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN))));
@@ -144,39 +184,35 @@ function module_heal() {
 					}
 				}
 				break;
-
-					
 		}
 	}
 }
 
+/** Forest Fight Menu (non-combat)
+ * 
+ * Visit the forest
+ */
 function module_forest() {
 	GLOBAL $userid, $xprt;
-        $quitter = 0;
-        while (!$quitter) {
-                if ( !$xprt ) { slowecho(art_forest()); }
+	$quitter = 0;
+	while (!$quitter) {
+		if ( !$xprt ) { slowecho(art_forest()); }
 		slowecho(menu_forest());
-                $choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-                switch ($choice) {
-			case 'Q':
-				$quitter = 1;
-				break;
-			case 'R':
-				$quitter = 1;
-				break;
-			case '?':
-				if ( $xprt ) { slowecho(art_forest()); }
-				break;
-			case 'H':
-				module_heal();
-				break;
-			case 'Y':
-				module_viewstats($userid);
-				break;
-			case 'V':
-				module_viewstats($userid);
-				break;
-			case 'L':
+		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+		switch ($choice) {
+			case 'Q': // QUIT
+				$quitter = 1; break;
+			case 'R': // QUIT
+				$quitter = 1; break;
+			case '?': // SHOW MENU
+				if ( $xprt ) { slowecho(art_forest()); } break;
+			case 'H': // HEALERS HUT
+				module_heal(); break;
+			case 'Y': // VIEW STATS
+				module_viewstats($userid); break;
+			case 'V': // VIEW STATS
+				module_viewstats($userid); break;
+			case 'L': // LOOK FOR SOMETHING TO KILL
 				$ffights = user_getffight($userid);
 				if ( $ffights > 0 ) {
 					$happening = rand(1, 8);
@@ -184,39 +220,36 @@ function module_forest() {
 					else { forest_fight(); }
 				} else { slowecho(func_casebold("  You are mighty tired.  Try again tommorow\n", 2)); }
 				break;
-			case 'A':
-				slowecho(func_casebold("  You brandish your weapon dramatically.\n", 2));
-				break;
-			case 'D':
-				slowecho(func_casebold("  Your Death Knight skills cannot help your here.\n", 2));
-				break;
-                        case 'M':
-                                slowecho(func_casebold("  Your Mystical skills cannot help your here.\n", 2));
-                                break;
-                        case 'T':
-                                slowecho(func_casebold("  Your Thieving skills cannot help your here.\n", 2));
-                                break;
+			case 'A': // ATTACK NOTHING
+				slowecho(func_casebold("  You brandish your weapon dramatically.\n", 2)); break;
+			case 'D': // SPECIAL ATTACK NOTHING
+				slowecho(func_casebold("  Your Death Knight skills cannot help your here.\n", 2)); break;
+			case 'M': // SPECIAL ATTACK NOTHING
+				slowecho(func_casebold("  Your Mystical skills cannot help your here.\n", 2)); break;
+			case 'T': // SPECIAL ATTACK NOTHING
+				slowecho(func_casebold("  Your Thieving skills cannot help your here.\n", 2)); break;
 		}
 	}
 }
 
-
+/** Ye Olde Bank
+ * 
+ * Visit the bank
+ */
 function module_bank() {
 	GLOBAL $userid;
-        $quitter = 0;
+	$quitter = 0;
 	while (!$quitter) {
 		slowecho(menu_bank());
 		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-                switch ($choice) {
-			case 'Q':
-				$quitter = 1;
+		switch ($choice) {
+			case 'Q': // QUIT
+				$quitter = 1; break;
+			case 'R': // QUIT
+				$quitter = 1; break;
+			case '?': // SHOW MENU
 				break;
-			case 'R':
-				$quitter = 1;
-				break;
-			case '?':
-				break;
-			case 'D':
+			case 'D': // DEPOSIT
 				slowecho("\n  \033[32mDeposit how much? \033[1;30m(1 for all) \033[1;32m:\033[0m ");
 				$number = preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN))));
   				if ( $number > user_getgold($userid) ) { slowecho(func_casebold("\n  You don't have that much gold!\n", 1)); pauser();
@@ -228,19 +261,19 @@ function module_bank() {
 					pauser();
 				}
 				break;
-			case 'W':
-                                slowecho("\n  \033[32mWithdraw how much? \033[1;30m(1 for all) \033[1;32m:\033[0m ");
-                                $number = preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN))));
-                                if ( $number > user_getbank($userid) ) { slowecho(func_casebold("\n  You don't have that much gold!\n", 1)); pauser();
-                                } else {
-                                        if ( $number == 1 ) { $number = user_getbank($userid); }
-                                        user_givegold($userid, $number);
-                                        user_takebank($userid, $number);
-                                        slowecho(func_casebold("\n  Gold widthdrawn\n", 2));
-                                        pauser();
-                                }
+			case 'W': // WITHDRAWL
+				slowecho("\n  \033[32mWithdraw how much? \033[1;30m(1 for all) \033[1;32m:\033[0m ");
+				$number = preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN))));
+				if ( $number > user_getbank($userid) ) { slowecho(func_casebold("\n  You don't have that much gold!\n", 1)); pauser();
+				} else {
+					if ( $number == 1 ) { $number = user_getbank($userid); }
+					user_givegold($userid, $number);
+					user_takebank($userid, $number);
+					slowecho(func_casebold("\n  Gold widthdrawn\n", 2));
+					pauser();
+				}
 				break;
-			case 'T':
+			case 'T': // TRANSFER
 				slowecho("\n  \033[32mTransfer to which player? \033[1;32m:\033[0m ");
 				$name = mysql_real_escape_string(preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN)))));
 				if ( user_fexist($name) ) {
@@ -249,35 +282,38 @@ function module_bank() {
 					} else {
 						slowecho("\n  \033[32mDid you mean \033[1m{$sendtofn}\033[0m \033[1;30m(Y/N)\033[0m\033[32m ?\033[0m ");
 						$yesno = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-	        	                        if ( $yesno == "Y" ) {
+						if ( $yesno == "Y" ) {
 							slowecho("\n  \033[32mTransfer how much? \033[1;30m(1 for all) \033[1;32m:\033[0m ");
-	                		                $number = preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN))));
+							$number = preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN))));
 							if ( $number > user_getgold($userid) ) { slowecho(func_casebold("\n  You don't have that much gold!\n", 1)); pauser();
-                                			} else {
-		                                        	if ( $number == 1 ) { $number = user_getgold($userid); }
-		        	                                user_givegold($sendto, $number);
-			                                        user_takegold($userid, $number);
-        			                                slowecho(func_casebold("\n  Gold transfered\n", 2));
-                			                        pauser();
-                        			        }
+							} else {
+								if ( $number == 1 ) { $number = user_getgold($userid); }
+								user_givegold($sendto, $number);
+								user_takegold($userid, $number);
+								slowecho(func_casebold("\n  Gold transfered\n", 2));
+								pauser();
+							}
 						}
 					}
 				} else { slowecho(func_casebold("\n  No User by that name found!\n", 1)); pauser(); }
 				break;
 		}
-
 	}
 }
 
+/** Abdul's Armor
+ * 
+ * Visit the armory
+ */
 function module_abduls() {
 	GLOBAL $db, $MYSQL_PREFIX, $armor, $xprt, $userid, $armorprice, $armorndef, $armordef;
-        $quitter = 0;
-        while ( !$quitter ) {
+	$quitter = 0;
+	while ( !$quitter ) {
  		if ( !$xprt ) { slowecho(art_abdul()); }
 		slowecho(menu_abdul());
 		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
 		switch ($choice) {
-			case 'B':
+			case 'B': // BUY ARMOR
 				slowecho(art_armbuy());
 				slowecho("\n\n\033[32mYour choice? \033[1m:\033[22m-\033[1m:\033[0m ");
 				$number = preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN))));
@@ -302,50 +338,47 @@ function module_abduls() {
 					}
 				}
 				break;
-			case 'S':
+			case 'S': // SELL ARMOR
 				$sellpercent = 50 + rand(1, 10);
 				$sellarmor = user_getarmor($userid);
 				if ( $sellarmor > 0 ) {
   					$sellprice = ( $sellpercent / 100 ) * $armorprice[$sellarmor];
 					slowecho(func_casebold("\nHmm...  I'll buy that {$armor[$sellarmor]} for {$sellprice} gold.  OK? ", 2));
 					$yesno = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-	                	        if ( $yesno == "Y" ) {
+					if ( $yesno == "Y" ) {
 						user_setarmor($userid, 0);
 						user_givegold($userid, $sellprice);
 						user_takedef($userid, $armordef[$sellarmor]);
 						slowecho(func_casebold("\nPleasure doing business with you!\n", 2));
 						pauser();
-	                                } else { slowecho(func_casebold("\nFine then...\n", 2)); }
+					} else { slowecho(func_casebold("\nFine then...\n", 2)); }
 				} else { slowecho(func_casebold("\nYou have nothing I want!\n", 1)); pauser(); }
 				break;
-			case '?':
-				if ( !$xprt ) { slowecho(art_abdul()); }
-				break;
-			case 'Y':
-				slowecho(module_viewstats($userid));
-				pauser();
-				break;
-			case 'Q':
-				$quitter = 1;
-				break;
-			case 'R':
-				$quitter = 1;
-				break;
+			case '?': // SHOW MENU
+				if ( !$xprt ) { slowecho(art_abdul()); } break;
+			case 'Y': // VIEW STATS
+				slowecho(module_viewstats($userid)); pauser(); break;
+			case 'Q': // QUIT
+				$quitter = 1; break;
+			case 'R': // QUIT
+				$quitter = 1; break;
 		}
 	}
 }
 
-
-	
+/** King Arthur's Weapons
+ * 
+ * Visit the weaponry
+ */
 function module_arthurs() {
 	GLOBAL $db, $MYSQL_PREFIX, $weapon, $xprt, $userid, $weaponprice, $weaponnstr, $weaponstr;
-        $quitter = 0;
-        while ( !$quitter ) {
+	$quitter = 0;
+	while ( !$quitter ) {
  		if ( !$xprt ) { slowecho(art_arthur()); }
 		slowecho(menu_arthur());
 		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
 		switch ($choice) {
-			case 'B':
+			case 'B': // BUY WEAPON
 				slowecho(art_wepbuy());
 				slowecho("\n\n\033[32mYour choice? \033[1m:\033[22m-\033[1m:\033[0m ");
 				$number = preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN))));
@@ -370,52 +403,52 @@ function module_arthurs() {
 					}
 				}
 				break;
-			case 'S':
+			case 'S': // SELL WEAPON
 				$sellpercent = 50 + rand(1, 10);
 				$sellweapon = user_getweapon($userid);
 				if ( $sellweapon > 0 ) {
   					$sellprice = ( $sellpercent / 100 ) * $weaponprice[$sellweapon];
 					slowecho(func_casebold("\nHmm...  I'll buy that {$armor[$sellweapon]} for {$sellprice} gold.  OK? ", 2));
 					$yesno = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-	                	        if ( $yesno == "Y" ) {
+					if ( $yesno == "Y" ) {
 						user_setweapon($userid, 0);
 						user_givegold($userid, $sellprice);
 						user_takestr($userid, $weaponstr[$sellweapon]);
 						slowecho(func_casebold("\nPleasure doing business with you!\n", 2));
 						pauser();
-	                                } else { slowecho(func_casebold("\nFine then...\n", 2)); }
+					} else { slowecho(func_casebold("\nFine then...\n", 2)); }
 				} else { slowecho(func_casebold("\nYou have nothing I want!\n", 1)); pauser(); }
 				break;
-			case '?':
-				if ( !$xprt ) { slowecho(art_weapon()); }
-				break;
-			case 'Y':
-				slowecho(module_viewstats($userid));
-				pauser();
-				break;
-			case 'Q':
-				$quitter = 1;
-				break;
-			case 'R':
-				$quitter = 1;
-				break;
+			case '?': // SHOW MENU
+				if ( !$xprt ) { slowecho(art_weapon()); } break;
+			case 'Y': // VIEW STATS
+				slowecho(module_viewstats($userid)); pauser(); break;
+			case 'Q': // QUIT
+				$quitter = 1; break;
+			case 'R': // QUIT
+				$quitter = 1; break;
 		}
 	}
 }
 
+/** Turgon's Warrior Training (pre-combat)
+ * 
+ * Visit the master
+ * 
+ * @todo Implement the hall of honor (V)
+ */
 function module_turgon() {
-        GLOBAL $db, $MYSQL_PREFIX, $masters, $userid;
-        $quitter = 0;
-        while ( !$quitter ) {
-                slowecho(menu_turgon());
-                $choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-                switch ($choice) {
-			case 'R':
-				$quitter = 1;
+	GLOBAL $db, $MYSQL_PREFIX, $masters, $userid;
+	$quitter = 0;
+	while ( !$quitter ) {
+		slowecho(menu_turgon());
+		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+		switch ($choice) {
+			case 'R': // QUIT
+				$quitter = 1; break;
+			case '?': // SHOW MENU
 				break;
-			case '?':
-				break;
-			case 'Q':
+			case 'Q': // QUESTION MASTER
 				$ulvl = user_getlevel($userid);
 				$uexp = user_getexp($userid);
 				$nexp = $masters[$ulvl][2] - $uexp;
@@ -428,17 +461,14 @@ function module_turgon() {
 				else { slowecho("  \033[32mYou need about \033[1;37m{$nexp}\033[0m\033[32m experience before you'll be as good as me.\033[0m\n"); }
 				pauser();
 				break;
-			case 'V':
-				control_noimp();
-				break;
-			case 'Y':
-				slowecho(module_viewstats($userid));
-				break;
-			case 'A':
-				master_fight();
-				break;
-
+			case 'V': // VIEW HALL OF HONOR
+				control_noimp(); break;
+			case 'Y': // VIEW STATS
+				slowecho(module_viewstats($userid)); break;
+			case 'A': // FIGHT MASTER
+				master_fight(); break;
 		}
 	}
 }
+
 ?>

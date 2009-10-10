@@ -1,9 +1,39 @@
 <?php
+/**
+ * Fighting Subsystem.
+ * 
+ * Contains forest fights, events, player fights, leveling up
+ * 
+ * @package phpsord
+ * @subpackage phpsord-ui
+ * @author J.T.Sage
+ * @todo Player fight subsystem
+ */
+
+/**
+ * Forest Special Events
+ * 
+ * Special forest event happenings
+ * 
+ * @todo Add all elements as needed.
+ * 	- gems (done)
+ * 	- gold (done)
+ * 	- old man
+ * 	- ugly / pretty stick
+ * 	- old hag
+ * 	- fairies
+ * 	- dark horse tavern
+ * 	- lessons
+ * 	- merry men (done)
+ * 	- rescue maiden
+ * 	- flowers
+ * 	- hammerstone (done)
+ */
 function forest_special() {
 	GLOBAL $userid, $db, $MYSQL_PREFIX;
 	$happening = rand(1, 12);
 	switch ( $happening ) {
-		case 1:
+		case 1: // Find Gems
 			$thisfind = rand(1, 4);
 			slowecho(art_line());
 			slowecho("  \033[32mFortune Smiles Upon You.  You find \033[1;37m{$thisfind}\033[0m\033[32m gems!\033[0m\n");
@@ -11,39 +41,43 @@ function forest_special() {
 			pauser();
 			user_givegems($userid, $thisfind);
 			break;
-		case 2:
+		case 2: // Find Gold
 			$thisfind = rand(1, 4) * 200 * user_getlevel($userid);
-                        slowecho(art_line());
-                        slowecho("  \033[32mFortune Smiles Upon You.  You find a sack full of \033[1;37m");
+			slowecho(art_line());
+			slowecho("  \033[32mFortune Smiles Upon You.  You find a sack full of \033[1;37m");
 			slowecho(number_format($thisfind, 0));
 			slowecho("\033[0m\033[32m gold!\033[0m\n");
-                        slowecho(art_line());
-                        pauser();
+			slowecho(art_line());
+			pauser();
 			user_givegold($userid, $thisfind);
 			break;
-		case 3:
-                        slowecho(art_line());
-                        slowecho("  \033[32mYou find a hammer stone.  You quickly hit it as hard as possible.\n \033[1mYour attack strength is raised by 1!\033[0m\n");
-                        slowecho(art_line());
-                        pauser();
-                        user_givestr($userid, 1);
-                        break;
-		case 4:
-                        slowecho(art_line());
-                        slowecho("  \033[32mYou stumble across a group of merry men.  They offer you ale you can't resist.\n \033[1mYou feel refreshed!\033[0m\n");
-                        slowecho(art_line());
-                        pauser();
+		case 3: // Hammerstone (attack str++)
+			slowecho(art_line());
+			slowecho("  \033[32mYou find a hammer stone.  You quickly hit it as hard as possible.\n \033[1mYour attack strength is raised by 1!\033[0m\n");
+			slowecho(art_line());
+			pauser();
+			user_givestr($userid, 1);
+			break;
+		case 4: // Merry Men (hp = hpmax)
+			slowecho(art_line());
+			slowecho("  \033[32mYou stumble across a group of merry men.  They offer you ale you can't resist.\n \033[1mYou feel refreshed!\033[0m\n");
+			slowecho(art_line());
+			pauser();
 			$sql = "UPDATE {$MYSQL_PREFIX}stats SET hp = hpmax WHERE userid = {$USERID}";
 			$result = mysql_query($sql, $db);
-                        break;
+			break;
 
-
-
-		default:
+		default: // Not yet implemented options
 			slowecho(func_casebold("Happening # {$happening}", 1)); pauser();
 	}
 }
 
+/**
+ * Forest Fights
+ * 
+ * Player vs. Monster system
+ * 
+ */
 function forest_fight() {
 	GLOBAL $userid, $enemies;
 	user_takeffight($userid, 1);
@@ -80,7 +114,7 @@ function forest_fight() {
 		$userhp = user_gethp($userid);
 		slowecho(forest_menu($userhp, $enemyhp, $enemyname));
 		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-                switch ($choice) {
+		switch ($choice) {
 			case 'S':
 				module_viewstats($userid);
 				break;
@@ -88,7 +122,7 @@ function forest_fight() {
 				$eattack =  (( $enemyhstr ) + rand(0, $enemyhstr) ) - $userdef;
 				$uattack =  (( $userhstr ) + rand(0, $userhstr));
 				if ( !$thisunderdog ) { if ( $uattack > $enemyhp ) { $eattack = 0; } }
-                                if ( $eattack > $userhp ) { $eattack = $userhp; $dead = 1;}
+				if ( $eattack > $userhp ) { $eattack = $userhp; $dead = 1;}
 				if ( $eattack > 0 ) {
 					slowecho("\n  \033[32m{$enemyname} hits you with {$enemywep} for \033[1;31m{$eattack}\033[0m\033[32m damage\033[0m\n"); 
 					user_takehp($userid, $eattack);
@@ -137,6 +171,13 @@ function forest_fight() {
 	}
 }
 
+/**
+ * Forest Fight Menu
+ * 
+ * Menu used during a fight
+ * 
+ * @todo Special Skills section
+ */
 function forest_menu($uhp, $ehp, $ename) {
 	GLOBAL $userid;
 	$thismenu .= "\n  \033[32mYour Hitpoints : \033[1m{$uhp}\033[0m\n";
@@ -149,8 +190,11 @@ function forest_menu($uhp, $ehp, $ename) {
 	return $thismenu;
 }
 
-
-
+/**
+ * Master Fight Subsystem
+ * 
+ * System for leveling up
+ */
 function master_fight() {
 	GLOBAL $userid, $masters, $masterwin, $db, $MYSQL_PREFIX;
 	$userlevel = user_getlevel($userid);
@@ -175,7 +219,7 @@ function master_fight() {
 		$userhp = user_gethp($userid);
 		slowecho(forest_menu($userhp, $enemyhp, $enemyname));
 		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-                switch ($choice) {
+		switch ($choice) {
 			case 'S':
 				module_viewstats($userid);
 				break;
@@ -183,7 +227,7 @@ function master_fight() {
 				$eattack =  (( $enemyhstr ) + rand(0, $enemyhstr) ) - $userdef;
 				$uattack =  (( $userhstr ) + rand(0, $userhstr)) - $enemydef;
 				if ( !$thisunderdog ) { if ( $uattack > $enemyhp ) { $eattack = 0; } }
-                                if ( $eattack > $userhp ) { $eattack = $userhp; $dead = 1;}
+				if ( $eattack > $userhp ) { $eattack = $userhp; $dead = 1;}
 				if ( $eattack > 0 ) {
 					slowecho("\n  \033[32m{$enemyname} hits you with {$enemywep} for \033[1;31m{$eattack}\033[0m\033[32m damage\033[0m\n"); 
 					user_takehp($userid, $eattack);

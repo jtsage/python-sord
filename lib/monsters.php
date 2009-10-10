@@ -1,4 +1,16 @@
 <?php
+/**
+ * Static variables used through game.
+ * 
+ * Contains all monster / master data for the game.
+ * 
+ * @package phpsord
+ * @subpackage phpsord-data
+ * @author J.T.Sage
+ * @staticvar array $enemies Enemies by level - Enemy Name, Enemy Weapon, Strenth, HP, Gold Gain, Experience Gain, Die Message
+ * @staticvar array $master Master by level - Master Name, Master Weapon, Exp Needed, Speech, Ready Speech, Win Speech, HP, Strength, Defense
+ * @staticvar array $masterwin Rewards for level up - HP Gain, Strength Gain, Defense Gain
+ */
 
 $enemies = array(
 	1 => array(
