@@ -1,6 +1,19 @@
 #!/usr/bin/php
 <?
-echo "PRESS ENTER TO CONNECT"; $dumper = fgets(STDIN);
+echo "PRESS ENTER TO CONNECT (UNICODE TERM) - PRESS 'A', THEN ENTER FOR IBM950 CODEPAGE"; 
+$a176 = html_entity_decode('&#9617;',ENT_QUOTES,'UTF-8');
+$a177 = html_entity_decode('&#9618;',ENT_QUOTES,'UTF-8');
+$a178 = html_entity_decode('&#9619;',ENT_QUOTES,'UTF-8');
+$a219 = html_entity_decode('&#9608;',ENT_QUOTES,'UTF-8');
+$a220 = html_entity_decode('&#9604;',ENT_QUOTES,'UTF-8');
+$a221 = html_entity_decode('&#9612;',ENT_QUOTES,'UTF-8');
+$a222 = html_entity_decode('&#9616;',ENT_QUOTES,'UTF-8');
+$a223 = html_entity_decode('&#9600;',ENT_QUOTES,'UTF-8');
+
+$dumper = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+if ( $dumper == "A" ) { 
+	$a176 = "\260"; $a177 = "\261"; $a178 = "\262"; $a219 = "\333"; $a220 = "\334"; $a221 = "\335"; $a222 = "\336"; $a223 = "\337"; }
+	
 $SORDDEBUG = 0;
 #$SORDDEBUG = 1;
 $SORDVERSION = "0.9.9";

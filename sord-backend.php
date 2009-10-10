@@ -26,7 +26,7 @@ $sql5 = "UPDATE {$MYSQL_PREFIX}stats SET uset = (spclt DIV 5) + 1 WHERE spclt > 
 $sql6 = "INSERT INTO {$MYSQL_PREFIX}daily ( `data` ) VALUES ( '{31}{$dailysayings[$randsaying]}' )";
 $sql7 = "UPDATE {$MYSQL_PREFIX}users SET alive = 1 WHERE alive = 0";
 $sql8 = "UPDATE {$MYSQL_PREFIX}stats SET bank = ( bank * {$interest} ) WHERE bank > 0";
-$sql9 = "DELETE FROM {$MYSQL_PREFIX} WHERE last < ( CURRENT_TIMESTAMP - INTERVAL {$SORD_DELINACT} DAY )";
+$sql9 = "DELETE FROM {$MYSQL_PREFIX}users WHERE last < ( CURRENT_TIMESTAMP - INTERVAL {$SORD_DELINACT} DAY )";
 $sql0 = "UPDATE {$MYSQL_PREFIX}setup SET valueint = ( valueint + 1 ) WHERE `name` = 'gdays'";
 
 $sqla = "UPDATE {$MYSQL_PREFIX}stats SET flirt = 0 WHERE 1";
