@@ -9,10 +9,11 @@ $a220 = html_entity_decode('&#9604;',ENT_QUOTES,'UTF-8');
 $a221 = html_entity_decode('&#9612;',ENT_QUOTES,'UTF-8');
 $a222 = html_entity_decode('&#9616;',ENT_QUOTES,'UTF-8');
 $a223 = html_entity_decode('&#9600;',ENT_QUOTES,'UTF-8');
+$a254 = html_entity_decode('&#9642;',ENT_QUOTES,'UTF-8');
 
 $dumper = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
 if ( $dumper == "A" ) { 
-	$a176 = "\260"; $a177 = "\261"; $a178 = "\262"; $a219 = "\333"; $a220 = "\334"; $a221 = "\335"; $a222 = "\336"; $a223 = "\337"; }
+	$a176 = "\260"; $a177 = "\261"; $a178 = "\262"; $a219 = "\333"; $a220 = "\334"; $a221 = "\335"; $a222 = "\336"; $a223 = "\337"; $a254 = "\376"; }
 	
 $SORDDEBUG = 0;
 #$SORDDEBUG = 1;
