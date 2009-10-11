@@ -134,6 +134,7 @@ function mb_str_split($str, $length = 1) {
 	}
 	return $result;
 }
+
 /** 
  * Signal handler to catch signals from the operating system.
  * 

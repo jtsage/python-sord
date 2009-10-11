@@ -16,9 +16,8 @@
  * @version 0.9.9
  * @todo IGM framework
  */
-
 /* Set ANSI characters per user input. */
-echo "PRESS ENTER TO CONNECT (UNICODE TERM) - PRESS 'A', THEN ENTER FOR IBM950 CODEPAGE"; 
+echo "PRESS ENTER TO CONNECT (UNICODE TERMINAL)\nPRESS 'A', THEN ENTER FOR IBM950 CODEPAGE\n"; 
 $a176 = html_entity_decode('&#9617;',ENT_QUOTES,'UTF-8');
 $a177 = html_entity_decode('&#9618;',ENT_QUOTES,'UTF-8');
 $a178 = html_entity_decode('&#9619;',ENT_QUOTES,'UTF-8');
@@ -37,7 +36,7 @@ $SORDDEBUG = 0;
 #$SORDDEBUG = 1;
 $SORDVERSION = "0.9.9";
 $SORDDELAY = ( $SORDDEBUG ) ? 0 : 700;
-
+$SORDDELAY = 0;
 /** Server and Game configuration */
 require_once("config.php");
 /** Load all needed functions */
