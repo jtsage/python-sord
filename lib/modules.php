@@ -471,4 +471,35 @@ function module_turgon() {
 	}
 }
 
+/** Look at the forest flowers
+ * 
+ * Yet another in-game message board.
+ *
+ * @todo random sayings generator for this section
+ */
+function module_flowers() {
+	GLOBAL $db, $MYSQL_PREFIX, $userid;
+	$sql = "SELECT data, nombre FROM (SELECT * FROM {$MYSQL_PREFIX}flowers ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id";
+	$result = mysql_query($sql, $db);
+	$output = "\n\n  \033[1;37mStudy the forest flowers\033[22;32m....\033[0m\n";
+	$output .= "\033[32m                                      -=-=-=-=-=-\033[0m\n";
+	while ( $line = mysql_fetch_array($result) ) {
+		$output .= "    \033[32m{$line['nombre']} \033[1;37msays... \033[0m\033[32m" . func_colorcode($line['data']);
+		$output .= "\033[0m\n\033[32m                                      -=-=-=-=-=-\033[0m\n";
+	}
+	$output .= "\n  \033[32mAdd to the conversation? \033[1m: \033[0m";
+	slowecho($output);
+	$yesno = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+	if ( $yesno == "Y" ) {
+		slowecho(func_casebold("\n  What!?  What do you want? :-: ", 2));
+		$ann = preg_replace("/\r\n/", "", chop(fgets(STDIN)));
+		$insann = mysql_real_escape_string($ann);
+		$insnme = user_gethandle($userid);
+		$sql = "INSERT INTO {$MYSQL_PREFIX}flowers ( `data`, `nombre` ) VALUES ('{$insann}', '{$insnme}')";
+		$result = mysql_query($sql, $db);
+		slowecho(func_casebold("\n  Idiocy added!\n", 2));
+		pauser();
+	}
+}
+
 ?>

@@ -30,6 +30,7 @@ $dailysayings = array (
 	8 => 'Several farmers report missing cattle today.',
 	9 => 'A Child was found today!  But scared deaf and dumb.');
 $randsaying = rand(0, 9);
+$dorand = rand(1,5); // Do the random saying, or not.
 $interest = ($SORD_BANKINT / 100) + 1;
 
 $sql1 = "UPDATE {$MYSQL_PREFIX}stats SET ffight = {$SORD_FFIGHT} WHERE ffight < {$SORD_FFIGHT}20";
@@ -37,7 +38,7 @@ $sql2 = "UPDATE {$MYSQL_PREFIX}stats SET pfight = {$SORD_PFIGHT} WHERE pfight < 
 $sql3 = "UPDATE {$MYSQL_PREFIX}stats SET usem = spclm";
 $sql4 = "UPDATE {$MYSQL_PREFIX}stats SET used = (spcld DIV 5) + 1 WHERE spcld > 0";
 $sql5 = "UPDATE {$MYSQL_PREFIX}stats SET uset = (spclt DIV 5) + 1 WHERE spclt > 0";
-$sql6 = "INSERT INTO {$MYSQL_PREFIX}daily ( `data` ) VALUES ( '{31}{$dailysayings[$randsaying]}' )";
+if ( $dorand == 1 ) { $sql6 = "INSERT INTO {$MYSQL_PREFIX}daily ( `data` ) VALUES ( '{31}{$dailysayings[$randsaying]}' )"; } else { $sql6 = ""; }
 $sql7 = "UPDATE {$MYSQL_PREFIX}users SET alive = 1 WHERE alive = 0";
 $sql8 = "UPDATE {$MYSQL_PREFIX}stats SET bank = ( bank * {$interest} ) WHERE bank > 0";
 $sql9 = "DELETE FROM {$MYSQL_PREFIX}users WHERE last < ( CURRENT_TIMESTAMP - INTERVAL {$SORD_DELINACT} DAY )";

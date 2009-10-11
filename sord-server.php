@@ -14,7 +14,7 @@
  * @copyright 2009-2011
  * @license http://sord.jtsage.com/LICENSE Disclaimer's License
  * @version 0.9.9
- * @todo IGM framework
+ * @todo IGM framework, main menu '1' for image.
  */
 /* Set ANSI characters per user input. */
 echo "PRESS ENTER TO CONNECT (UNICODE TERMINAL)\nPRESS 'A', THEN ENTER FOR IBM950 CODEPAGE\n"; 
@@ -36,7 +36,6 @@ $SORDDEBUG = 0;
 #$SORDDEBUG = 1;
 $SORDVERSION = "0.9.9";
 $SORDDELAY = ( $SORDDEBUG ) ? 0 : 700;
-$SORDDELAY = 0;
 /** Server and Game configuration */
 require_once("config.php");
 /** Load all needed functions */
