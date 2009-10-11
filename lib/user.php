@@ -660,4 +660,17 @@ function user_chkpass ($userid, $pass) {
 	else { return false; }
 }
 
+/** Check if user has seen the master
+ * 
+ * @param int $userid User ID
+ * @return bool true if seen
+ */
+function user_seenmaster( $userid ) {
+	GLOBAL $db, $MYSQL_PREFIX;
+	$sql = "SELECT master FROM {$MYSQL_PREFIX}stats WHERE userid = {$userid}";
+	$result = mysql_query($sql, $db);
+	$line = mysql_fetch_array($result);
+	if ( $line['master'] == 1 ) { return true; }
+	else { return false; }
+}
 ?>

@@ -466,7 +466,9 @@ function module_turgon() {
 			case 'Y': // VIEW STATS
 				slowecho(module_viewstats($userid)); break;
 			case 'A': // FIGHT MASTER
-				master_fight(); break;
+				if ( user_seenmaster($userid) ) { slowecho("\n\n  \033[32mI'm sorry my son, you may only fight me once per game-day\033[0m\n"); }
+				else { master_fight(); }
+				break;
 		}
 	}
 }

@@ -159,7 +159,7 @@ function forest_special() {
 			slowecho("  \033[1mTo Whome It May Concern:\n    I have been locked in this terrible tower for many cycles.\n    Please save me soon!\n        ~ Elora\n\n");
 			slowecho(func_normmenu("(S)eek the maiden"));
 			slowecho(func_normmenu("(I)gnore her plight"));
-			slowecho("  \033[0m\033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[0m\033[32m:-: \033[0m");
+			slowecho("\n  \033[0m\033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[0m\033[32m:-: \033[0m");
 			$miniquit = 0;
 			while ( !$miniquit ) {
 				$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
@@ -169,13 +169,13 @@ function forest_special() {
 						break;
 					case "S":
 						$miniquit2 = 0; $towerselection = 0;
-						slowecho("  \033[32mWhere do you wish to seek the maiden?\033[0m\n");
+						slowecho("\n  \033[32mWhere do you wish to seek the maiden?\033[0m\n");
 						slowecho(func_normmenu("(K)eep of Hielwain"));
 						slowecho(func_normmenu("(S)tarbucks Seattle Spaceneedle"));
 						slowecho(func_normmenu("(C)astle Morbidia"));
 						slowecho(func_normmenu("(S)ty of Pigashia"));
 						slowecho(func_normmenu("(B)logshares Brutal Belfry"));
-						slowecho("  \033[0m\033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[0m\033[32m:-: \033[0m");
+						slowecho("\n  \033[0m\033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[0m\033[32m:-: \033[0m");
 						while ( !$miniquit2 ) {
 							$minichoice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
 							switch($minichoice) {
@@ -397,7 +397,9 @@ function master_fight() {
 			case 'R':
 				slowecho("\n  \033[32mYou retire from the field before getting yourself killed.\033[0m\n"); 
 				$resethp = "UPDATE {$MYSQL_PREFIX}stats set hp = hpmax WHERE userid = {$userid}";
+				$masterql = "UPDATE {$MYSQL_PREFIX}stats SET master = 1 WHERE userid = {$userid}"; 
 				$result = mysql_query($resethp, $db);
+				$result = mysql_query($masterql, $db);
 				$ran = 1; 
 				break;
 		}
@@ -423,6 +425,7 @@ function master_fight() {
 		$resethp = "UPDATE {$MYSQL_PREFIX}stats set hp = hpmax WHERE userid = {$userid}";
 		$masterql = "UPDATE {$MYSQL_PREFIX}stats SET master = 1 WHERE userid = {$userid}"; 
 		$result = mysql_query($resethp, $db);
+		$result = mysql_query($masterql, $db);
 		pauser();
 	}
 }

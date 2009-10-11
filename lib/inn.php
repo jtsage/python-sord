@@ -438,14 +438,20 @@ function inn_bartend() {
 									user_givehpmax($userid, $number);
 									user_givehp($userid, $number);
 									user_takegems($userid, $gemsused);
+									slowecho("\n  \033[32mYou feel as if your stamina is greater\n");
+									$tinyquit = 1;
 									break;
 								case 'S':
 									user_givestr($userid, $number);
 									user_takegems($userid, $gemsused);
+									slowecho("\n  \033[32mYou feel as if your strength is greater\n");
+									$tinyquit = 1;
 									break;
 								case 'V':
 									user_givedef($userid, $number);
 									user_takegems($userid, $gemsused);
+									slowecho("\n  \033[32mYou feel as if your vitality is greater\n");
+									$tinyquit = 1;
 									break;
 							}
 						}
