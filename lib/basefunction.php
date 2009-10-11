@@ -117,9 +117,23 @@ function pauser() {
 function slowecho($text) {
 	global $SORDDELAY;
 	$text = preg_replace("/\\n/", "\r\n", $text);
-	foreach( str_split($text) as $char ) { echo $char; usleep($SORDDELAY); }
+	foreach( mb_str_split($text) as $char ) { echo $char; usleep($SORDDELAY); }
 }
 
+/** Split a multi-byte string - which our data likely is.
+ * 
+ * @param string $str Text to split
+ * @param int $length Length to split to [optional]
+ * @return array split text.
+ */
+function mb_str_split($str, $length = 1) {
+	if ($length < 1) return FALSE;
+	$result = array();
+	for ($i = 0; $i < mb_strlen($str); $i += $length) {
+		$result[] = mb_substr($str, $i, $length);
+	}
+	return $result;
+}
 /** 
  * Signal handler to catch signals from the operating system.
  * 
