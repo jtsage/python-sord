@@ -230,7 +230,7 @@ function forest_special() {
  * 
  */
 function forest_fight() {
-	GLOBAL $userid, $enemies;
+	GLOBAL $userid, $enemies, $forestdie;
 	user_takeffight($userid, 1);
 	$userlevel = user_getlevel($userid);
 	$topenemy = (count($enemies[$userlevel])) - 1;
@@ -318,6 +318,14 @@ function forest_fight() {
 	if ( $dead ) {
 		user_setdead($userid);
 		user_logout($userid);
+		$lamenttop = (count($forestdie)) - 1;
+		$thislament = $forestdie[rand(0, $lamenttop)];
+		$thislament = preg_replace("/`n/", "\n", $thislament);
+		$thislament = preg_replace("/`g/", user_gethandle($userid), $thislament);
+		$thislament = preg_replace("/`e/", $enemyname, $thislament);
+		$thislament = mysql_escape_string($thislament);
+		$sql = "INSERT INTO {$MYSQL_PREFIX}daily ( `data` ) VALUES ('{$thislament}')";
+		$result = mysql_query($sql, $db);
 		die(func_casebold("  Tragically, you died.  Returning to the mundane world for the day...\n"));
 	}
 }

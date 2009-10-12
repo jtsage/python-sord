@@ -673,4 +673,30 @@ function user_seenmaster( $userid ) {
 	if ( $line['master'] == 1 ) { return true; }
 	else { return false; }
 }
+
+/** Check status of a user horse
+ * 
+ * @param int $userid User Id
+ * @return bool true if user has a horse
+ */
+function user_gethorse( $userid ) {
+	GLOBAL $db, $MYSQL_PREFIX;
+	$sql = "SELECT horse FROM {$MYSQL_PREFIX}stats WHERE userid = {$userid}";
+	$result = mysql_query($sql, $db);
+	$line = mysql_fetch_array($result);
+	if ( $line['horse'] ) { return true; }
+	else { return false; }
+}
+
+/** Set the status of a user horse
+ * 
+ * @param int $userid User ID
+ * @param bool $horse True for a horse
+ */
+function user_sethorse( $userid, $horse ) {
+	GLOBAL $db, $MYSQL_PREFIX;
+	$sql = "UPDATE {$MYSQL_PREFIX}stats SET horse = {$horse} WHERE userid = {$userid}";
+	$result = mysql_query($sql, $db);
+}
+
 ?>

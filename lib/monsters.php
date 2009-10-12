@@ -8,6 +8,7 @@
  * @subpackage phpsord-data
  * @author J.T.Sage
  * @staticvar array $enemies Enemies by level - Enemy Name, Enemy Weapon, Strenth, HP, Gold Gain, Experience Gain, Die Message
+ * @staticvar array $forestdie Strings for use when dieing in the forest.  Very sad.
  * @staticvar array $master Master by level - Master Name, Master Weapon, Exp Needed, Speech, Ready Speech, Win Speech, HP, Strength, Defense
  * @staticvar array $masterwin Rewards for level up - HP Gain, Strength Gain, Defense Gain
  */
@@ -30,7 +31,7 @@ $enemies = array(
 		array ('Green Python', 'Dripping Fangs', 13, 17, 80, 6, 'You tie the mighty snake\'s carcass to a tree.'),
 		array ('Gath The Barbarian', 'Huge Spiked Club', 12, 13, 134, 9, 'You knock Gath down, ignoring his constant groaning.'),
 		array ('Evil Wood Nymph', 'Flirtatios Behavior', 15, 10, 160, 11, 'You shudder to think of what would have happened, had you given in.'),
-		array ('Fedrick The Limping Baboon Scary Faces', 8, 23, 97, 6, 'Fredrick will never grunt in anyones face again.'),
+		array ('Fedrick The Limping Baboon', 'Scary Faces', 8, 23, 97, 6, 'Fredrick will never grunt in anyones face again.'),
 		array ('Wild Man', 'Hands', 13, 14, 134, 8, 'Pitting your wisdom against his brawn has one this battle.'),
 		array ('Brorandia The Viking', 'Hugely Spiked Mace', 21, 18, 330, 20, 'You consider this a message to her people, "STAY AWAY!".'),
 		array ('Huge Bald Man', 'Glare From Forehead', 19, 19, 311, 16, 'It wasn\'t even a close battle, you slaughtered him.'),
@@ -265,7 +266,32 @@ $masterwin = array(
 	11 => array(550, 200, 150)
 );
 
-
+$forestdie = array(
+	'"Damn, Damn, Damn!," `g roars.',
+	'"I would rather gargle razor blades then be beaten by you,`n `e !," `g screams.',
+	'"How the hell did you do that?!," `g shouts.',
+	'"You got lucky, `e!," `g declares.',
+	'"Try that again!  I\'ll decapitate you!," `g challenges.',
+	'"You are definatly stronger than you look, `e," `g admits.',
+	'"I am SO mad I could slice you in two!," `g  screams.',
+	'"You have not seen the last of me, `e!," `g threatens.',
+	'"How could a scrawny little wimp like `e best me?," `g`n  wonders aloud.',
+	'"How many of you `e\'s live in that forest anyway?!,"`n  `g ponders.',
+	'"Ack!  I was under the impression I was invincible. I suppose I was wrong,"`n  `g admits.',
+	'"Killed by `e.  I am disgraced," grieves `g.',
+	'"I\'LL BE BACK!," swears `g.',
+	'"At least I wasn\'t bested by Large Rat, eh?," shrugs `g.',
+	'"My goodness.  This a turn for the worse," states `g.',
+	'"You never think it can happen to you...Then WHAM!," explains `g.',
+	'"I think I\'m going to be sick," `g moans pitifully.',
+	'"I feel ill," elucidates `g.',
+	'"Well...So much for my reputation!," expounds `g.',
+	'"Damnit!  I was looking for the Dark Cloak Tavern," explains`n  `g in dismay.',
+	'`e devours `g raw.',
+	'`e carefully burys `g.',
+	'`g\'s entrails are littering the forest.',
+	'Halder laughs at `g\'s plight.',
+	'The banker is already looking for `g\'s next of kin');
 
 ?>
 
