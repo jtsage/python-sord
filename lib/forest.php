@@ -16,18 +16,11 @@
  * Special forest event happenings
  * 
  * @todo Add all elements as needed.
- * 	- gems (done)
- * 	- gold (done)
- * 	- old man (done)
- * 	- ugly / pretty stick (done)
- * 	- old hag (done)
- * 	- fairies
- * 	- dark horse tavern
+ * 	- fairies forest_fairies()
+ * 	- dark horse tavern  darkhorse_login()  (new file)
  * 	- lessons
- * 	- merry men (done)
- * 	- rescue man/maiden
- * 	- flowers (done)
- * 	- hammerstone (done)
+ * 		-	forest_lesson_m()
+
  */
 function forest_special() {
 	GLOBAL $userid, $db, $MYSQL_PREFIX;
@@ -216,10 +209,32 @@ function forest_special() {
 			}
 			pauser();
 			break;
-
-
+		case 10: // lessons
+			switch(user_getclass($userid)) {
+				case 1: // Death Knight
+					forest_lesson_d();
+					break;
+				case 2: // Magic
+					forest_lesson_m();
+					break;
+				case 3: // Thief
+					forest_lesson_t();
+					break;
+			}
+			pauser();
+			break;
+		case 11: // Dark Horse Tavern
+			if ( !user_gethorse($userid) ) {
+				darkhorse_logic();
+				pauser();
+			}
+			break;
+		case 12: // Fairies.
+			forest_fairies();
+			pauser();
+			break;
 		default: // Not yet implemented options
-			slowecho(func_casebold("Happening # {$happening}", 1)); pauser();
+			slowecho(func_casebold("(Tell jon about this - shouldn't still occur) Happening # {$happening}", 1)); pauser();
 	}
 }
 
@@ -437,4 +452,147 @@ function master_fight() {
 		pauser();
 	}
 }
+
+/** Special Skills - Death Knight
+ * 
+ * Learn to be a death knight. 
+ * via a 50/50 guessing game.
+ */
+function forest_lesson_d() {
+	GLOBAL $userid;
+	slowecho(art_line());
+	slowecho("\n  \033[32mYou come upon a group of warriors, they carry the look of a proud people.\033[0m\n");
+	slowecho("\n   \033[1,32mDeath Knight #1: \033[0,32mWe shall teach you the ways of the death knights weakling.\033[0m\n");
+	slowecho("   \033[1,32mDeath Knight #2: \033[0,32mAye.  But you must prove your wisdom first.  This man is guilty of a crime.\033[0m\n");
+	slowecho("   \033[1,32mDeath Knight #1: \033[0,32mYup.  Or he's completely innocent.  Decide wisely.!\033[0m\n");
+	slowecho(func_normmenu("(K)ill Him"));
+	slowecho(func_normmenu("(F)ree him as an innocent"));
+	slowecho("\n  \033[0m\033[32mYour choice, \033[1m" . user_gethandle($userid) . "\033[22m? (K,F) \033[0m\033[32m:-: \033[0m");
+	$this_right = rand(1,2);
+	$miniquit = 0;
+	while ( !$miniquit ) {
+		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+		switch($choice) {
+			case "K":
+				slowecho("\n  \033[32mYou draw your weapon, and ram it as hard as you can through his midsection.\033[0m\n");
+				$this_choice = 1; $miniquit = 1; break;
+			case "F":
+				slowecho("\n  \033[32mYou consider a moment, and shout \"Let him live!  He's done nothing wrong!\"\033[0m\n");
+				$this_choice = 2; $miniquit = 1; break;
+			default:
+				slowecho("\n  \033[32mTwo options numbnuts, not that hard.\033[0m\n"); break;
+		}
+	}
+	inn_flirt_and();
+	if ( $this_right == $this_choice ) {
+		slowecho("   \033[1,32mDeath Knight #1: \033[0,32mWell spotted young warrior.  We shall teach you!\033[0m\n");
+		slowecho("  \033[32mYou recieve \033[1m1\033[0,32m use point");
+		skill_giveuse($userid, 1, 1);
+		$this_hp = user_gethp($userid);
+		$this_maxhp = user_gethpmax($userid);
+		if ( $this_hp < $this_maxhp ) { user_givehp($userid, ($this_maxhp - $this_hp)); }
+		if ( skill_getskill($userid, 1, 0) < 40 ) { skill_giveskill($userid, 1, 1); slowecho(" and \033[1m1\033[0,32m skill point"); }
+		slowecho(".\033[0m\n");
+	} else {
+		slowecho("   \033[1,32mDeath Knight #3: \033[0,32mOh god no!  That wasn't right at all!  Somebody get a mop and a bandaid!\033[0m\n");
+	}
+}
+
+/** Special Skills - Thief
+ * 
+ * Learn to be a thief.  Costs a gem
+ */
+function forest_lesson_t() {
+	GLOBAL $userid;
+	slowecho(art_line());
+	slowecho("\n  \033[32mYou come upon a gathering of the theives guild, they kinda smell bad.\033[0m\n");
+	slowecho("\n   \033[1,32mThief #1: \033[0,32mWe can make you a better thief.  Just cost ya a gem.\033[0m\n");
+	slowecho(func_normmenu("(G)ive him the gem"));
+	slowecho(func_normmenu("(S)pit on him and walk away"));
+	slowecho(func_normmenu("(M)utter incoherantly, hoping he'll leave"));
+	slowecho("\n  \033[0m\033[32mYour choice, \033[1m" . user_gethandle($userid) . "\033[22m? (G,S,M) \033[0m\033[32m:-: \033[0m");
+	$miniquit = 0;
+	while ( !$miniquit ) {
+		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+		switch($choice) {
+			case "S": //spit and leave
+				slowecho("\n  \033[32mAs you spit on him, the thief looks at you closely.  He almost looks proud.\033[0m\n");
+				$miniquit = 1; break;
+			case "M": //mutter
+				slowecho("\n  \033[32mAs the thief leaves, you distincly hear the words \"nutjob\" and \"jackass\".  Oh well.\033[0m\n");
+				$miniquit = 1; break;
+			case "G": // give the gem
+				if ( user_getgems($userid) > 0 ) {
+					skill_giveuse($userid, 3, 1);
+					slowecho("  \033[32mYou recieve \033[1m1\033[0,32m use point");
+					if ( skill_getskill($userid, 3, 0) < 40 ) { skill_giveskill($userid, 3, 1); slowecho( "and \033[1m1\033[0,32m skill point"); }
+					slowecho(".\033[0m\n");
+					user_takegems($userid, 1);
+				} else {
+					slowecho("  \033[1,32mThief #1: \033[0,32mYou don't have any gems dumbass.\033[0m\n");
+				}
+				$miniquit = 1;
+				break;
+		} 
+	}
+}
+
+/** Special Skills - Magic
+ * 
+ * Learn to be a mage.  Big old guessing game.
+ */
+function forest_lesson_m() {
+	GLOBAL $userid;
+	slowecho(art_line());
+	slowecho("\n  \033[32mYou come upon an old house.  You sense an old mage might live here.\033[0m\n");
+	slowecho(func_normmenu("(K)nock on the door"));
+	slowecho(func_normmenu("(B)ang on the door"));
+	slowecho(func_normmenu("(L)eave"));
+	slowecho("\n  \033[0m\033[32mYour choice, \033[1m" . user_gethandle($userid) . "\033[22m? (K,B,L) \033[0m\033[32m:-: \033[0m");
+	$miniquit = 0; $minidone = 0;
+	while ( !$miniquit ) {
+		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+		switch($choice) {
+			case "K":
+				slowecho("\n  \033[32mYou knock polietly on the door.\033[0m\n");
+				$miniquit = 1; break;
+			case "B":
+				slowecho("\n  \033[32mYou bang loudly on the door.\033[0m\n");
+				$miniquit = 1; break;
+			case "L":
+				slowecho("\n  \033[32mYou leave, confident in finding better things to do.\033[0m\n");
+				$miniquit = 1; $minidone = 1; break;
+		} 
+	}
+	if ( !$minidone ) { 
+		if ( rand(1, 4) == 2 ) {
+			slowecho("\n  \033[32mNothing happens, and you leave.\033[0m\n");
+		} else {
+			slowecho("\n  \033[32mThe old man rips open the door and screams \"WHAT?!?\"\033[0m\n");
+			slowecho("  \033[32mHe then gazes at you and says \"I'll teach you magic if you can guess\n  the number I'm thinking of.  It's between 1 and 100\033[0m\n");
+			$this_number = rand(1, 100);
+			$this_guesses = 0; $this_correct = 0;
+			while( $this_guesses < 7 ) {
+				slowecho("\n  \033[0m\033[32mYour guess, \033[1m" . user_gethandle($userid) . "\033[22m? \033[0m\033[32m:-: \033[0m");
+				$this_guess = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 3)));
+				if ( $this_guess == $this_number ) { $this_guesses = 7; $this_correct = 1; }
+				else {
+					if ( $this_guess < $this_number ) { slowecho("\n  \033[32mHigher!\033[0m\n"); }
+					if ( $this_guess > $this_number ) { slowecho("\n  \033[32mLower!\033[0m\n"); }
+					$this_guesses++;
+				}
+			}
+			if ( $this_correct ) {
+				slowecho("\n  \033[32mWell Done young mage!\033[0m\n");
+				skill_giveuse($userid, 2, 1);
+				slowecho("  \033[32mYou recieve \033[1m1\033[0,32m use point");
+				if ( skill_getskill($userid, 2, 0) < 40 ) { skill_giveskill($userid, 2, 1); slowecho( "and \033[1m1\033[0,32m skill point"); }
+				slowecho(".\033[0m\n");
+			} else {
+				slowecho("\n  \033[32mBetter luck next time!\033[0m\n");
+			}
+		}
+	}
+}
+
 ?>
