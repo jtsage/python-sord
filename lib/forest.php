@@ -76,6 +76,7 @@ function forest_special() {
 						slowecho(" gold and 1 charm!.\033[0m\n");
 						user_givegold($userid, $goldgotten);
 						user_givecharm($userid, 1);
+						user_takeffight($userid, 1);
 						$miniquit = 1;
 						break;
 					case "I":
@@ -161,6 +162,7 @@ function forest_special() {
 						$miniquit = 1;
 						break;
 					case "S":
+						user_takeffight($userid, 1);
 						$miniquit2 = 0; $towerselection = 0;
 						slowecho("\n  \033[32mWhere do you wish to seek the maiden?\033[0m\n");
 						slowecho(func_normmenu("(K)eep of Hielwain"));
