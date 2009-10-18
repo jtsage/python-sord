@@ -8,6 +8,7 @@ from sord.art import *
 from sord.functions import *
 from sord.user import *
 from sord.modules import *
+from sord.menus import *
 
 from config import sord
 from socket import *
@@ -52,6 +53,8 @@ def handleClient(connection):
 	
 	quitter = False
 	quitfull = False
+	if ( SORDDEBUG):
+		quitter = True
 	while ( not quitter ):
 		func_slowecho(connection, artwork.banner(mySord,mySQLcurs))
 		data = connection.recv(1)
@@ -59,7 +62,6 @@ def handleClient(connection):
 		if ( data == "Q" or data == "q" ):
 			quitter = True
 			quitfull = True
-			func_slowecho(connection, "\r\nQuitting to the fields...\r\n\r\n")
 		if ( data == "L" or data == "l" ):
 			func_slowecho(connection, module_list(artwork, mySQLcurs, mySord.sqlPrefix()))
 			pauser(connection)
@@ -69,6 +71,10 @@ def handleClient(connection):
 			
 	loggedin = False
 	ittr = 0
+	if ( SORDDEBUG ):
+		loggedin = True
+		currentUser = sordUser('jtsage')
+		
 	while ( not loggedin ):
 		username = ""
 		password = ""
@@ -104,24 +110,72 @@ def handleClient(connection):
 		func_slowecho(connection, func_casebold("\r\nI'm Afraid You Are DEAD Right Now.  Sorry\r\n", 1))
 		
 	if ( not quitfull ):
-		func_slowecho(connection, module_dailyhappen(True, mySQLcurs, mySord.sqlPrefix()))
-		func_pauser(connection)
-		func_slowecho(connection, module_who(artwork, mySQLcurs, mySord.sqlPrefix()))
-		func_pauser(connection)
+		if ( not SORDDEBUG ):
+			func_slowecho(connection, module_dailyhappen(True, mySQLcurs, mySord.sqlPrefix()))
+			func_pauser(connection)
+			func_slowecho(connection, module_who(artwork, mySQLcurs, mySord.sqlPrefix()))
+			func_pauser(connection)
+			func_slowecho(connection, module_viewstats(artwork, currentUser))
+			func_pauser(connection)
 	
 	while ( not quitfull ):
-		data = connection.recv(1)
+		if ( not currentUser.expert ):
+			func_slowecho(connection, menu_mainlong(artwork, currentUser, True))
+		func_slowecho(connection, menu_mainshort(currentUser))
+		data = connection.recv(2)
 		if not data: break
+		if ( data[0] == "q" or data[0] == "Q" ):
+			quitfull = True
+		if ( data[0] == "x" or data[0] == "X" ):
+			currentUser.toggleXprt()
+		if ( data[0] == "v" or data[0] == "V" ):
+			func_slowecho(connection, module_viewstats(artwork, currentUser))
+			func_pauser(connection)
+		if ( data[0] == "d" or data[0] == "D" ):
+			func_slowecho(connection, module_dailyhappen(True, mySQLcurs, mySord.sqlPrefix()))
+			func_pauser(connection)
+		if ( data[0] == "?" ):
+			if ( currentUser.expert ):
+				func_slowecho(connection, menu_mainlong(artwork, currentUser, True))
+		if ( data[0] == "p" or data[0] == "P" ):
+			func_slowecho(connection, module_who(artwork, mySQLcurs, mySord.sqlPrefix()))
+			func_pauser(connection)
+		if ( data[0] == "l" or data[0] == "L" ):
+			func_slowecho(connection, module_list(artwork, mySQLcurs, mySord.sqlPrefix()))
+			func_pauser(connection)
+			
+		"""
+		case 'A': // ABDULS ARMOR
+			module_abduls(); break;
+		case 'K': // KING ARTHURS WEAPONS
+			module_arthurs(); break;
+		case 'Y': // THE BANK
+			module_bank(); break;
+		case 'H': // HEALERS HUT
+			module_heal(); break;
+		case 'F': // THE FOREST
+			module_forest(); break;
+		case 'M': // MAKE ANNOUNCMENT
+			module_announce(); break;
+		case 'W': // SEND MAIL MESSAGE
+			control_sendmail($userid); break;
+		case 'I': // RED DRAGON INN
+			inn_logic(); break;
+		case 'T': // WARRIOR TRAINING
+			module_turgon(); break;
+					
 		if ( data == "\n" ):
 			connection.send("NewLine")
 		if ( data == "\r" ):
 			connection.send("Return")
 			quitfull = True
 		func_slowecho(connection, ('Echo=>' + data))
-
+"""
+	func_slowecho(connection, func_casebold("\r\n\r\n   Quitting to the Fields... GoodBye!\r\n", 7))
 	currentUser.logout()	
 	connection.close()
 	print 'Thread Disconnected::' + str(thisClientAddress)
+	thread.exit()
 	
 def dispatcher():
 	while True:

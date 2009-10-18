@@ -86,7 +86,33 @@ def func_normmenu(text):
 	bclrstr = "  \x1b[0m\x1b[32m(\x1b[1;35m"
 	nclrstr = "\x1b[0m\x1b[32m)"
 	return re.sub("\(([A-Z:<>])\)", bclrstr + r"\1" + nclrstr, text) + "\x1b[0m"
-	
+
+""" 2 Column Menu
+ * Generate a 2 column menu entry
+ * 
+ * @param string $text1 Menu Option 1
+ * @param string $text2 Menu Option 2
+ * @param int $col1 Option color for menu option 1
+ * @param int $col2 Option color for menu option 2
+ * @return string Formatted menu string"""
+def func_menu_2col(text1, text2, col1, col2):
+	nclrstr = "\x1b[0m\x1b[32m)"
+	bclrstr1 = "\x1b[0m\x1b[32m(\x1b[1;3"+str(col1)+"m"
+	bclrstr2 = "\x1b[0m\x1b[32m(\x1b[1;3"+str(col2)+"m"
+	text1col = re.sub("\(([A-Z:<>])\)", bclrstr1 + r"\1" + nclrstr, text1) + "\x1b[0m"
+	text2col = re.sub("\(([A-Z:<>])\)", bclrstr2 + r"\1" + nclrstr, text2) + "\x1b[0m"
+	return "  " + text1col + padnumcol(text1, 36) + text2col + "\x1b[0m\r\n"
+
+def func_maketime(user):
+	currenttime = time.time()
+	ontime = int(currenttime) - int(user.logontime)
+	sec = ontime % 60
+	min = ( ontime - sec ) / 60
+	if ( sec < 10 ):
+		ptime = str(min) + ':0' + str(sec)
+	else: 
+		ptime = str(min) + ':' + str(sec)
+	return ptime
 """Pad a selection of text to be a specied number of columns wide.
  * 
  * @param string $text Text to pad

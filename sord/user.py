@@ -8,13 +8,14 @@
  * @subpackage phpsord-general
  * @author J.T.Sage
 """
-import MySQLdb
+import MySQLdb, time
 from config import sord
 
 class sordUser():
 	thisSord = sord()
 	dbc = MySQLdb.connect(host=str(thisSord.sqlServer()), db='sord', user='sord', passwd='dr0s')
 	db = dbc.cursor()
+	expert = False
 	
 	def __init__(self, loginname):
 		""" Find and set the userID in the object """
@@ -32,6 +33,12 @@ class sordUser():
 			self.thisPassword = ""
 			self.thisFullname = "unregistered"
 
+	def toggleXprt(self):
+		if self.expert == False:
+			self.expert = True
+		else:
+			self.expert = False
+
 	def logout(self):  
 		"""Log a user out"""
 		thisSQL = "DELETE FROM "+self.thisSord.sqlPrefix()+"online WHERE userid = "+str(self.thisUserID)
@@ -44,6 +51,7 @@ class sordUser():
 		self.db.execute(thisSQL)
 		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET atinn = 0 WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
+		self.logontime = time.time()
 		
 	def setDead(self):
 		"""Set a user as dead"""
