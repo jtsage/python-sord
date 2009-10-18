@@ -154,12 +154,10 @@ def handleClient(connection):
 		if ( data[0] == "k" or data[0] == "K" ):
 			connection.send('K')
 			module_arthurs(connection, artwork, currentUser)
-			
+		if ( data[0] == "y" or data[0] == "Y" ):
+			connection.send('Y')
+			module_bank(connection, artwork, currentUser)
 		"""
-		case 'K': // KING ARTHURS WEAPONS
-			module_arthurs(); break;
-		case 'Y': // THE BANK
-			module_bank(); break;
 		case 'H': // HEALERS HUT
 			module_heal(); break;
 		case 'F': // THE FOREST

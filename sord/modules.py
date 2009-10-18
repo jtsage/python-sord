@@ -246,49 +246,49 @@ function module_forest() {
 	}
 }
 
-/** Ye Olde Bank
- * 
- * Visit the bank
- */
-function module_bank() {
-	GLOBAL $userid;
-	$quitter = 0;
-	while (!$quitter) {
-		slowecho(menu_bank());
-		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-		switch ($choice) {
-			case 'Q': // QUIT
-				$quitter = 1; break;
-			case 'R': // QUIT
-				$quitter = 1; break;
-			case '?': // SHOW MENU
-				break;
-			case 'D': // DEPOSIT
-				slowecho("\n  \033[32mDeposit how much? \033[1;30m(1 for all) \033[1;32m:\033[0m ");
-				$number = preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN))));
-  				if ( $number > user_getgold($userid) ) { slowecho(func_casebold("\n  You don't have that much gold!\n", 1)); pauser();
-				} else {
-					if ( $number == 1 ) { $number = user_getgold($userid); }
-					user_givebank($userid, $number);
-					user_takegold($userid, $number);
-					slowecho(func_casebold("\n  Gold deposited\n", 2));
-					pauser();
-				}
-				break;
-			case 'W': // WITHDRAWL
-				slowecho("\n  \033[32mWithdraw how much? \033[1;30m(1 for all) \033[1;32m:\033[0m ");
-				$number = preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN))));
-				if ( $number > user_getbank($userid) ) { slowecho(func_casebold("\n  You don't have that much gold!\n", 1)); pauser();
-				} else {
-					if ( $number == 1 ) { $number = user_getbank($userid); }
-					user_givegold($userid, $number);
-					user_takebank($userid, $number);
-					slowecho(func_casebold("\n  Gold widthdrawn\n", 2));
-					pauser();
-				}
-				break;
-			case 'T': // TRANSFER
-				slowecho("\n  \033[32mTransfer to which player? \033[1;32m:\033[0m ");
+"""
+""" Ye Olde Bank """
+def module_bank(connection, art, user):
+	thisQuit = False
+	while ( not thisQuit ):
+		func_slowecho(connection, menu_bank(user, art))
+		data = connection.recv(2)
+		if not data: break
+		if ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
+			connection.send('Q')
+			thisQuit = True
+		if ( data[0] == 'd' or data[0] == 'D' ):
+			connection.send('D')
+			func_slowecho(connection, "\r\n  \x1b[32mDeposit how much? \x1b[1;30m(1 for all) \x1b[1;32m:\x1b[0m ")
+			number = int(func_getLine(connection, True))
+			if ( number > user.getGold() ):
+				func_slowecho(func_casebold(connection, "\r\n  You don't have that much gold!\r\n", 1))
+				func_pauser(connection)
+			else:
+				if ( number == 1 ):
+					number = user.getGold()
+				user.updateBank(number)
+				user.updateGold(number * -1)
+				func_slowecho(connection, func_casebold("\r\n  Gold deposited\r\n", 2))
+				func_pauser(connection)
+		if ( data[0] == 'w' or data[0] == 'W' ):
+			connection.send('W')
+			func_slowecho(connection, "\r\n  \x1b[32mWithdraw how much? \x1b[1;30m(1 for all) \x1b[1;32m:\x1b[0m ")
+			number = int(func_getLine(connection, True))
+			if ( number > user.getBank() ):
+				func_slowecho(connection, func_casebold("\r\n  You don't have that much gold in the bank!\r\n", 1))
+				func_pauser(connection)
+			else:
+				if ( number == 1 ):
+					number = user.getBank()
+				user.updateGold(number)
+				user.updateBank(number * -1)
+				func_slowecho(connection, func_casebold("\r\n  Gold widthdrawn\r\n", 2))
+				func_pauser(connection)
+		if ( data[0] == 't' or data[0] == 'T' ):
+			connection.send('T')
+			func_slowecho(connection, "\r\n  \x1b[32mSorry, transfers are currently offline.\x1b[0m")
+			"""slowecho("\n  \033[32mTransfer to which player? \033[1;32m:\033[0m ");
 				$name = mysql_real_escape_string(preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN)))));
 				if ( user_fexist($name) ) {
 					$sendto = user_fgetid($name); $sendtofn = user_gethandle($sendto); 
@@ -305,16 +305,8 @@ function module_bank() {
 								user_givegold($sendto, $number);
 								user_takegold($userid, $number);
 								slowecho(func_casebold("\n  Gold transfered\n", 2));
-								pauser();
-							}
-						}
-					}
-				} else { slowecho(func_casebold("\n  No User by that name found!\n", 1)); pauser(); }
-				break;
-		}
-	}
-}
-"""
+								pauser();	}	}	}
+				} else { slowecho(func_casebold("\n  No User by that name found!\n", 1)); pauser(); } """
 
 """ Abdul's Armor"""
 def module_abduls(connection, art, user):

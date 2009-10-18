@@ -41,32 +41,25 @@ function menu_turgon() {
 	$thismenu .= "  \033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[1;37m[\033[22m{$min}:{$psec}\033[1m] \033[0m\033[32m:-: \033[0m";
 	return $thismenu;
 }
+"""
+"""Ye olde bank
+ * @return string Fully formatted menu"""
+def menu_bank(user, art):
+	ptime = func_maketime(user)
+	thismenu  = "\r\n\r\n  \x1b[1;37mSaga of the Red Dragon - \x1b[0m\x1b[32mBank\x1b[0m\r\n"
+	thismenu += art.line()
+	thismenu += "  \x1b[32mA polite clerk approaches. \x1b[1;35m\"Can I help you sir?\"\x1b[0m\r\n\r\n"
+	thismenu += func_normmenu("(D)eposit Gold")
+	thismenu += func_normmenu("(W)ithdraw Gold")
+	thismenu += func_normmenu("(T)ransfer Gold")
+	thismenu += func_normmenu("(R)eturn to Town")
+	thismenu += "\r\n\r\n\x1b[32m  Gold In Hand: \x1b[1m" + str(user.getGold())
+	thismenu += "\x1b[0m\x1b[32m Gold In Bank: \x1b[1m" + str(user.getBank()) + "\r\n"
+	thismenu += "\x1b[1;35m  The Bank \x1b[1;30m(W,D,R,T,Q) (? for menu)\x1b[0m\r\n\r\n"
+	thismenu += "  \x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
+	return thismenu
+"""
 
-/** Ye olde bank
- * 
- * Generate menu for the bank.
- * 
- * @return string Fully formatted menu
- */
-function menu_bank() {
-	GLOBAL $userid, $logontime;
-	$currenttime = time(); $ontime = $currenttime - $logontime;
-	$sec = $ontime % 60;
-	$min = ( $ontime - $sec ) / 60;
-	$psec = ( $sec < 10 ) ? "0{$sec}" : $sec;
-	$thismenu  = "\n\n  \033[1;37mSaga of the Red Dragon - \033[0m\033[32mBank\033[0m\n";
-	$thismenu .= art_line();
-	$thismenu .= "  \033[32mA polite clerk approaches. \033[1;35m\"Can I help you sir?\"\033[0m\n\n";
-	$thismenu .= func_normmenu("(D)eposit Gold");
-	$thismenu .= func_normmenu("(W)ithdraw Gold");
-	$thismenu .= func_normmenu("(T)ransfer Gold");
-	$thismenu .= func_normmenu("(R)eturn to Town");
-	$thismenu .= "\n\n\033[32m  Gold In Hand: \033[1m" . user_getgold($userid);
-	$thismenu .= "\033[0m\033[32m Gold In Bank: \033[1m" . user_getbank($userid). "\n";
-	$thismenu .= "\033[1;35m  The Bank \033[1;30m(W,D,R,T,Q) (? for menu)\033[0m\n\n";
-	$thismenu .= "  \033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[1;37m[\033[22m{$min}:{$psec}\033[1m] \033[0m\033[32m:-: \033[0m";
-	return $thismenu;
-}
 
 /** Forest fight menu (pre-battle)
  * 
