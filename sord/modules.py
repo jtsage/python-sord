@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from functions import *
 """
  * Module System
  * 
@@ -10,19 +11,12 @@
 """
 
 """ View Player Stats
- * 
- * View current player's stats.
- * 
  * @param int $userid User ID
- * @return string Formatted output for display
- */
-function module_viewstats($userid) {
-	GLOBAL $db, $MYSQL_PREFIX, $weapon, $armor, $classes;
-	$sql = "SELECT s.*, fullname FROM {$MYSQL_PREFIX}users u, {$MYSQL_PREFIX}stats s WHERE u.userid = {$userid} AND u.userid = s.userid";
-	$result = mysql_query($sql, $db);
-	$line = mysql_fetch_array($result);
-	$output  = "\n\n\033[1m\033[37m{$line['fullname']}\033[0m\033[32m's Stats...\n";
-	$output .= art_line();
+ * @return string Formatted output for display"""
+ 
+def module_viewstats(art, user) {
+	output  = "\r\n\r\n\x1b[1m\x1b[37m"+user.thisFullname+"\x1b[0m\x1b[32m's Stats...\r\n";
+	output += art.line();
 	$output .= "\033[32m Experience    : \033[1m{$line['exp']}\033[0m\n";
 	$output .= "\033[32m Level         : \033[1m{$line['level']}\033[0m"  . padnumcol($line['level'], 20)  . "\033[32mHitPoints          : \033[1m{$line['hp']} \033[22mof\033[1m {$line['hpmax']}\033[0m\n";
 	$output .= "\033[32m Forest Fights : \033[1m{$line['ffight']}\033[0m" . padnumcol($line['ffight'], 20) . "\033[32mPlayer Fights Left : \033[1m{$line['pfight']}\033[0m\n";
@@ -39,50 +33,38 @@ function module_viewstats($userid) {
 	$output .= "\n \033[1;32mYou are currently interested in \033[37mThe {$classes[$line['class']]} \033[32mskills.\n\n";
 	return $output;
 }
+"""
 
-/** View Daily Happenings
- * 
- * View the daily happenings
- * 
+""" View Daily Happenings
  * @param bool $noprmpt Do not prompt for additions.
- * @return string Formatted output for display
- */
-function module_dailyhappen($noprmpt) {
-	GLOBAL $db, $MYSQL_PREFIX;
-	$sql = "SELECT data FROM (SELECT * FROM {$MYSQL_PREFIX}daily ORDER BY id DESC LIMIT 10) AS tbl ORDER BY tbl.id";
-	$result = mysql_query($sql, $db);
-	$output = "\n\n\033[1;37mRecent Happenings\033[22;32m....\033[0m\n";
-	$output .= "\033[32m                                      -=-=-=-=-=-\033[0m\n";
-	while ( $line = mysql_fetch_array($result) ) {
-		$output .= "    " . func_colorcode($line['data']);
-		$output .= "\n\033[32m                                      -=-=-=-=-=-\033[0m\n";
-	}
-	$output .= ( $noprmpt ) ? "" : "\n\033[32m(\033[1;35mC\033[22;32m)ontinue  \033[32m(\033[1;35mT\033[22;32m)odays happenings again  \033[1;32m[\033[35mC\033[32m] \033[22m:-: ";
-	return $output;
-}
+ * @return string Formatted output for display """
+def module_dailyhappen(noprmpt, db, prefix):
+	thisSQL = "SELECT data FROM (SELECT * FROM "+prefix+"daily ORDER BY id DESC LIMIT 10) AS tbl ORDER BY tbl.id"
+	db.execute(thisSQL)
+	output  = "\r\n\r\n\x1b[1;37mRecent Happenings\033[22;32m....\x1b[0m\r\n"
+	output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+	for line in db.fetchall():
+		output += "    " + func_colorcode(line[0])
+		output += "\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+	if ( not noprmpt ) :
+		output +=  "\n\x1b[32m(\x1b[1;35mC\x1b[22;32m)ontinue  \x1b[32m(\x1b[1;35mT\x1b[22;32m)odays happenings again  \x1b[1;32m[\x1b[35mC\x1b[32m] \x1b[22m:-: "
+	return output
 
-/** Who's Online
- * 
- * Show current users online
- * 
- * @return string Formatted output for display
- */
-function module_who() {
-	GLOBAL $db, $MYSQL_PREFIX;
-	$sql = "SELECT o.userid, fullname, DATE_FORMAT(whence, '%H:%i') as whence FROM {$MYSQL_PREFIX}users u, {$MYSQL_PREFIX}online o WHERE o.userid = u.userid ORDER BY whence ASC";
-	$result = mysql_query($sql, $db);
-	$output = "\n\n\033[1;37m                     Warriors In The Realm Now\033[22;32m\033[0m\n";
-	$output .= art_line();
-	while ( $line = mysql_fetch_array($result) ) {
-		$output .= "  \033[1;32m" . $line['fullname'] . padnumcol($line['fullname'], 28);
-		$output .= "\033[0m\033[32mArrived At                    \033[1;37m" . $line['whence'] . "\033[0m\n";
-	}
-	return $output . "\n";
-}"""
-from functions import *
+
+""" Who's Online
+ * @return string Formatted output for display"""
+def module_who(art, db, prefix):
+	thisSQL = "SELECT o.userid, fullname, DATE_FORMAT(whence, '%H:%i') as whence FROM "+prefix+"users u, "+prefix+"online o WHERE o.userid = u.userid ORDER BY whence ASC"
+	db.execute(thisSQL)
+	output  = "\r\n\r\n\x1b[1;37m                     Warriors In The Realm Now\x1b[22;32m\x1b[0m\r\n"
+	output += art.line()
+	for line in db.fetchall():
+		output += "  \x1b[1;32m" + line[1] + padnumcol(line[1], 28)
+		output += "\x1b[0m\x1b[32mArrived At                    \x1b[1;37m" + line[2] + "\x1b[0m\r\n"
+	return output + "\r\n"
+
+
 """ Player List
- * List all players
- * 
  * @return string Formatted output for display """
 def module_list(art, db, prefix):
 	thisSQL = "SELECT u.userid, fullname, exp, level, class, spclm, spcld, spclt, sex, alive FROM "+prefix+"users u, "+prefix+"stats s WHERE u.userid = s.userid ORDER BY exp DESC"

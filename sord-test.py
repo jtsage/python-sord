@@ -30,6 +30,7 @@ WONT = chr(252)
 WILL = chr(251)
 ECHO = chr(1)
 LINEMODE = chr(34) # Linemode option
+SORDDEBUG = True
 
 def now():				#Server Time
 	return time.ctime(time.time())
@@ -45,8 +46,9 @@ def handleClient(connection):
 	
 	connection.send("Welcome to SORD\r\n")
 	func_pauser(connection)
-	#func_slowecho(connection, artwork.header())
-	func_pauser(connection)
+	if ( not SORDDEBUG ):
+		func_slowecho(connection, artwork.header())
+		func_pauser(connection)
 	
 	quitter = False
 	quitfull = False
@@ -87,7 +89,7 @@ def handleClient(connection):
 			if ( password == currentUser.thisPassword ):
 				loggedin = True
 			else:
-				func_slowecho(connection, func_casebold("\r\nIncorrect Password\r\n::"+password+"::", 1))
+				func_slowecho(connection, func_casebold("\r\nIncorrect Password\r\n", 1))
 		else:
 			if ( username == "new" ):
 				func_slowecho(connection, func_casebold("\r\nNew User\r\n", 1))
@@ -95,7 +97,17 @@ def handleClient(connection):
 				func_slowecho(connection, func_casebold("\r\nUser Name Not Found!\r\n",2))
 				
 	currentUser.login()
-	print 'User Logged in::' + currentUser.thisFullname + ' ' + thisClientAddress
+	print 'User Logged in::' + currentUser.thisFullname + ' ' + str(thisClientAddress)
+	
+	if currentUser.isDead() :
+		quitfull = 2
+		func_slowecho(connection, func_casebold("\r\nI'm Afraid You Are DEAD Right Now.  Sorry\r\n", 1))
+		
+	if ( not quitfull ):
+		func_slowecho(connection, module_dailyhappen(True, mySQLcurs, mySord.sqlPrefix()))
+		func_pauser(connection)
+		func_slowecho(connection, module_who(artwork, mySQLcurs, mySord.sqlPrefix()))
+		func_pauser(connection)
 	
 	while ( not quitfull ):
 		data = connection.recv(1)
@@ -104,6 +116,7 @@ def handleClient(connection):
 			connection.send("NewLine")
 		if ( data == "\r" ):
 			connection.send("Return")
+			quitfull = True
 		func_slowecho(connection, ('Echo=>' + data))
 
 	currentUser.logout()	

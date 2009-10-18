@@ -56,9 +56,9 @@ class sordUser():
 		self.db.execute(thisSQL)
 		thisAlive = self.db.fetchone()
 		if ( thisAlive[0] == 1 ):
-			return True
-		else:
 			return False
+		else:
+			return True
 
 	def getLevel(self):
 		"""Get user level"""
