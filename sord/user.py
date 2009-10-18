@@ -206,7 +206,7 @@ class sordUser():
 		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET horse = "+str(inst)+" WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		
-	def setArmour(self, inst):
+	def setArmor(self, inst):
 		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET armor = "+str(inst)+" WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		

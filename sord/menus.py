@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import time
 from functions import *
+from data import *
 """
  * Menu Functions.
  * 
@@ -143,26 +144,16 @@ def menu_mainshort(user):
 	thismenu += "  \x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
 	return thismenu
 
-"""
-/** Abdul's Armor
- * 
- * Generate menu for Abdul's Armor
- * 
- * @return string Fully formatted menu
- */
-function menu_abdul() {
-	GLOBAL $userid, $armor, $logontime;
-	$currenttime = time(); $ontime = $currenttime - $logontime;
-	$sec = $ontime % 60;
-	$min = ( $ontime - $sec ) / 60;
-	$psec = ( $sec < 10 ) ? "0{$sec}" : $sec;
-	$thisarmour = user_getarmor($userid);
-	$thismenu  = "\n  \033[32mCurrent armour: \033[1m{$armor[$thisarmour]}\033[0m\n";
-	$thismenu .= "  \033[1;35mAbduls Armour \033[1;30m(B,S,Y,R) (? for menu)\n\n";
-	$thismenu .= "  \033[0m\033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[1;37m[\033[22m{$min}:{$psec}\033[1m] \033[0m\033[32m:-: \033[0m";
-	return $thismenu;
-}
+"""Abdul's Armor
+ * @return string Fully formatted menu"""
+def menu_abdul(user):
+	ptime = func_maketime(user)
+	thismenu  = "\r\n  \x1b[32mCurrent armour: \x1b[1m"+armor[user.getArmor()]+"\x1b[0m\r\n"
+	thismenu += "  \x1b[1;35mAbduls Armour \x1b[1;30m(B,S,Y,R) (? for menu)\r\n\r\n"
+	thismenu += "  \x1b[0m\x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
+	return thismenu
 
+"""
 /** King Arthur's Weapons
  * 
  * Generate menu for King Arthur's Weapons.

@@ -125,28 +125,35 @@ def handleClient(connection):
 		data = connection.recv(2)
 		if not data: break
 		if ( data[0] == "q" or data[0] == "Q" ):
+			connection.send('Q')
 			quitfull = True
 		if ( data[0] == "x" or data[0] == "X" ):
+			connection.send('X')
 			currentUser.toggleXprt()
 		if ( data[0] == "v" or data[0] == "V" ):
+			connection.send('V')
 			func_slowecho(connection, module_viewstats(artwork, currentUser))
 			func_pauser(connection)
 		if ( data[0] == "d" or data[0] == "D" ):
+			connection.send('D')
 			func_slowecho(connection, module_dailyhappen(True, mySQLcurs, mySord.sqlPrefix()))
 			func_pauser(connection)
 		if ( data[0] == "?" ):
+			connection.send('?')
 			if ( currentUser.expert ):
 				func_slowecho(connection, menu_mainlong(artwork, currentUser, True))
 		if ( data[0] == "p" or data[0] == "P" ):
+			connection.send('P')
 			func_slowecho(connection, module_who(artwork, mySQLcurs, mySord.sqlPrefix()))
 			func_pauser(connection)
 		if ( data[0] == "l" or data[0] == "L" ):
+			connection.send('L')
 			func_slowecho(connection, module_list(artwork, mySQLcurs, mySord.sqlPrefix()))
 			func_pauser(connection)
-			
+		if ( data[0] == "a" or data[0] == "A" ):
+			connection.send('A')
+			module_abduls(connection, artwork, currentUser)
 		"""
-		case 'A': // ABDULS ARMOR
-			module_abduls(); break;
 		case 'K': // KING ARTHURS WEAPONS
 			module_arthurs(); break;
 		case 'Y': // THE BANK
