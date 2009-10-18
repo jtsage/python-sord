@@ -13,7 +13,7 @@ from config import sord
 
 class sordUser():
 	thisSord = sord()
-	dbc = MySQLdb.connect(host=str(thisSord.sqlServer()), db='sord', user='sord', passwd='dr0s')
+	dbc = MySQLdb.connect(host=str(thisSord.sqlServer()), db=str(thisSord.sqlDatabase()), user=str(thisSord.sqlUser()), passwd=str(thisSord.sqlPass()))
 	db = dbc.cursor()
 	expert = False
 	

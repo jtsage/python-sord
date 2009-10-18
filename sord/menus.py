@@ -127,7 +127,7 @@ def menu_mainlong(art, user, noprmpt):
 	thismenu += func_menu_2col("(I)nn", "(T)urgons Warrior Training", 5, 5)
 	thismenu += func_menu_2col("(Y)e Old Bank", "(L)ist Warriors", 5, 5)
 	thismenu += func_menu_2col("(W)rite Mail", "(D)aily News", 5, 5)
-	#$thismenu .= menu_2col("(C)onjugality List", "(O)ther Places", 5, 5);
+	#thismenu += func_menu_2col("(C)onjugality List", "(O)ther Places", 5, 5)
 	thismenu += func_menu_2col("(X)pert Mode", "(M)ake Announcement", 7, 5)
 	thismenu += func_menu_2col("(P)eople Online", "(Q)uit to Fields", 5, 2)
 	if ( not noprmpt ):
@@ -153,28 +153,12 @@ def menu_abdul(user):
 	thismenu += "  \x1b[0m\x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
 	return thismenu
 
-"""
-/** King Arthur's Weapons
- * 
- * Generate menu for King Arthur's Weapons.
- * 
- * @return string Fully formatted menu
- */
-function menu_arthur() {
-	GLOBAL $userid, $weapon, $logontime;
-	$currenttime = time(); $ontime = $currenttime - $logontime;
-	$sec = $ontime % 60;
-	$min = ( $ontime - $sec ) / 60;
-	$psec = ( $sec < 10 ) ? "0{$sec}" : $sec;
-	$thisweapon = user_getweapon($userid);
-	$thismenu  = "\n  \033[32mCurrent weapon: \033[1m{$weapon[$thisweapon]}\033[0m\n";
-	$thismenu .= "  \033[1;35mKing Arthur's Weapons \033[1;30m(B,S,Y,R) (? for menu)\n\n";
-	$thismenu .= "  \033[0m\033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[1;37m[\033[22m{$min}:{$psec}\033[1m] \033[0m\033[32m:-: \033[0m";
-	return $thismenu;
-}
-
-
-
-
-?>
-"""
+"""King Arthur's Weapons
+ * @return string Fully formatted menu """
+ 
+def menu_arthur(user):
+	ptime = func_maketime(user)
+	thismenu  = "\r\n  \x1b[32mCurrent weapon: \x1b[1m"+weapon[user.getWeapon()]+"\x1b[0m\r\n"
+	thismenu += "  \x1b[1;35mKing Arthur's Weapons \x1b[1;30m(B,S,Y,R) (? for menu)\r\n\r\n"
+	thismenu += "  \x1b[0m\x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
+	return thismenu

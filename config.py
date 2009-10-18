@@ -26,6 +26,9 @@ class sord():
 	def sqlServer(self):
 		return "localhost"
 		
+	def sqlDatabase(self):
+		return "sord"
+		
 	def sqlUser(self):
 		return "sord"
 		

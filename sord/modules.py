@@ -369,7 +369,8 @@ def module_abduls(connection, art, user):
 					connection.send('Y')
 					user.setArmour(0)
 					user.updateGold(sellprice)
-					user.updateDefense(armordef[sellarmor] * -1)
+					unstrength = (60 * armordef[sellweapon]) // 100
+					user.updateDefense(unstrength * -1)
 					func_slowecho(connection, func_casebold("\r\nPleasure doing business with you!\r\n", 2))
 					func_pauser(connection)
 				else:
@@ -390,72 +391,83 @@ def module_abduls(connection, art, user):
 			connection.send('Q')
 			thisQuit = True;
 
+"""King Arthur's Weapons"""
+def module_arthurs(connection, art, user):
+	thisQuit = False
+	while ( not thisQuit ):
+ 		if ( not user.expert ):
+			func_slowecho(connection, art.arthur())
+		func_slowecho(connection, menu_arthur(user))
+		data = connection.recv(2)
+		if not data: break
+		if ( data[0] == 'b' or data[0] == 'B' ):
+			connection.send('B')
+			func_slowecho(connection, art.wepbuy())
+			func_slowecho(connection, "\r\n\r\n\x1b[32mYour choice? \x1b[1m:\x1b[22m-\x1b[1m:\x1b[0m ")
+			number = int(func_getLine(connection, True))
+			if ( number > 0 and number < 16 ):
+				if ( user.getWeapon() > 0 ):
+					func_slowecho(connection, func_casebold("\r\nYou cannot hold 2 Weapons!\r\n", 1))
+					func_pauser(connection)
+				else:
+					if ( user.getGold() < weaponprice[number] ):
+						func_slowecho(connection, func_casebold("\r\nYou do NOT have enough Gold!\n", 1))
+						func_pauser(connection)
+					else:
+						if ( user.getStrength() < weaponnstr[number] ):
+							func_slowecho(connection, func_casebold("\r\nYou are NOT strong enough for that!\r\n", 1))
+							func_pauser(connection)
+						else:
+							func_slowecho(connection, func_casebold("\r\nI'll sell you my Favorite "+weapon[number]+" for "+str(weaponprice[number])+" gold.  OK? ", 2)) 
+							yesno = connection.recv(2)
+							if not yesno: break
+							if ( yesno[0] == "Y" or yesno[0] == "y" ):
+								connection.send('Y')
+								user.setWeapon(number)
+								user.updateGold(weaponprice[number] * -1)
+								user.updateStrength(weaponstr[number])
+								func_slowecho(connection, func_casebold("\r\nPleasure doing business with you!\r\n", 2))
+								func_pauser(connection)
+							else:
+								func_slowecho(connection, func_casebold("\r\nFine then...\r\n", 2))
+								func_pauser(connection)
+		if ( data[0] == 's' or data[0] == 'S' ):
+			connection.send('S')
+			sellpercent = 50 + random.randint(1, 10)
+			sellweapon = user.getWeapon()
+			if ( sellweapon > 0 ):
+				sellprice = ((sellpercent * weaponprice[sellweapon]) // 100 )
+				func_slowecho(connection, func_casebold("\r\nHmm...  I'll buy that "+weapon[sellweapon]+" for "+str(sellprice)+" gold.  OK? ", 2))
+				yesno = connection.recv(2)
+				if not yesno: break
+				if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
+					connection.send('Y')
+					user.setWeapon(0)
+					user.updateGold(sellprice)
+					unstrength = (60 * weaponstr[sellweapon]) // 100
+					user.updateStrength(unstrength * -1)
+					func_slowecho(connection, func_casebold("\r\nPleasure doing business with you!\r\n", 2))
+					func_pauser(connection)
+				else:
+					func_slowecho(connection, func_casebold("\r\nFine then...\r\n", 2))
+					func_pauser(connection)
+			else:
+				func_slowecho(connection, func_casebold("\r\nYou have nothing I want!\r\n", 1))
+				func_pauser(connection)
+		if ( data[0] == "?" ):
+			connection.send('?')
+			if ( user.expert ):
+				func_slowecho(connection, art.abdul())
+		if ( data[0] == 'Y' or data[0] == 'y' ):
+			connection.send('Y')
+			func_slowecho(connection, module_viewstats(art, user))
+			func_pauser(connection)
+		if ( data[0] == 'Q' or data[0] == 'q' or data[0] == 'R' or data[0] == 'r' ):
+			connection.send('Q')
+			thisQuit = True;
+				
 
 """
-/** King Arthur's Weapons
- * 
- * Visit the weaponry
- */
-function module_arthurs() {
-	GLOBAL $db, $MYSQL_PREFIX, $weapon, $xprt, $userid, $weaponprice, $weaponnstr, $weaponstr;
-	$quitter = 0;
-	while ( !$quitter ) {
- 		if ( !$xprt ) { slowecho(art_arthur()); }
-		slowecho(menu_arthur());
-		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-		switch ($choice) {
-			case 'B': // BUY WEAPON
-				slowecho(art_wepbuy());
-				slowecho("\n\n\033[32mYour choice? \033[1m:\033[22m-\033[1m:\033[0m ");
-				$number = preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN))));
-				if ( $number > 0 && $number < 16 ) {
-					if ( user_getweapon($userid) > 0 ) { slowecho(func_casebold("\nYou cannot hold 2 weapons!\n", 1)); pauser(); }
-					else {
-						if ( user_getgold($userid) < $weaponprice[$number] ) { slowecho(func_casebold("\nYou do NOT have enough Gold!\n", 1)); pauser(); }
-						else {
-							if ( user_getstr($userid) < $weaponnstr[$number] ) { slowecho(func_casebold("\nYou are NOT strong enough for that!\n", 1)); pauser(); }
-							else {
-								slowecho(func_casebold("\nI'll sell you my Favorite {$weapon[$number]} for {$weaponprice[$number]} gold.  OK? ", 2)); 
-								$yesno = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-								if ( $yesno == "Y" ) {
-									user_setweapon($userid, $number);
-									user_takegold($userid, $weaponprice[$number]);
-									user_givestr($userid, $weaponstr[$number]);
-									slowecho(func_casebold("\nPleasure doing business with you!\n", 2));
-									pauser();
-								} else { slowecho(func_casebold("\nFine then...\n", 2)); pauser(); }
-							}
-						}
-					}
-				}
-				break;
-			case 'S': // SELL WEAPON
-				$sellpercent = 50 + rand(1, 10);
-				$sellweapon = user_getweapon($userid);
-				if ( $sellweapon > 0 ) {
-  					$sellprice = ( $sellpercent / 100 ) * $weaponprice[$sellweapon];
-					slowecho(func_casebold("\nHmm...  I'll buy that {$armor[$sellweapon]} for {$sellprice} gold.  OK? ", 2));
-					$yesno = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-					if ( $yesno == "Y" ) {
-						user_setweapon($userid, 0);
-						user_givegold($userid, $sellprice);
-						user_takestr($userid, $weaponstr[$sellweapon]);
-						slowecho(func_casebold("\nPleasure doing business with you!\n", 2));
-						pauser();
-					} else { slowecho(func_casebold("\nFine then...\n", 2)); }
-				} else { slowecho(func_casebold("\nYou have nothing I want!\n", 1)); pauser(); }
-				break;
-			case '?': // SHOW MENU
-				if ( !$xprt ) { slowecho(art_weapon()); } break;
-			case 'Y': // VIEW STATS
-				slowecho(module_viewstats($userid)); pauser(); break;
-			case 'Q': // QUIT
-				$quitter = 1; break;
-			case 'R': // QUIT
-				$quitter = 1; break;
-		}
-	}
-}
 
 /** Turgon's Warrior Training (pre-combat)
  * 

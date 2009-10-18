@@ -3,7 +3,7 @@
 # See LICENSE for details.
 
 #
-import thread, threading, time, MySQLdb
+import thread, threading, time, MySQLdb, sys
 from sord.art import *
 from sord.functions import *
 from sord.user import *
@@ -12,16 +12,15 @@ from sord.menus import *
 
 from config import sord
 from socket import *
-myHost = ''
+myHost = ''  #all hosts.
 myPort = 6969
 mySord = sord()
 
-
-sockobj = socket(AF_INET, SOCK_STREAM)
+sockobj = socket(AF_INET6, SOCK_STREAM)
 sockobj.bind((myHost, myPort))
 sockobj.listen(5)
 
-mySQLconn = MySQLdb.connect(host='localhost', db='sord', user='sord', passwd='dr0s')
+mySQLconn = MySQLdb.connect(host=str(mySord.sqlServer()), db=str(mySord.sqlDatabase()), user=str(mySord.sqlUser()), passwd=str(mySord.sqlPass()))
 mySQLcurs = mySQLconn.cursor()
 
 IAC  = chr(255) # "Interpret As Command"
@@ -36,7 +35,6 @@ SORDDEBUG = True
 def now():				#Server Time
 	return time.ctime(time.time())
 	
-		
 def handleClient(connection):
 	time.sleep(1)
 	thisClientAddress = connection.getpeername()
@@ -153,6 +151,10 @@ def handleClient(connection):
 		if ( data[0] == "a" or data[0] == "A" ):
 			connection.send('A')
 			module_abduls(connection, artwork, currentUser)
+		if ( data[0] == "k" or data[0] == "K" ):
+			connection.send('K')
+			module_arthurs(connection, artwork, currentUser)
+			
 		"""
 		case 'K': // KING ARTHURS WEAPONS
 			module_arthurs(); break;
@@ -171,12 +173,6 @@ def handleClient(connection):
 		case 'T': // WARRIOR TRAINING
 			module_turgon(); break;
 					
-		if ( data == "\n" ):
-			connection.send("NewLine")
-		if ( data == "\r" ):
-			connection.send("Return")
-			quitfull = True
-		func_slowecho(connection, ('Echo=>' + data))
 """
 	func_slowecho(connection, func_casebold("\r\n\r\n   Quitting to the Fields... GoodBye!\r\n", 7))
 	currentUser.logout()	
@@ -186,9 +182,16 @@ def handleClient(connection):
 	
 def dispatcher():
 	while True:
-		connection, address = sockobj.accept()
-		print 'Server connected by', address, 
-		print 'at', now()
-		thread.start_new(handleClient, (connection,))
+		try:
+			connection, address = sockobj.accept()
+			print 'Server connected by', address, 
+			print 'at', now()
+			thread.start_new(handleClient, (connection,))
+		except KeyboardInterrupt:
+			print 'Closing listener and exiting.'
+			sockobj.close()
+			sys.exit()
+		
+		
 			
 dispatcher()
