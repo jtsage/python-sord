@@ -9,8 +9,42 @@
  * @subpackage phpsord-general
  * @author J.T.Sage
 """
-import re
+import re, time
 
+"""slowecho"""
+def func_slowecho(connection, data):
+	for thisData in list(data):
+		time.sleep(0.001)
+		connection.send(thisData)
+		
+"""Sreen pauser"""
+def func_pauser(connection):
+	#data = connection.recv(1024) #clear buffer
+	func_slowecho(connection, func_casebold("\r\n    :-: Press Any Key :-:", 2))
+	pauser_quit = False
+	while ( not pauser_quit ):
+		data = connection.recv(5)
+		if not data: break
+		pauser_quit = True
+		connection.send("\r\n")
+		
+""" Get line from user"""
+def func_getLine(connection, echo):
+	getterquit = False
+	retval = ""
+	while ( not getterquit ):
+		data = connection.recv(2)
+		if not data: break
+		if ( data[0] == "\n" or data[0] == "\r" ):
+			getterquit = True
+		else:
+			retval += data
+			if ( echo ):
+				connection.send(data)
+			else:
+				connection.send('*')
+	return retval
+	
 """ Color by character case.
  * Capitals returns in boldcolor, lowercase in normcolor
  * 

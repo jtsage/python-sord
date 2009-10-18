@@ -32,7 +32,7 @@ class sord():
 	def sqlPass(self):
 		return "dr0s"
 		
-	def sqlDatabase(self):
+	def sqlPrefix(self):
 		return "gameone_"
 		
 	def host(self):
