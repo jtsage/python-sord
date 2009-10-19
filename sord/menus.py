@@ -13,35 +13,24 @@ from data import *
 """
 
 
-"""
-/** Turgons warrior training
- * 
- * Generate menu for warrior training.
- * 
- * @return string Fully formatted menu
- */
-function menu_turgon() {
-	GLOBAL $userid, $logontime, $masters;
-	$currenttime = time(); $ontime = $currenttime - $logontime;
-	$sec = $ontime % 60;
-	$min = ( $ontime - $sec ) / 60;
-	$psec = ( $sec < 10 ) ? "0{$sec}" : $sec;
-	$userlevel = user_getlevel($userid);
-	$thismenu  = "\n\n  \033[1;37mSaga of the Red Dragon - \033[0m\033[32mTurgons Warrior Training\033[0m\n";
-	$thismenu .= art_blueline();
-	$thismenu .= "  \033[32mYou enter the mighty Training Center.  Hundreds of warriors, young,\033[0m\n";
-	$thismenu .= "  \033[32mas well as old, are sparring.  Every few seconds you hear someone\033[0m\n";
-	$thismenu .= "  \033[32mshriek in pain.  Obviously some novice who let his gaurd down.\033[0m\n\n";
-	$thismenu .= func_normmenu("(Q)uestion Master");
-	$thismenu .= func_normmenu("(A)ttack Master");
-	$thismenu .= "  \033[32m(\033[1;37mV\033[0m\033[32m)\033[1;37misit The Hall Of Honor\033[0m\n";
-	$thismenu .= func_normmenu("(R)eturn to Town");
-	$thismenu .= "\n  \033[32mYour master is \033[1;37m{$masters[$userlevel][0]}\033[0m\033[32m.\033[0m\n\n";
-	$thismenu .= "\033[1;35m  Turgon's Warrior Training \033[1;30m(Q,A,V,R) (? for menu)\033[0m\n\n";
-	$thismenu .= "  \033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[1;37m[\033[22m{$min}:{$psec}\033[1m] \033[0m\033[32m:-: \033[0m";
-	return $thismenu;
-}
-"""
+"""Turgons warrior training
+ * @return string Fully formatted menu """
+def menu_turgon(user, art):
+	ptime = func_maketime(user, art)
+	thismenu  = "\r\n\r\n  \x1b[1;37mSaga of the Red Dragon - \x1b[0m\x1b[32mTurgons Warrior Training\x1b[0m\r\n"
+	thismenu += art.blueline()
+	thismenu += "  \x1b[32mYou enter the mighty Training Center.  Hundreds of warriors, young,\x1b[0m\r\n"
+	thismenu += "  \x1b[32mas well as old, are sparring.  Every few seconds you hear someone\x1b[0m\r\n"
+	thismenu += "  \x1b[32mshriek in pain.  Obviously some novice who let his gaurd down.\x1b[0m\r\n\r\n"
+	thismenu += func_normmenu("(Q)uestion Master")
+	thismenu += func_normmenu("(A)ttack Master")
+	thismenu += "  \x1b[32m(\x1b[1;37mV\x1b[0m\x1b[32m)\x1b[1;37misit The Hall Of Honor\x1b[0m\r\n"
+	thismenu += func_normmenu("(R)eturn to Town")
+	thismenu += "\r\n  \x1b[32mYour master is \x1b[1;37m"+masters[user.getLevel()][0]+"\x1b[0m\x1b[32m.\x1b[0m\r\n\r\n"
+	thismenu += "\x1b[1;35m  Turgon's Warrior Training \x1b[1;30m(Q,A,V,R) (? for menu)\x1b[0m\r\n\r\n"
+	thismenu += "  \x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
+	return thismenu
+
 """Ye olde bank
  * @return string Fully formatted menu"""
 def menu_bank(user, art):
@@ -58,55 +47,35 @@ def menu_bank(user, art):
 	thismenu += "\x1b[1;35m  The Bank \x1b[1;30m(W,D,R,T,Q) (? for menu)\x1b[0m\r\n\r\n"
 	thismenu += "  \x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
 	return thismenu
-"""
 
+""" Forest fight menu (pre-battle)
+ * @return string Fully formatted menu """
+def menu_forest(user):
+	ptime = func_maketime(user)
+	thismenu = "  \x1b[32mHitPoints: (\x1b[1m" + str(user.getHP()) + "\x1b[22m of \x1b[1m" + str(user.getHPMax())
+	thismenu += "\x1b[22m)  Fights: \x1b[1m" + str(user.getForestFight()) + "\x1b[22m  Gold: \x1b[1m" + str(user.getGold())
+	thismenu += "\x1b[22m  Gems: \x1b[1m" + str(user.getGems()) + "\x1b[0m\r\n"
+	thismenu += "  \x1b[1;35mThe Forest  \x1b[1;30m(L,H,R,Q) (? for menu)\x1b[0m\r\n\r\n"
+	thismenu += "  \x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
+	return thismenu
 
-/** Forest fight menu (pre-battle)
- * 
- * Generate menu for forest fights.
- * 
- * @return string Fully formatted menu
- */
-function menu_forest() {
-	GLOBAL $userid, $logontime;
-	$currenttime = time(); $ontime = $currenttime - $logontime;
-	$sec = $ontime % 60;
-	$min = ( $ontime - $sec ) / 60;
-	$psec = ( $sec < 10 ) ? "0{$sec}" : $sec;
-	$thismenu .= "  \033[32mHitPoints: (\033[1m" . user_gethp($userid) . "\033[22m of \033[1m" . user_gethpmax($userid);
-	$thismenu .= "\033[22m)  Fights: \033[1m" . user_getffight($userid) . "\033[22m  Gold: \033[1m" . user_getgold($userid);
-	$thismenu .= "\033[22m  Gems: \033[1m" . user_getgems($userid) . "\033[0m\n";
-	$thismenu .= "  \033[1;35mThe Forest  \033[1;30m(L,H,R,Q) (? for menu)\033[0m\n\n";
-	$thismenu .= "  \033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[1;37m[\033[22m{$min}:{$psec}\033[1m] \033[0m\033[32m:-: \033[0m";
-	return $thismenu;
-}
+""" Healers Hut
+ * @return string Fully formatted menu """
+def menu_heal(user, art):
+	ptime = func_maketime(user)
+	thismenu  = "\r\n\r\n  \x1b[1;37mSaga of the Red Dragon - \x1b[0m\x1b[32mHealers Hut\x1b[0m\r\n"
+	thismenu += art.line()
+	thismenu += "  \x1b[32mYou enter the smoky healers hut.\r\n  \x1b[1;35m\"What is your wish, warrior?\" \x1b[0m\x1b[32m the old\n  \x1b[32mhealer asks.\x1b[0m\r\n\r\n"
+	thismenu += func_normmenu("(H)eal all possible")
+	thismenu += func_normmenu("(C)ertain amount healed")
+	thismenu += func_normmenu("(R)eturn")
+	thismenu += "\r\n\x1b[32m  HitPoints: \x1b[1m" + str(user.getHP()) + "\x1b[22m of \x1b[1m" + str(user.getHPMax()) + "\x1b[0m"
+	thismenu += "\x1b[32m  Gold In Hand: \x1b[1m" + str(user.getGold())
+	thismenu += "\x1b[22m.\n  It costs \x1b[1m" + str(user.getLevel() * 5) + "\x1b[22m gold to heal 1 HitPoint\x1b[0m\r\n"
+	thismenu += "\x1b[1;35m  The Healers Hut \x1b[1;30m(H,C,R) (? for menu)\x1b[0m\r\n\r\n"
+	thismenu += "  \x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
+	return thismenu
 
-/** Healers Hut
- * 
- * Generate menu for the healers hut
- * 
- * @return string Fully formatted menu
- */
-function menu_heal() {
-	GLOBAL $userid, $logontime;
-	$currenttime = time(); $ontime = $currenttime - $logontime;
-	$sec = $ontime % 60;
-	$min = ( $ontime - $sec ) / 60;
-	$psec = ( $sec < 10 ) ? "0{$sec}" : $sec;
-	$thismenu  = "\n\n  \033[1;37mSaga of the Red Dragon - \033[0m\033[32mHealers Hut\033[0m\n";
-	$thismenu .= art_line();
-	$thismenu .= "  \033[32mYou enter the smoky healers hut.\n  \033[1;35m\"What is your wish, warrior?\" \033[0m\033[32m the old\n  \033[32mhealer asks.\033[0m\n\n";
-	$thismenu .= func_normmenu("(H)eal all possible");
-	$thismenu .= func_normmenu("(C)ertain amount healed");
-	$thismenu .= func_normmenu("(R)eturn");
-	$thismenu .= "\n\033[32m  HitPoints: \033[1m" . user_gethp($userid) . "\033[22m of \033[1m" . user_gethpmax($userid) . "\033[0m";
-	$thismenu .= "\033[32m  Gold In Hand: \033[1m" . user_getgold($userid);
-	$thismenu .= "\033[22m.\n  It costs \033[1m" . (user_getlevel($userid) * 5) . "\033[22m gold to heal 1 HitPoint\033[0m\n";
-	$thismenu .= "\033[1;35m  The Healers Hut \033[1;30m(H,C,R) (? for menu)\033[0m\n\n";
-	$thismenu .= "  \033[32mYour command, \033[1m" . user_gethandle($userid) . "\033[22m? \033[1;37m[\033[22m{$min}:{$psec}\033[1m] \033[0m\033[32m:-: \033[0m";
-	return $thismenu;
-}
-"""
 """Main Menu - Non-Expert
  * @todo Married List and Other Places
  * @return string Fully formatted menu"""
