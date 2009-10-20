@@ -9,6 +9,7 @@ from sord.functions import *
 from sord.user import *
 from sord.modules import *
 from sord.menus import *
+from sord.messaging import *
 
 from config import sord
 from socket import *
@@ -66,13 +67,13 @@ def handleClient(connection):
 		if ( data == "E" or data == "e" ):
 			print 'User Logging In::' + str(thisClientAddress)
 			quitter = True
-			
+
 	loggedin = False
 	ittr = 0
 	if ( SORDDEBUG ):
 		loggedin = True
-		currentUser = sordUser('jtsage')
-		
+		currentUser = sordUser('jtsage', mySQLconn, mySQLcurs)
+
 	while ( not loggedin ):
 		username = ""
 		password = ""
@@ -85,7 +86,7 @@ def handleClient(connection):
 			thread.exit()
 		func_slowecho(connection, func_casebold("\r\n\r\nWelcome Warrior!  Enter Your Login Name (OR '\x1b[1m\x1b[31mnew\x1b[32m') :-: ", 2))
 		username = func_getLine(connection, True)
-		currentUser = sordUser(username)
+		currentUser = sordUser(username, mySQLconn, mySQLcurs)
 		if ( currentUser.thisUserID > 0 ):
 			func_slowecho(connection, func_casebold("\r\nPassword :-: ",2));  
 			password = func_getLine(connection, False)
@@ -96,7 +97,13 @@ def handleClient(connection):
 				func_slowecho(connection, func_casebold("\r\nIncorrect Password\r\n", 1))
 		else:
 			if ( username == "new" ):
-				func_slowecho(connection, func_casebold("\r\nNew User\r\n", 1))
+				print 'New User! ' + str(thisClientAddress)
+				newusername = module_newuser(connection, currentUser)
+				currentUser = sordUser(newusername, mySQLconn, mySQLcurs)
+				newclass = currentUser.getClass()
+				currentUser.updateSkillUse(newclass, 1)
+				currentUser.updateSkillPoint(newclass, 1)
+				loggedin = True
 			else:
 				func_slowecho(connection, func_casebold("\r\nUser Name Not Found!\r\n",2))
 				
@@ -157,15 +164,20 @@ def handleClient(connection):
 		if ( data[0] == "y" or data[0] == "Y" ):
 			connection.send('Y')
 			module_bank(connection, artwork, currentUser)
+		if ( data[0] == "h" or data[0] == "H" ):
+			connection.send('H')
+			module_heal(connection, artwork, currentUser)
+		if ( data[0] == "m" or data[0] == "M" ):
+			connection.send('M')
+			msg_announce(connection, currentUser)
+		if ( data[0] == "w" or data[0] == "W" ):
+			connection.send('W')
+			msg_sendmail(connection, currentUser)
+
+		
 		"""
-		case 'H': // HEALERS HUT
-			module_heal(); break;
 		case 'F': // THE FOREST
 			module_forest(); break;
-		case 'M': // MAKE ANNOUNCMENT
-			module_announce(); break;
-		case 'W': // SEND MAIL MESSAGE
-			control_sendmail($userid); break;
 		case 'I': // RED DRAGON INN
 			inn_logic(); break;
 		case 'T': // WARRIOR TRAINING

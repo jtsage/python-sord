@@ -8,17 +8,20 @@
  * @subpackage phpsord-general
  * @author J.T.Sage
 """
-import MySQLdb, time
+#import MySQLdb, time
+import time
 from config import sord
 
 class sordUser():
 	thisSord = sord()
-	dbc = MySQLdb.connect(host=str(thisSord.sqlServer()), db=str(thisSord.sqlDatabase()), user=str(thisSord.sqlUser()), passwd=str(thisSord.sqlPass()))
-	db = dbc.cursor()
+	#Passed at init now. dbc = MySQLdb.connect(host=str(thisSord.sqlServer()), db=str(thisSord.sqlDatabase()), user=str(thisSord.sqlUser()), passwd=str(thisSord.sqlPass()))
+	#Passed at init now. db = dbc.cursor()
 	expert = False
 	
-	def __init__(self, loginname):
+	def __init__(self, loginname, dbc, db):
 		""" Find and set the userID in the object """
+		self.dbc = dbc
+		self.db = db
 		thisSQL = "SELECT userid,password,fullname FROM "+self.thisSord.sqlPrefix()+"users WHERE username = '"+loginname+"'"
 		self.thisUserName = loginname
 		self.db.execute(thisSQL)
@@ -33,6 +36,36 @@ class sordUser():
 			self.thisPassword = ""
 			self.thisFullname = "unregistered"
 
+	def userExist(self, fullname):
+		searchname = self.dbc.escape_string(fullname)
+		thisSQL = "SELECT userid FROM "+self.thisSord.sqlPrefix()+"users WHERE fullname = '"+searchname+"'"
+		self.db.execute(thisSQL)
+		
+		if self.db.rowcount > 0:
+			thisReturn = self.db.fetchone()
+			return thisReturn[0]
+		else:
+			return 0
+	
+	def userLoginExist(self, username):
+		searchname = self.dbc.escape_string(username)
+		thisSQL = "SELECT userid FROM "+self.thisSord.sqlPrefix()+"users WHERE username = '"+searchname+"'"
+		self.db.execute(thisSQL)
+		
+		if self.db.rowcount > 0:
+			return True
+		else:
+			return False
+	
+	def userGetName(self, someID):
+		thisSQL = "SELECT fullname FROM "+self.thisSord.sqlPrefix()+"users WHERE userid = "+str(someID)
+		self.db.execute(thisSQL)
+		if self.db.rowcount > 0:
+			thisReturn = self.db.fetchone()
+			return thisReturn[0]
+		else:
+			return 0
+			
 	def toggleXprt(self):
 		if self.expert == False:
 			self.expert = True

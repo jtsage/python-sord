@@ -65,13 +65,13 @@ def menu_heal(user, art):
 	ptime = func_maketime(user)
 	thismenu  = "\r\n\r\n  \x1b[1;37mSaga of the Red Dragon - \x1b[0m\x1b[32mHealers Hut\x1b[0m\r\n"
 	thismenu += art.line()
-	thismenu += "  \x1b[32mYou enter the smoky healers hut.\r\n  \x1b[1;35m\"What is your wish, warrior?\" \x1b[0m\x1b[32m the old\n  \x1b[32mhealer asks.\x1b[0m\r\n\r\n"
+	thismenu += "  \x1b[32mYou enter the smoky healers hut.\r\n  \x1b[1;35m\"What is your wish, warrior?\" \x1b[0m\x1b[32m the old\r\n  \x1b[32mhealer asks.\x1b[0m\r\n\r\n"
 	thismenu += func_normmenu("(H)eal all possible")
 	thismenu += func_normmenu("(C)ertain amount healed")
 	thismenu += func_normmenu("(R)eturn")
 	thismenu += "\r\n\x1b[32m  HitPoints: \x1b[1m" + str(user.getHP()) + "\x1b[22m of \x1b[1m" + str(user.getHPMax()) + "\x1b[0m"
 	thismenu += "\x1b[32m  Gold In Hand: \x1b[1m" + str(user.getGold())
-	thismenu += "\x1b[22m.\n  It costs \x1b[1m" + str(user.getLevel() * 5) + "\x1b[22m gold to heal 1 HitPoint\x1b[0m\r\n"
+	thismenu += "\x1b[22m.\r\n  It costs \x1b[1m" + str(user.getLevel() * 5) + "\x1b[22m gold to heal 1 HitPoint\x1b[0m\r\n"
 	thismenu += "\x1b[1;35m  The Healers Hut \x1b[1;30m(H,C,R) (? for menu)\x1b[0m\r\n\r\n"
 	thismenu += "  \x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
 	return thismenu

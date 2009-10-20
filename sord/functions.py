@@ -38,11 +38,15 @@ def func_getLine(connection, echo):
 		if ( data[0] == "\n" or data[0] == "\r" ):
 			getterquit = True
 		else:
-			retval += data
-			if ( echo ):
-				connection.send(data)
+			if ( data[0] == chr(127) ):
+				retval = retval[:-1]
+				connection.send("\x1b[1D \x1b[1D")
 			else:
-				connection.send('*')
+				retval += data
+				if ( echo ):
+					connection.send(data)
+				else:
+					connection.send('*')
 	return retval
 	
 """ Color by character case.
@@ -85,7 +89,7 @@ def func_colorcode(text):
 def func_normmenu(text):
 	bclrstr = "  \x1b[0m\x1b[32m(\x1b[1;35m"
 	nclrstr = "\x1b[0m\x1b[32m)"
-	return re.sub("\(([A-Z:<>])\)", bclrstr + r"\1" + nclrstr, text) + "\x1b[0m"
+	return re.sub("\(([A-Z:<>])\)", bclrstr + r"\1" + nclrstr, text) + "\x1b[0m\r\n"
 
 """ 2 Column Menu
  * Generate a 2 column menu entry

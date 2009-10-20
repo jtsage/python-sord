@@ -12,6 +12,100 @@ from menus import *
  * @subpackage phpsord-ui
  * @author J.T.Sage
 """
+"""Create a user"""
+def module_newuser(connection, user):
+	func_slowecho(connection, func_casebold("\r\nCreating a New Character...\r\n", 2))
+	thisLooper = False
+	while ( not thisLooper ):
+		func_slowecho(connection, func_casebold("\r\nPlease Choose a Username (12 characters MAX) :-: ", 2))
+		newname = func_getLine(connection, True)
+		newname = newname[:12]
+		if ( user.userLoginExist(newname) ):
+			func_slowecho(connection, func_casebold("\r\nName In Use!\r\n", 1))
+		else:
+			thisLooper = True
+	thisLooper = False
+	while ( not thisLooper ):
+		func_slowecho(connection, func_casebold("\r\nAnd, how will you be addressed? (a Handle) (40 characters MAX) :-: ", 2))
+		newfname = func_getLine(connection, True)
+		newfname = newfname[:40]
+		if ( newfname == "" ):
+			func_slowecho(connection, func_casebold("\r\nHEY! No Anonymous Players!\r\n", 1))
+		else:
+			thisLooper = True
+	thisLooper = False
+	while ( not thisLooper ):
+		func_slowecho(connection, func_casebold("\r\nPick a Password (12 characters MAX) :-: ", 2))
+		newpass = func_getLine(connection, True)
+		newpass = newpass[:12]
+		if ( newpass == "" ):
+			func_slowecho(connection, func_casebold("\r\nPassword MUST Not Be Empty\r\n", 1))
+		else:
+			thisLooper = True
+	thisLooper = False
+	while ( not thisLooper ):
+		func_slowecho(connection, func_casebold("\r\nYour Sex (M/F) :-: ", 2))
+		data = connection.recv(2)
+		if not data: break
+		if ( data[0] == 'm' or data[0] == 'M' ):
+			connection.send('M')
+			newsexnum = 1
+			thisLooper = True
+			func_slowecho(connection, func_casebold("\r\nMy, what a girly man you are...\r\n", 2))
+		if ( data[0] == 'f' or data[0] == 'F' ):
+			connection.send('F')
+			newsexnum = 2
+			thisLooper = True
+			func_slowecho(connection, func_casebold("Gee sweetheart, hope you don't break a nail...\n", 2))
+	func_slowecho(connection, func_casebold("\r\nPick that which best describes your childhood.\nFrom an early age, you remember:\r\n\r\n", 2))
+	func_slowecho(connection, func_normmenu("(D)abbling in the mystical forces"))
+	func_slowecho(connection, func_normmenu("(K)illing a lot of woodland creatures"))
+	func_slowecho(connection, func_normmenu("(L)ying, cheating, and stealing from the blind"))
+	thisLooper = False
+	while ( not thisLooper ):
+		func_slowecho(connection, func_casebold("\r\nYour Choice (D/K/L) :-: ", 2))
+		data = connection.recv(2)
+		if not data: break
+		if ( data[0] == 'k' or data[0] == 'K' ):
+			connection.send('K')
+			newclassnum = 1
+			thisLooper = True
+			func_slowecho(connection, func_casebold("\r\nWelcome warrior to the ranks of the Death Knights!\n", 2))
+		if ( data[0] == 'd' or data[0] == 'D' ):
+			connection.send('D')
+			newclassnum = 2
+			thisLooper = True
+			func_slowecho(connection, func_casebold("\r\nFeel the force young jedi.!\n", 2))
+		if ( data[0] == 'l' or data[0] == 'L' ):
+			connection.send('L')
+			newclassnum = 3
+			thisLooper = True
+			func_slowecho(connection, func_casebold("\r\nYou're a real shitheel, you know that?\n", 2))
+	thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"users (`username`, `password`, `fullname`) VALUES ('"+newname+"', '"+newpass+"', '"+newfname+"')"
+	user.db.execute(thisSQL)
+	thisUserID = user.dbc.insert_id()
+	thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"stats (`userid`, `sex`, `class`) VALUES ("+str(thisUserID)+", "+str(newsexnum)+", "+str(newclassnum)+")"
+	user.db.execute(thisSQL)
+	return newname
+	
+"""Find a user"""
+def module_finduser(connection, user, prompter):
+	func_slowecho(connection, prompter + " \x1b[1;32m:\x1b[0;32m-\x1b[1;32m:\x1b[0m ")
+	name = func_getLine(connection, True)
+	returnID = user.userExist(name)
+	if ( returnID > 0 ) :
+		if ( returnID == user.thisUserID ):
+			func_slowecho(connection, func_casebold("\r\n  Masturbation is gross...\r\n", 1))
+			return 0
+		else:
+			func_slowecho(connection, "\r\n  \x1b[32mDid you mean \x1b[1m" + user.userGetName(returnID) +"\x1b[0m \x1b[1;30m(Y/N)\x1b[0m\x1b[32m ?\x1b[0m ")
+			yesno = connection.recv(2)
+			if ( yesno[0] == "Y" or yesno[0] == "y" ):
+				return returnID
+			else:
+				return 0
+	else:
+		return 0
 
 """ View Player Stats
  * @param int $userid User ID
@@ -122,87 +216,57 @@ def module_list(art, db, prefix):
 		output += padright(str(line[3]), 6) + "        " + lineMaster + padnumcol(lineMaster, 12) + lineStatus + "\r\n"
 	return output + "\r\n"
 
-"""
-/** Make announcment
- * 
- * Make an announcment in the daily happenings.
- */
-function module_announce() {
-	GLOBAL $db, $MYSQL_PREFIX;
-	slowecho(func_casebold("\n  Your announcment? :-: ", 2));
-	$ann = preg_replace("/\r\n/", "", chop(fgets(STDIN)));
-	$insann = mysql_real_escape_string($ann);
-	$sql = "INSERT INTO {$MYSQL_PREFIX}daily ( `data` ) VALUES ('{$ann}')";
-	$result = mysql_query($sql, $db);
-	slowecho(func_casebold("\n  Announcment Made!\n", 2));
-	pauser();
-}
+""" Healers Hut Logic """
+def module_heal(connection, art, user):
+	thisQuit = False
+	while ( not thisQuit ):
+		func_slowecho(connection, menu_heal(user, art))
+		data = connection.recv(2)
+		if not data: break
+		if ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
+			connection.send('R')
+			thisQuit = True
+		if ( data[0] == 'h' or data[0] == 'H' ):
+			connection.send('H')
+			hptoheal = user.getHPMax() - user.getHP()
+			if ( hptoheal < 1 ):
+				func_slowecho(connection, func_casebold("\r\n  You do NOT need healing!\r\n", 2))
+			else:
+				perhpgold = user.getLevel() * 5
+				usergold = user.getGold()
+				if ( usergold < perhpgold ):
+					func_slowecho(connection, func_casebold("\r\n  You are too poor to heal anything!\r\n)", 2))
+				else:
+					fullcosttoheal = hptoheal * perhpfold
+					canaffordtoheal =  ( usergold - ( usergold % perhpgold ) ) / perhpgold
+					if ( canaffordtoheal >= hptoheal ):
+						canaffordtoheal = hptoheal
+					user.updateGold((canaffordtoheal * perhpgold) * -1)
+					user.updateHP(canaffordtoheal)
+					func_slowecho(connection, "\n  \x1b[32m\x1b[1m"+str(canaffordtoheal)+" \x1b[22mHitPoints are healed and you feel much better!\x1b[0m\r\n")
+ 					func_pauser(connection)
+		if ( data[0] == 'c' or data[0] == 'C' ):
+			connection.send('C')
+			hptoheal = user.getHPMax() - user.getHP()
+			if ( hptoheal < 1 ):
+				slowecho(connection, func_casebold("\r\n  You do NOT need healing!\r\n", 2))
+			else:
+				slowecho(connection, "\r\n  \x1b[32mHow much to heal warror? \x1b[1m: \x1b[0m")
+				number = int(func_getLine(connection, True))
+				if ( number > hptoheal ):
+					number = hptoheal
+				if ( number > 0 ):
+					perhpgold = user.getLevel() * 5
+					costforaction = perhpgold * number
+					if ( costforaction > user.getGold() ):
+						func_slowecho(connection, func_casebold("\r\n  You do not have enough gold for that!\r\n", 1))
+					else:
+						user.updateGold(costforaction * -1)
+						user.updateHP(number)
+						func_slowecho(connection, "\r\n  \x1b[32m\x1b[1m"+str(number)+" \x1b[22mHitPoints are healed and you feel much better!\x1b[0m\r\n")
+						func_pauser(connection)
 
-/** Healers Hut Logic
- * 
- * Visit and use the healers hut
- */
-function module_heal() {
-	GLOBAL $userid;
-	$quitter = 0;
-	while (!$quitter) {
-		slowecho(menu_heal());
-		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-		switch ($choice) {
-			case 'Q': // QUIT
-				$quitter = 1; break;
-			case 'R': // QUIT
-				$quitter = 1; break;
-			case '?': // SHOW MENU
-				break;
-			case 'H': // HEAL ALL POSSIBLE
-				$hptoheal = user_gethpmax($userid) - user_gethp($userid);
-				if ( $hptoheal < 1 ) { slowecho(func_casebold("\n  You do not need healing!\n", 2)); 
-				} else {
- 					$usergold = user_getgold($userid);
-					$userlvl = user_getlevel($userid);
-					$perhpgold = $userlvl * 5;
-					if ( $usergold < ($userlvl * $perhpgold) ) { slowecho(func_casebold("\nYou're poor!\n", 2)); 
-					} else {
-						$costtoheal = $hptoheal * $perhpgold;
-						$userafford = ( $usergold - ( $usergold % $perhpgold ) ) / $perhpgold;
-						if ( $userafford > $hptoheal ) { $userafford = $hptoheal; }
-						$usercost = $userafford * $perhpgold;
-						user_takegold($userid, $usercost);
-						user_givehp($userid, $userafford);
-						slowecho("\n  \033[32m\033[1m{$userafford} \033[22mHitPoints are healed and you feel much better!\033[0m\n");
-						pauser(); $quitter = 1;
-					}
-				}
-				break;
-			case 'C': // HEAL CERTAIN AMOUNT
-				$hptoheal = user_gethpmax($userid) - user_gethp($userid);
-				if ( $hptoheal < 1 ) { slowecho(func_casebold("\n  You do not need healing!\n", 2)); 
-				} else {
-					slowecho("\n  \033[32mHow much to heal warrior? \033[1m: \033[0m");
-					$number = preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN))));
-					if ( !is_numeric($number) ) { break; }
-					if ( $number > $hptoheal ) { $number = $hptoheal; }
-					if ( $number > 0 ) {
-						$usergold = user_getgold($userid);
-						$userlvl = user_getlevel($userid);
-						$perhpgold = $userlvl * 5;
-						$costforaction = $perhpgold * $number;
-						if ( $costforaction > $usergold ) { slowecho(func_casebold("\n  You do not have enough gold for that!\n", 1));
-						} else {
-							user_takegold($userid, $costforaction);
-							user_givehp($userid, $number);
-							slowecho("\n  \033[32m\033[1m{$number} \033[22mHitPoints are healed and you feel much better!\033[0m\n");
-							pauser();
-						}
-					}
-				}
-				break;
-		}
-	}
-}
-
-/** Forest Fight Menu (non-combat)
+"""/** Forest Fight Menu (non-combat)
  * 
  * Visit the forest
  */
