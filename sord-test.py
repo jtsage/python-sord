@@ -22,8 +22,7 @@ sockobj = socket(AF_INET6, SOCK_STREAM)
 sockobj.bind((myHost, myPort))
 sockobj.listen(5)
 
-mySQLconn = MySQLdb.connect(host=str(mySord.sqlServer()), db=str(mySord.sqlDatabase()), user=str(mySord.sqlUser()), passwd=str(mySord.sqlPass()))
-mySQLcurs = mySQLconn.cursor()
+
 
 IAC  = chr(255) # "Interpret As Command"
 DONT = chr(254)
@@ -32,12 +31,14 @@ WONT = chr(252)
 WILL = chr(251)
 ECHO = chr(1)
 LINEMODE = chr(34) # Linemode option
-SORDDEBUG = True
+SORDDEBUG = False
 
 def now():				#Server Time
 	return time.ctime(time.time())
 	
 def handleClient(connection):
+	mySQLconn = MySQLdb.connect(host=str(mySord.sqlServer()), db=str(mySord.sqlDatabase()), user=str(mySord.sqlUser()), passwd=str(mySord.sqlPass()))
+	mySQLcurs = mySQLconn.cursor()
 	time.sleep(1)
 	thisClientAddress = connection.getpeername()
 	connection.send(IAC + DO + LINEMODE) # drop to character mode.
@@ -174,13 +175,14 @@ def handleClient(connection):
 		if ( data[0] == "w" or data[0] == "W" ):
 			connection.send('W')
 			msg_sendmail(connection, currentUser)
+		if ( data[0] == "i" or data[0] == "I" ):
+			connection.send('I')
+			rdi_logic(connection, artwork, currentUser)
 
 		
 		"""
 		case 'F': // THE FOREST
 			module_forest(); break;
-		case 'I': // RED DRAGON INN
-			inn_logic(); break;
 		case 'T': // WARRIOR TRAINING
 			module_turgon(); break;
 					

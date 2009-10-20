@@ -354,8 +354,7 @@ def module_bank(connection, art, user):
 				func_pauser(connection)
 		if ( data[0] == 't' or data[0] == 'T' ):
 			connection.send('T')
-			func_slowecho(connection, "\r\n  \x1b[32mSorry, transfers are currently offline.\x1b[0m")
-			touser = module_finduser(connection, user, "\n  \x1b[32mTransfer to which player? \x1b[1;32m:\x1b[0m ")
+			touser = module_finduser(connection, user, "\r\n  \x1b[32mTransfer to which player? \x1b[1;32m:\x1b[0m ")
 			if ( touser > 0 ):
 				func_slowecho(connection, "\r\n  \x1b[32mTransfer how much? \x1b[1;32m:\x1b[0m ")
 				number = int(func_getLine(connection, True))
@@ -363,7 +362,7 @@ def module_bank(connection, art, user):
 					func_slowecho(connection, func_casebold("\r\n  You don't have that much gold!\r\n", 1))
 					func_pauser(connection)
 				else:
-					thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET gold = (gold + "+str(number)+") WHERE userid = "+str(touser)
+					thisSQL = "UPDATE "+user.thisSord.sqlPrefix()+"stats SET gold = (gold + "+str(number)+") WHERE userid = "+str(touser)
 					user.db.execute(thisSQL)
 					user.updateGold(number * -1)
 					func_slowecho(connection, func_casebold("\r\n  Gold transfered\r\n", 2))
