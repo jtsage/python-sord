@@ -10,6 +10,7 @@ from sord.user import *
 from sord.modules import *
 from sord.menus import *
 from sord.messaging import *
+from sord.rdi import *
 
 from config import sord
 from socket import *

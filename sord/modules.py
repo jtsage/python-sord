@@ -1,8 +1,4 @@
 #!/usr/bin/python
-import random
-from functions import *
-from data import *
-from menus import *
 """
  * Module System
  * 
@@ -12,8 +8,14 @@ from menus import *
  * @subpackage phpsord-ui
  * @author J.T.Sage
 """
-"""Create a user"""
+import random
+from functions import *
+from data import *
+from menus import *
+
+
 def module_newuser(connection, user):
+	"""Create a user"""
 	func_slowecho(connection, func_casebold("\r\nCreating a New Character...\r\n", 2))
 	thisLooper = False
 	while ( not thisLooper ):
@@ -88,8 +90,9 @@ def module_newuser(connection, user):
 	user.db.execute(thisSQL)
 	return newname
 	
-"""Find a user"""
+
 def module_finduser(connection, user, prompter):
+	"""Find a user"""
 	func_slowecho(connection, prompter + " \x1b[1;32m:\x1b[0;32m-\x1b[1;32m:\x1b[0m ")
 	name = func_getLine(connection, True)
 	returnID = user.userExist(name)
@@ -107,10 +110,11 @@ def module_finduser(connection, user, prompter):
 	else:
 		return 0
 
-""" View Player Stats
- * @param int $userid User ID
- * @return string Formatted output for display"""
+
 def module_viewstats(art, user):
+	""" View Player Stats
+	* @param int $userid User ID
+	* @return string Formatted output for display"""
 	output  = "\r\n\r\n\x1b[1m\x1b[37m"+user.thisFullname+"\x1b[0m\x1b[32m's Stats...\r\n"
 	output += art.line()
 	output += "\x1b[32m Experience    : \x1b[1m"+str(user.getExperience())+"\x1b[0m\r\n"
@@ -132,10 +136,10 @@ def module_viewstats(art, user):
 	output += "\r\n \x1b[1;32mYou are currently interested in \x1b[37mThe "+classes[user.getClass()]+" \x1b[32mskills.\r\n\r\n";
 	return output
 
-""" View Daily Happenings
- * @param bool $noprmpt Do not prompt for additions.
- * @return string Formatted output for display """
 def module_dailyhappen(noprmpt, db, prefix):
+	""" View Daily Happenings
+	* @param bool $noprmpt Do not prompt for additions.
+	* @return string Formatted output for display """
 	thisSQL = "SELECT data FROM (SELECT * FROM "+prefix+"daily ORDER BY id DESC LIMIT 10) AS tbl ORDER BY tbl.id"
 	db.execute(thisSQL)
 	output  = "\r\n\r\n\x1b[1;37mRecent Happenings\033[22;32m....\x1b[0m\r\n"
@@ -147,10 +151,9 @@ def module_dailyhappen(noprmpt, db, prefix):
 		output +=  "\n\x1b[32m(\x1b[1;35mC\x1b[22;32m)ontinue  \x1b[32m(\x1b[1;35mT\x1b[22;32m)odays happenings again  \x1b[1;32m[\x1b[35mC\x1b[32m] \x1b[22m:-: "
 	return output
 
-
-""" Who's Online
- * @return string Formatted output for display"""
 def module_who(art, db, prefix):
+	""" Who's Online
+	* @return string Formatted output for display"""
 	thisSQL = "SELECT o.userid, fullname, DATE_FORMAT(whence, '%H:%i') as whence FROM "+prefix+"users u, "+prefix+"online o WHERE o.userid = u.userid ORDER BY whence ASC"
 	db.execute(thisSQL)
 	output  = "\r\n\r\n\x1b[1;37m                     Warriors In The Realm Now\x1b[22;32m\x1b[0m\r\n"
@@ -160,10 +163,9 @@ def module_who(art, db, prefix):
 		output += "\x1b[0m\x1b[32mArrived At                    \x1b[1;37m" + line[2] + "\x1b[0m\r\n"
 	return output + "\r\n"
 
-
-""" Player List
- * @return string Formatted output for display """
 def module_list(art, db, prefix):
+	""" Player List
+	* @return string Formatted output for display """
 	thisSQL = "SELECT u.userid, fullname, exp, level, class, spclm, spcld, spclt, sex, alive FROM "+prefix+"users u, "+prefix+"stats s WHERE u.userid = s.userid ORDER BY exp DESC"
 	db.execute(thisSQL)
 	output = "\r\n\r\n\x1b[32m    Name                    Experience    Level    Mastered    Status\x1b[0m\r\n";
@@ -216,8 +218,8 @@ def module_list(art, db, prefix):
 		output += padright(str(line[3]), 6) + "        " + lineMaster + padnumcol(lineMaster, 12) + lineStatus + "\r\n"
 	return output + "\r\n"
 
-""" Healers Hut Logic """
 def module_heal(connection, art, user):
+	""" Healers Hut Logic """
 	thisQuit = False
 	while ( not thisQuit ):
 		func_slowecho(connection, menu_heal(user, art))
@@ -311,8 +313,9 @@ function module_forest() {
 }
 
 """
-""" Ye Olde Bank """
+
 def module_bank(connection, art, user):
+	""" Ye Olde Bank """
 	thisQuit = False
 	while ( not thisQuit ):
 		func_slowecho(connection, menu_bank(user, art))
@@ -352,28 +355,25 @@ def module_bank(connection, art, user):
 		if ( data[0] == 't' or data[0] == 'T' ):
 			connection.send('T')
 			func_slowecho(connection, "\r\n  \x1b[32mSorry, transfers are currently offline.\x1b[0m")
-			"""slowecho("\n  \033[32mTransfer to which player? \033[1;32m:\033[0m ");
-				$name = mysql_real_escape_string(preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN)))));
-				if ( user_fexist($name) ) {
-					$sendto = user_fgetid($name); $sendtofn = user_gethandle($sendto); 
-					if ( $sendto == $userid ) { slowecho(func_casebold("\n  You cannot transfer to yourself!\n", 1)); pauser(); 
-					} else {
-						slowecho("\n  \033[32mDid you mean \033[1m{$sendtofn}\033[0m \033[1;30m(Y/N)\033[0m\033[32m ?\033[0m ");
-						$yesno = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-						if ( $yesno == "Y" ) {
-							slowecho("\n  \033[32mTransfer how much? \033[1;30m(1 for all) \033[1;32m:\033[0m ");
-							$number = preg_replace("/\r\n/", "", strtoupper(chop(fgets(STDIN))));
-							if ( $number > user_getgold($userid) ) { slowecho(func_casebold("\n  You don't have that much gold!\n", 1)); pauser();
-							} else {
-								if ( $number == 1 ) { $number = user_getgold($userid); }
-								user_givegold($sendto, $number);
-								user_takegold($userid, $number);
-								slowecho(func_casebold("\n  Gold transfered\n", 2));
-								pauser();	}	}	}
-				} else { slowecho(func_casebold("\n  No User by that name found!\n", 1)); pauser(); } """
+			touser = module_finduser(connection, user, "\n  \x1b[32mTransfer to which player? \x1b[1;32m:\x1b[0m ")
+			if ( touser > 0 ):
+				func_slowecho(connection, "\r\n  \x1b[32mTransfer how much? \x1b[1;32m:\x1b[0m ")
+				number = int(func_getLine(connection, True))
+				if ( number > user.getGold() ):
+					func_slowecho(connection, func_casebold("\r\n  You don't have that much gold!\r\n", 1))
+					func_pauser(connection)
+				else:
+					thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET gold = (gold + "+str(number)+") WHERE userid = "+str(touser)
+					user.db.execute(thisSQL)
+					user.updateGold(number * -1)
+					func_slowecho(connection, func_casebold("\r\n  Gold transfered\r\n", 2))
+					func_pauser(connection)
+			else:
+				func_slowecho(connection, func_casebold("\r\n  No user by that name found!\r\n", 1))
+				func_pauser(connection)
 
-""" Abdul's Armor"""
 def module_abduls(connection, art, user):
+	""" Abdul's Armor"""
 	thisQuit = False
 	while ( not thisQuit ):
  		if ( not user.expert ):
@@ -447,8 +447,8 @@ def module_abduls(connection, art, user):
 			connection.send('Q')
 			thisQuit = True;
 
-"""King Arthur's Weapons"""
 def module_arthurs(connection, art, user):
+	"""King Arthur's Weapons"""
 	thisQuit = False
 	while ( not thisQuit ):
  		if ( not user.expert ):
@@ -523,9 +523,7 @@ def module_arthurs(connection, art, user):
 			thisQuit = True;
 				
 
-"""
-
-/** Turgon's Warrior Training (pre-combat)
+""" Turgon's Warrior Training (pre-combat)
  * 
  * Visit the master
  * 

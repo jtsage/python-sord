@@ -8,10 +8,9 @@ from functions import *
  * @author J.T.Sage
 """
 
-""" Read waiting in-game e-mail. Very simple.
- * @param int $userid User ID to pull in game mail for."""
-
 def msg_readmail(connection, user):
+	""" Read waiting in-game e-mail. Very simple.
+	* @param int $userid User ID to pull in game mail for."""
 	thisSQL = "SELECT `id`, `from`, `message`, DATE_FORMAT(sent, '%W %M %Y, %H:%i') as sent FROM "+user.thisSord.sqlPrefix()+"mail WHERE `to` = "+str(user.thisUserID)
 	user.db.execute(thisSQL)
 	for (id, sender, message, sent) in user.db.fetchall():
@@ -25,8 +24,8 @@ def msg_readmail(connection, user):
 	thisSQL = "DELETE FROM "+user.thisSord.sqlPrefix()+"mail WHERE `to` = "+str(user.thisUserID)
 	user.db.execute(thisSQL)
 
-""" Send in game mail to a user """
 def msg_sendmail(connection, user):
+	""" Send in game mail to a user """
 	toid = module_finduser(connection, user, "\r\n  \x1b[32mSend mail to which user?")
 	if ( toid == 0 ):
 		return False
@@ -39,8 +38,8 @@ def msg_sendmail(connection, user):
 		func_slowecho(connection, func_casebold("\r\n  Message Sent\r\n", 2))
 		func_pauser(connection)
 
-""" Make announcment """
 def msg_announce(connection, user):
+	""" Make announcment """
 	func_slowecho(connection, func_casebold("\r\n  Your announcment? :-: ", 2))
 	ann = func_getLine(connection, True)
 	safeann = user.dbc.escape_string(ann)
