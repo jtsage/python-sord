@@ -121,6 +121,15 @@ class sordUser():
 		thisReturn = self.db.fetchone()
 		return int(thisReturn[0])
 		
+	def didBard(self):
+		thisSQL = "SELECT sung FROM "+self.thisSord.sqlPrefix()+"stats WHERE userid = "+str(self.thisUserID)
+		self.db.execute(thisSQL)
+		thisReturn = self.db.fetchone()
+		if ( thisReturn == 1 ):
+			return True
+		else:
+			return False
+			
 	def didFlirt(self):
 		thisSQL = "SELECT flirt FROM "+self.thisSord.sqlPrefix()+"stats WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
@@ -237,6 +246,10 @@ class sordUser():
 		
 	def setHorse(self, inst):
 		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET horse = "+str(inst)+" WHERE userid = "+str(self.thisUserID)
+		self.db.execute(thisSQL)
+		
+	def setBard(self):
+		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET sung = 1 WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		
 	def setArmor(self, inst):

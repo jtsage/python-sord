@@ -6,7 +6,7 @@
 import random
 from functions import *
 
-def rdi_mainmenu(art, user):
+def rdi_menu_main(art, user):
 	""" Main Menu """
 	thismenu  = "\r\n\r\n  \x1b[1;37mSaga of the Red Dragon - \x1b[0m\x1b[32mThe Inn\x1b[0m\r\n"
 	thismenu += art.blueline();
@@ -39,7 +39,7 @@ def rdi_logic(connection, art, user):
 	thisQuit = False
 	while ( not thisQuit ):
 		if (  not user.expert ):
-			func_slowecho(connection, rdi_mainmenu(art, user))
+			func_slowecho(connection, rdi_menu_main(art, user))
 		func_slowecho(connection, rdi_prompt(user))
 		data = connection.recv(2)
 		if not data: break
@@ -49,7 +49,7 @@ def rdi_logic(connection, art, user):
 		if ( data[0] == '?' ):
 			connection.send('?')
 			if ( user.expert):
-				func_slowecho(connection, rdi_mainmenu(art, user))
+				func_slowecho(connection, rdi_menu_main(art, user))
 		if ( data[0] == 'd' or data[0] == 'D' ):
 			connection.send('D')
 			func_slowecho(connection, module_dailyhappen(True, user.db, user.thisSord.sqlPrefix()))
@@ -76,7 +76,7 @@ def rdi_logic(connection, art, user):
 			rdi_converse(connection, user)
 		if ( data[0] == 'h' or data[0] == 'H' ):
 			connection.send('H')
-			rdi_bardmenu(connection, user)
+			rdi_menu_bard(connection, art, user)
 		if ( data[0] == 'g' or data[0] == 'G' ):
 			connection.send('G')
 			rdi_getroom(connection, user)
@@ -122,76 +122,49 @@ def rdi_converse(connection, user):
 		func_slowecho(connection, func_casebold("\r\n  Wisdom added!\r\n", 2))
 		func_pauser(connection)
 
-"""
-/** Red Dragon Inn Bard Menu
- * 
- * Talk with Seth Able
- */
-function inn_bardmenu() {
-	GLOBAL $userid;
-	$thismenu  = "\n\n  \x1b[1;37mSaga of the Red Dragon - \x1b[0m\x1b[32mSeth Able\x1b[0m\n";
-	$thismenu .= art_blueline();
-	$thismenu .= "  \x1b[32mYou stumble over to a dank corner of the Inn.\n  Seth able looks at you expectantly...\n\n";
-	$thismenu .= func_normmenu("(A)sk Seth Able to Sing");
-	$thismenu .= func_normmenu("(R)eturn to the Inn");
-	$thismenu .= "\n  \x1b[1;35mSeth Able the Bard\x1b[0m\x1b[1;30m (A,R,Q) (? for menu)\x1b[0m\n\n";
-	$thismenu .= "  \x1b[32mYour command, \x1b[1m" . user_gethandle($userid) . "\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m";
-	$miniquit = 0;
-	while ( !$miniquit ) {
-		slowecho($thismenu);
-		$minichoice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-		switch ($minichoice) {
-			case 'R':
-				$miniquit = 1;
-				break;
-			case 'Q':
-				$miniquit = 1;
-				break;
-			case 'A':
-				inn_hearbard();
-				break;
-		}
-	}
-}
+def rdi_menu_bard(connection, art, user):
+	""" Talk with the bard """
+	ptime = func_maketime(user)
+	thismenu  = "\r\n\r\n  \x1b[1;37mSaga of the Red Dragon - \x1b[0m\x1b[32mSeth Able\x1b[0m\n"
+	thismenu += art.blueline()
+	thismenu += "  \x1b[32mYou stumble over to a dank corner of the Inn.\n  Seth able looks at you expectantly...\r\n\r\n"
+	thismenu += func_normmenu("(A)sk Seth Able to Sing")
+	thismenu += func_normmenu("(R)eturn to the Inn")
+	thismenu += "\r\n  \x1b[1;35mSeth Able the Bard\x1b[0m\x1b[1;30m (A,R,Q) (? for menu)\x1b[0m\r\n\r\n"
+	thismenu += "  \x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
+	thisQuit = False
+	while ( not thisQuit ):
+		func_slowecho(connection, thismenu)
+		data = connection.recv(2)
+		if not data: break
+		if ( data[0] == 'r' or data[0] == 'R' or data[0] == 'q' or data[0] == 'Q' ):
+			connection.send('R')
+			thisQuit = True
+		if ( data[0] == 'a' or data[0] == 'A' ):
+			rdi_hearbard(connection, user)
 
-/** Red Dragon Inn Bard Song
- * 
- * Hear Seth Able sing a song
- */
-function inn_hearbard() {
-	GLOBAL $db, $MYSQL_PREFIX, $userid, $thebard;
-	$sqldidhear = "SELECT sung FROM {$MYSQL_PREFIX}stats WHERE userid = {$userid}";
-	$sqlsethear = "UPDATE {$MYSQL_PREFIX}stats SET sung = 1 WHERE userid = {$userid}";
-	$result = mysql_query($sqldidhear, $db);
-	$line = mysql_fetch_array($result);
-	if ( $line['sung'] == 0 ) {
-		slowecho("\n  \x1b[32mSeth thinks for a moment, picks up his lute, and begins...\n\n");
-		$songnum = rand(1, 10);
-		$pname = user_gethandle($userid);
-		foreach( $thebard[$songnum][0] as $lyrics ) {
+def rdi_hearbard(connection, user):
+	""" Hear the bard sing"""
+	if ( not user.didBard() ):
+		func_slowecho(connection, "\r\n  \x1b[32mSeth thinks for a moment, picks up his lute, and begins...\r\n\r\n")
+		songnum = random.randint(1, 10)
+		for lyrics in thebard[songnum][0]:
 			sleep(1);
-			$lyrics = preg_replace("/\.\.\.\"/", "\x1b[37m...\"\x1b[32m", $lyrics);
-			$lyrics = preg_replace("/\"\.\.\./", "\x1b[37m\"...\x1b[0m", $lyrics);
-			$lyrics = preg_replace("/XX/", "\x1b[1m{$pname}\x1b[22m", $lyrics);
-			slowecho("  {$lyrics}\n");
-		}
-		slowecho("\n  \x1b[1;32m{$thebard[$songnum][1][0]}\x1b[0m\n");
-		slowecho("\n  \x1b[1;34m{$thebard[$songnum][1][1]}\x1b[0m\n\n");
-		$sqlupdate = "UPDATE {$MYSQL_PREFIX}stats SET {$thebard[$songnum][2]} WHERE userid = {$userid}";
-		$result = mysql_query($sqlupdate, $db);
-		$result = mysql_query($sqlsethear, $db);
-		pauser();
-	} else { slowecho(func_casebold("\n  Seth says:  I'm a bit tired, maybe tommorow...\n", 2)); }
-}
+			re.sub("\{(\d+)\}", "\x1b[" + r"\1" + "m" , text)
+			lyrics = re.sub("\.\.\.\"", "\x1b[37m...\"\x1b[32m", lyrics)
+			lyrics = re.sub("\"\.\.\.", "\x1b[37m\"...\x1b[0m", lyrics)
+			lyrics = re.sub("XX", "\x1b[1m"+user.thisFullname+"\x1b[22m", lyrics)
+			func_slowecho(connection, lyrics+"\r\n")
+		func_slowecho(connection, "\r\n  \x1b[1;32m"+thebard[songnum][1][0]+"\x1b[0m\r\n")
+		func_slowecho(connection, "\r\n  \x1b[1;34m"+thebard[songnum][1][1]+"\x1b[0m\r\n\r\n")
+		thisSQL = "UPDATE "+user.thisSord.sqlPrefix()+"stats SET "+thebard[songnum][2]+" WHERE userid = "+str(user.thisUserID)
+		user.db.execute(thisSQL)
+		func_pauser(connection)
+	else:
+		func_slowecho(connection, func_casebold("\r\n  Seth says:  I'm a bit tired, maybe tommorow...\r\n", 2))
 
-/** Red Dragon Inn Flirt System
- * 
- * Player sex chooser, kicks to appropriate partner.
- * 
- * @todo write inn_flirt_seth()
- */
-function inn_flirt() {
-	GLOBAL $userid, $flirts;
+def rdi_flirt(connection, user):
+	""" Flirt initiator.  Locked on viloet for now. """
 	$sexo = user_getsex($userid);
 	slowecho(inn_flirt_menu($sexo));
 	slowecho("\n  \x1b[32mYour Choice? \x1b[1m: \x1b[0m ");
