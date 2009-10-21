@@ -75,7 +75,7 @@ def handleClient(connection):
 	ittr = 0
 	if ( SORDDEBUG ):
 		loggedin = True
-		currentUser = sordUser('jtsage', mySQLconn, mySQLcurs)
+		currentUser = sordUser('jtsage', mySQLconn, mySQLcurs, connection, artwork)
 
 	while ( not loggedin ):
 		username = ""
@@ -89,7 +89,7 @@ def handleClient(connection):
 			thread.exit()
 		func_slowecho(connection, func_casebold("\r\n\r\nWelcome Warrior!  Enter Your Login Name (OR '\x1b[1m\x1b[31mnew\x1b[32m') :-: ", 2))
 		username = func_getLine(connection, True)
-		currentUser = sordUser(username, mySQLconn, mySQLcurs)
+		currentUser = sordUser(username, mySQLconn, mySQLcurs, connection, artwork)
 		if ( currentUser.thisUserID > 0 ):
 			func_slowecho(connection, func_casebold("\r\nPassword :-: ",2));  
 			password = func_getLine(connection, False)
@@ -101,7 +101,7 @@ def handleClient(connection):
 		else:
 			if ( username == "new" ):
 				print 'New User! ' + str(thisClientAddress)
-				newusername = module_newuser(connection, currentUser)
+				newusername = module_newuser(currentUser)
 				currentUser = sordUser(newusername, mySQLconn, mySQLcurs)
 				newclass = currentUser.getClass()
 				currentUser.updateSkillUse(newclass, 1)
@@ -115,71 +115,75 @@ def handleClient(connection):
 
 	if currentUser.isDead() :
 		quitfull = 2
-		func_slowecho(connection, func_casebold("\r\nI'm Afraid You Are DEAD Right Now.  Sorry\r\n", 1))
+		currentUser.write(func_casebold("\r\nI'm Afraid You Are DEAD Right Now.  Sorry\r\n", 1))
 		
 	if ( not quitfull ):
 		if ( not SORDDEBUG ):
-			func_slowecho(connection, module_dailyhappen(True, mySQLcurs, mySord.sqlPrefix()))
-			func_pauser(connection)
-			func_slowecho(connection, module_who(artwork, mySQLcurs, mySord.sqlPrefix()))
-			func_pauser(connection)
-			func_slowecho(connection, module_viewstats(artwork, currentUser))
-			func_pauser(connection)
+			currentUser.write(module_dailyhappen(True, mySQLcurs, mySord.sqlPrefix()))
+			currentUser.pause()
+			currentUser.write( module_who(artwork, mySQLcurs, mySord.sqlPrefix()))
+			currentUser.pause()
+			currentUser.write(module_viewstats(currentUser))
+			currentUser.pause()
 	
+	skipDisp = False
 	while ( not quitfull ):
-		if ( not currentUser.expert ):
-			func_slowecho(connection, menu_mainlong(artwork, currentUser, True))
-		func_slowecho(connection, menu_mainshort(currentUser))
+		if ( not skipDisp ):
+			if ( not currentUser.expert ):
+				currentUser.write(menu_mainlong(currentUser))
+			currentUser.write(menu_mainshort(currentUser))
+		skipDisp = False
 		data = connection.recv(2)
 		if not data: break
-		if ( data[0] == "q" or data[0] == "Q" ):
+		elif ( data[0] == "q" or data[0] == "Q" ):
 			connection.send('Q')
 			quitfull = True
-		if ( data[0] == "x" or data[0] == "X" ):
+		elif ( data[0] == "x" or data[0] == "X" ):
 			connection.send('X')
 			currentUser.toggleXprt()
-		if ( data[0] == "v" or data[0] == "V" ):
+		elif ( data[0] == "v" or data[0] == "V" ):
 			connection.send('V')
-			func_slowecho(connection, module_viewstats(artwork, currentUser))
-			func_pauser(connection)
-		if ( data[0] == "d" or data[0] == "D" ):
+			currentUser.write(module_viewstats(currentUser))
+			currentUser.pause()
+		elif ( data[0] == "d" or data[0] == "D" ):
 			connection.send('D')
-			func_slowecho(connection, module_dailyhappen(True, mySQLcurs, mySord.sqlPrefix()))
-			func_pauser(connection)
-		if ( data[0] == "?" ):
+			currentUser.write(module_dailyhappen(True, mySQLcurs, mySord.sqlPrefix()))
+			currentUser.pause()
+		elif ( data[0] == "?" ):
 			connection.send('?')
 			if ( currentUser.expert ):
-				func_slowecho(connection, menu_mainlong(artwork, currentUser, True))
-		if ( data[0] == "p" or data[0] == "P" ):
+				currentUser.write(menu_mainlong(currentUser))
+		elif ( data[0] == "p" or data[0] == "P" ):
 			connection.send('P')
-			func_slowecho(connection, module_who(artwork, mySQLcurs, mySord.sqlPrefix()))
-			func_pauser(connection)
-		if ( data[0] == "l" or data[0] == "L" ):
+			currentUser.write(module_who(artwork, mySQLcurs, mySord.sqlPrefix()))
+			currentUser.pause()
+		elif ( data[0] == "l" or data[0] == "L" ):
 			connection.send('L')
-			func_slowecho(connection, module_list(artwork, mySQLcurs, mySord.sqlPrefix()))
-			func_pauser(connection)
-		if ( data[0] == "a" or data[0] == "A" ):
+			currentUser.write(module_list(artwork, mySQLcurs, mySord.sqlPrefix()))
+			currentUser.pause()
+		elif ( data[0] == "a" or data[0] == "A" ):
 			connection.send('A')
-			module_abduls(connection, artwork, currentUser)
-		if ( data[0] == "k" or data[0] == "K" ):
+			module_abduls(currentUser)
+		elif ( data[0] == "k" or data[0] == "K" ):
 			connection.send('K')
-			module_arthurs(connection, artwork, currentUser)
-		if ( data[0] == "y" or data[0] == "Y" ):
+			module_arthurs(currentUser)
+		elif ( data[0] == "y" or data[0] == "Y" ):
 			connection.send('Y')
-			module_bank(connection, artwork, currentUser)
-		if ( data[0] == "h" or data[0] == "H" ):
+			module_bank(currentUser)
+		elif ( data[0] == "h" or data[0] == "H" ):
 			connection.send('H')
-			module_heal(connection, artwork, currentUser)
-		if ( data[0] == "m" or data[0] == "M" ):
+			module_heal(currentUser)
+		elif ( data[0] == "m" or data[0] == "M" ):
 			connection.send('M')
-			msg_announce(connection, currentUser)
-		if ( data[0] == "w" or data[0] == "W" ):
+			msg_announce(currentUser)
+		elif ( data[0] == "w" or data[0] == "W" ):
 			connection.send('W')
-			msg_sendmail(connection, currentUser)
-		if ( data[0] == "i" or data[0] == "I" ):
+			msg_sendmail(currentUser)
+		elif ( data[0] == "i" or data[0] == "I" ):
 			connection.send('I')
-			rdi_logic(connection, artwork, currentUser)
-
+			rdi_logic(currentUser)
+		else:
+			skipDisp = True
 		
 		"""
 		case 'F': // THE FOREST
@@ -188,7 +192,7 @@ def handleClient(connection):
 			module_turgon(); break;
 					
 """
-	func_slowecho(connection, func_casebold("\r\n\r\n   Quitting to the Fields... GoodBye!\r\n", 7))
+	currentUser.write(func_casebold("\r\n\r\n   Quitting to the Fields... GoodBye!\r\n", 7))
 	currentUser.logout()
 	connection.close()
 	print 'Thread Disconnected::' + str(thisClientAddress)

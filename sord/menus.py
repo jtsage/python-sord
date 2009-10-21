@@ -15,10 +15,10 @@ from data import *
 
 """Turgons warrior training
  * @return string Fully formatted menu """
-def menu_turgon(user, art):
-	ptime = func_maketime(user, art)
+def menu_turgon(user):
+	ptime = func_maketime(user)
 	thismenu  = "\r\n\r\n  \x1b[1;37mSaga of the Red Dragon - \x1b[0m\x1b[32mTurgons Warrior Training\x1b[0m\r\n"
-	thismenu += art.blueline()
+	thismenu += user.art.blueline()
 	thismenu += "  \x1b[32mYou enter the mighty Training Center.  Hundreds of warriors, young,\x1b[0m\r\n"
 	thismenu += "  \x1b[32mas well as old, are sparring.  Every few seconds you hear someone\x1b[0m\r\n"
 	thismenu += "  \x1b[32mshriek in pain.  Obviously some novice who let his gaurd down.\x1b[0m\r\n\r\n"
@@ -33,10 +33,10 @@ def menu_turgon(user, art):
 
 """Ye olde bank
  * @return string Fully formatted menu"""
-def menu_bank(user, art):
+def menu_bank(user):
 	ptime = func_maketime(user)
 	thismenu  = "\r\n\r\n  \x1b[1;37mSaga of the Red Dragon - \x1b[0m\x1b[32mBank\x1b[0m\r\n"
-	thismenu += art.line()
+	thismenu += user.art.line()
 	thismenu += "  \x1b[32mA polite clerk approaches. \x1b[1;35m\"Can I help you sir?\"\x1b[0m\r\n\r\n"
 	thismenu += func_normmenu("(D)eposit Gold")
 	thismenu += func_normmenu("(W)ithdraw Gold")
@@ -61,10 +61,10 @@ def menu_forest(user):
 
 """ Healers Hut
  * @return string Fully formatted menu """
-def menu_heal(user, art):
+def menu_heal(user):
 	ptime = func_maketime(user)
 	thismenu  = "\r\n\r\n  \x1b[1;37mSaga of the Red Dragon - \x1b[0m\x1b[32mHealers Hut\x1b[0m\r\n"
-	thismenu += art.line()
+	thismenu += user.art.line()
 	thismenu += "  \x1b[32mYou enter the smoky healers hut.\r\n  \x1b[1;35m\"What is your wish, warrior?\" \x1b[0m\x1b[32m the old\r\n  \x1b[32mhealer asks.\x1b[0m\r\n\r\n"
 	thismenu += func_normmenu("(H)eal all possible")
 	thismenu += func_normmenu("(C)ertain amount healed")
@@ -79,9 +79,9 @@ def menu_heal(user, art):
 """Main Menu - Non-Expert
  * @todo Married List and Other Places
  * @return string Fully formatted menu"""
-def menu_mainlong(art, user, noprmpt):
+def menu_mainlong(user):
 	thismenu  = "\r\n\r\n\x1b[1;37m  Saga of the Red Dragon - \x1b[0m\x1b[32mTown Square\x1b[0m\r\n"
-	thismenu += art.line()
+	thismenu += user.art.line()
 	thismenu += "\x1b[32m  The streets are crowded, it is difficult to\r\n  push your way through the mob....\r\n\r\n"
 	thismenu += func_menu_2col("(F)orest", "(S)laughter other players", 5, 5)
 	thismenu += func_menu_2col("(K)ing Arthurs Weapons", "(A)bduls Armour", 5, 5)
@@ -92,8 +92,6 @@ def menu_mainlong(art, user, noprmpt):
 	#thismenu += func_menu_2col("(C)onjugality List", "(O)ther Places", 5, 5)
 	thismenu += func_menu_2col("(X)pert Mode", "(M)ake Announcement", 7, 5)
 	thismenu += func_menu_2col("(P)eople Online", "(Q)uit to Fields", 5, 2)
-	if ( not noprmpt ):
-		thismenu += menu_mainshort(user)
 	return thismenu
 
 """ Main Menu - Expert

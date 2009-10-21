@@ -14,75 +14,75 @@ from data import *
 from menus import *
 
 
-def module_newuser(connection, user):
+def module_newuser(user):
 	"""Create a user"""
-	func_slowecho(connection, func_casebold("\r\nCreating a New Character...\r\n", 2))
+	user.write(func_casebold("\r\nCreating a New Character...\r\n", 2))
 	thisLooper = False
 	while ( not thisLooper ):
-		func_slowecho(connection, func_casebold("\r\nPlease Choose a Username (12 characters MAX) :-: ", 2))
-		newname = func_getLine(connection, True)
+		user.write(func_casebold("\r\nPlease Choose a Username (12 characters MAX) :-: ", 2))
+		newname = func_getLine(user.connection, True)
 		newname = newname[:12]
 		if ( user.userLoginExist(newname) ):
-			func_slowecho(connection, func_casebold("\r\nName In Use!\r\n", 1))
+			user.write(func_casebold("\r\nName In Use!\r\n", 1))
 		else:
 			thisLooper = True
 	thisLooper = False
 	while ( not thisLooper ):
-		func_slowecho(connection, func_casebold("\r\nAnd, how will you be addressed? (a Handle) (40 characters MAX) :-: ", 2))
-		newfname = func_getLine(connection, True)
+		user.write(func_casebold("\r\nAnd, how will you be addressed? (a Handle) (40 characters MAX) :-: ", 2))
+		newfname = func_getLine(user.connection, True)
 		newfname = newfname[:40]
 		if ( newfname == "" ):
-			func_slowecho(connection, func_casebold("\r\nHEY! No Anonymous Players!\r\n", 1))
+			user.write(func_casebold("\r\nHEY! No Anonymous Players!\r\n", 1))
 		else:
 			thisLooper = True
 	thisLooper = False
 	while ( not thisLooper ):
-		func_slowecho(connection, func_casebold("\r\nPick a Password (12 characters MAX) :-: ", 2))
-		newpass = func_getLine(connection, True)
+		user.write(casebold("\r\nPick a Password (12 characters MAX) :-: ", 2))
+		newpass = func_getLine(user.connection, True)
 		newpass = newpass[:12]
 		if ( newpass == "" ):
-			func_slowecho(connection, func_casebold("\r\nPassword MUST Not Be Empty\r\n", 1))
+			user.write(func_casebold("\r\nPassword MUST Not Be Empty\r\n", 1))
 		else:
 			thisLooper = True
 	thisLooper = False
 	while ( not thisLooper ):
-		func_slowecho(connection, func_casebold("\r\nYour Sex (M/F) :-: ", 2))
-		data = connection.recv(2)
+		user.write(func_casebold("\r\nYour Sex (M/F) :-: ", 2))
+		data = user.connection.recv(2)
 		if not data: break
 		if ( data[0] == 'm' or data[0] == 'M' ):
-			connection.send('M')
+			user.write('M')
 			newsexnum = 1
 			thisLooper = True
-			func_slowecho(connection, func_casebold("\r\nMy, what a girly man you are...\r\n", 2))
+			user.write(func_casebold("\r\nMy, what a girly man you are...\r\n", 2))
 		if ( data[0] == 'f' or data[0] == 'F' ):
-			connection.send('F')
+			user.write('F')
 			newsexnum = 2
 			thisLooper = True
-			func_slowecho(connection, func_casebold("Gee sweetheart, hope you don't break a nail...\n", 2))
-	func_slowecho(connection, func_casebold("\r\nPick that which best describes your childhood.\nFrom an early age, you remember:\r\n\r\n", 2))
-	func_slowecho(connection, func_normmenu("(D)abbling in the mystical forces"))
-	func_slowecho(connection, func_normmenu("(K)illing a lot of woodland creatures"))
-	func_slowecho(connection, func_normmenu("(L)ying, cheating, and stealing from the blind"))
+			user.write(func_casebold("Gee sweetheart, hope you don't break a nail...\n", 2))
+	user.write(func_casebold("\r\nPick that which best describes your childhood.\nFrom an early age, you remember:\r\n\r\n", 2))
+	user.write(func_normmenu("(D)abbling in the mystical forces"))
+	user.write(func_normmenu("(K)illing a lot of woodland creatures"))
+	user.write(func_normmenu("(L)ying, cheating, and stealing from the blind"))
 	thisLooper = False
 	while ( not thisLooper ):
-		func_slowecho(connection, func_casebold("\r\nYour Choice (D/K/L) :-: ", 2))
-		data = connection.recv(2)
+		user.write(func_casebold("\r\nYour Choice (D/K/L) :-: ", 2))
+		data = user.connection.recv(2)
 		if not data: break
 		if ( data[0] == 'k' or data[0] == 'K' ):
-			connection.send('K')
+			user.write('K')
 			newclassnum = 1
 			thisLooper = True
-			func_slowecho(connection, func_casebold("\r\nWelcome warrior to the ranks of the Death Knights!\n", 2))
+			user.write(func_casebold("\r\nWelcome warrior to the ranks of the Death Knights!\n", 2))
 		if ( data[0] == 'd' or data[0] == 'D' ):
-			connection.send('D')
+			user.write('D')
 			newclassnum = 2
 			thisLooper = True
-			func_slowecho(connection, func_casebold("\r\nFeel the force young jedi.!\n", 2))
+			user.write(func_casebold("\r\nFeel the force young jedi.!\n", 2))
 		if ( data[0] == 'l' or data[0] == 'L' ):
-			connection.send('L')
+			user.write('L')
 			newclassnum = 3
 			thisLooper = True
-			func_slowecho(connection, func_casebold("\r\nYou're a real shitheel, you know that?\n", 2))
+			user.write(func_casebold("\r\nYou're a real shitheel, you know that?\n", 2))
 	thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"users (`username`, `password`, `fullname`) VALUES ('"+newname+"', '"+newpass+"', '"+newfname+"')"
 	user.db.execute(thisSQL)
 	thisUserID = user.dbc.insert_id()
@@ -91,18 +91,18 @@ def module_newuser(connection, user):
 	return newname
 	
 
-def module_finduser(connection, user, prompter):
+def module_finduser(user, prompter):
 	"""Find a user"""
-	func_slowecho(connection, prompter + " \x1b[1;32m:\x1b[0;32m-\x1b[1;32m:\x1b[0m ")
-	name = func_getLine(connection, True)
+	user.write(prompter + " \x1b[1;32m:\x1b[0;32m-\x1b[1;32m:\x1b[0m ")
+	name = func_getLine(user.connection, True)
 	returnID = user.userExist(name)
 	if ( returnID > 0 ) :
 		if ( returnID == user.thisUserID ):
-			func_slowecho(connection, func_casebold("\r\n  Masturbation is gross...\r\n", 1))
+			user.write(func_casebold("\r\n  Masturbation is gross...\r\n", 1))
 			return 0
 		else:
-			func_slowecho(connection, "\r\n  \x1b[32mDid you mean \x1b[1m" + user.userGetName(returnID) +"\x1b[0m \x1b[1;30m(Y/N)\x1b[0m\x1b[32m ?\x1b[0m ")
-			yesno = connection.recv(2)
+			user.write("\r\n  \x1b[32mDid you mean \x1b[1m" + user.userGetName(returnID) +"\x1b[0m \x1b[1;30m(Y/N)\x1b[0m\x1b[32m ?\x1b[0m ")
+			yesno = user.connection.recv(2)
 			if ( yesno[0] == "Y" or yesno[0] == "y" ):
 				return returnID
 			else:
@@ -111,12 +111,12 @@ def module_finduser(connection, user, prompter):
 		return 0
 
 
-def module_viewstats(art, user):
+def module_viewstats(user):
 	""" View Player Stats
 	* @param int $userid User ID
 	* @return string Formatted output for display"""
 	output  = "\r\n\r\n\x1b[1m\x1b[37m"+user.thisFullname+"\x1b[0m\x1b[32m's Stats...\r\n"
-	output += art.line()
+	output += user.art.line()
 	output += "\x1b[32m Experience    : \x1b[1m"+str(user.getExperience())+"\x1b[0m\r\n"
 	output += "\x1b[32m Level         : \x1b[1m"+str(user.getLevel())+"\x1b[0m" + padnumcol(str(user.getLevel()), 20) + "\x1b[32mHitPoints          : \x1b[1m"+str(user.getHP())+" \x1b[22mof\x1b[1m "+str(user.getHPMax())+"\x1b[0m\r\n"
 	output += "\x1b[32m Forest Fights : \x1b[1m"+str(user.getForestFight())+"\x1b[0m" + padnumcol(str(user.getForestFight()), 20) + "\x1b[32mPlayer Fights Left : \x1b[1m"+str(user.getPlayerFight())+"\x1b[0m\r\n"
@@ -218,26 +218,26 @@ def module_list(art, db, prefix):
 		output += padright(str(line[3]), 6) + "        " + lineMaster + padnumcol(lineMaster, 12) + lineStatus + "\r\n"
 	return output + "\r\n"
 
-def module_heal(connection, art, user):
+def module_heal(user):
 	""" Healers Hut Logic """
 	thisQuit = False
 	while ( not thisQuit ):
-		func_slowecho(connection, menu_heal(user, art))
-		data = connection.recv(2)
+		user.write(menu_heal(user))
+		data = user.connection.recv(2)
 		if not data: break
 		if ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
-			connection.send('R')
+			user.write('R')
 			thisQuit = True
 		if ( data[0] == 'h' or data[0] == 'H' ):
-			connection.send('H')
+			user.write('H')
 			hptoheal = user.getHPMax() - user.getHP()
 			if ( hptoheal < 1 ):
-				func_slowecho(connection, func_casebold("\r\n  You do NOT need healing!\r\n", 2))
+				user.write(func_casebold("\r\n  You do NOT need healing!\r\n", 2))
 			else:
 				perhpgold = user.getLevel() * 5
 				usergold = user.getGold()
 				if ( usergold < perhpgold ):
-					func_slowecho(connection, func_casebold("\r\n  You are too poor to heal anything!\r\n)", 2))
+					user.write(func_casebold("\r\n  You are too poor to heal anything!\r\n)", 2))
 				else:
 					fullcosttoheal = hptoheal * perhpfold
 					canaffordtoheal =  ( usergold - ( usergold % perhpgold ) ) / perhpgold
@@ -245,28 +245,31 @@ def module_heal(connection, art, user):
 						canaffordtoheal = hptoheal
 					user.updateGold((canaffordtoheal * perhpgold) * -1)
 					user.updateHP(canaffordtoheal)
-					func_slowecho(connection, "\n  \x1b[32m\x1b[1m"+str(canaffordtoheal)+" \x1b[22mHitPoints are healed and you feel much better!\x1b[0m\r\n")
- 					func_pauser(connection)
+					user.write("\n  \x1b[32m\x1b[1m"+str(canaffordtoheal)+" \x1b[22mHitPoints are healed and you feel much better!\x1b[0m\r\n")
+ 					user.pause()
 		if ( data[0] == 'c' or data[0] == 'C' ):
-			connection.send('C')
+			user.write('C')
 			hptoheal = user.getHPMax() - user.getHP()
 			if ( hptoheal < 1 ):
-				slowecho(connection, func_casebold("\r\n  You do NOT need healing!\r\n", 2))
+				user.write(func_casebold("\r\n  You do NOT need healing!\r\n", 2))
 			else:
-				slowecho(connection, "\r\n  \x1b[32mHow much to heal warror? \x1b[1m: \x1b[0m")
-				number = int(func_getLine(connection, True))
+				user.write("\r\n  \x1b[32mHow much to heal warror? \x1b[1m: \x1b[0m")
+				try:
+					number = int(func_getLine(user.connection, True))
+				except ValueError:
+					number = 0
 				if ( number > hptoheal ):
 					number = hptoheal
 				if ( number > 0 ):
 					perhpgold = user.getLevel() * 5
 					costforaction = perhpgold * number
 					if ( costforaction > user.getGold() ):
-						func_slowecho(connection, func_casebold("\r\n  You do not have enough gold for that!\r\n", 1))
+						user.write(func_casebold("\r\n  You do not have enough gold for that!\r\n", 1))
 					else:
 						user.updateGold(costforaction * -1)
 						user.updateHP(number)
-						func_slowecho(connection, "\r\n  \x1b[32m\x1b[1m"+str(number)+" \x1b[22mHitPoints are healed and you feel much better!\x1b[0m\r\n")
-						func_pauser(connection)
+						user.write("\r\n  \x1b[32m\x1b[1m"+str(number)+" \x1b[22mHitPoints are healed and you feel much better!\x1b[0m\r\n")
+						user.pause()
 
 """/** Forest Fight Menu (non-combat)
  * 
@@ -314,211 +317,232 @@ function module_forest() {
 
 """
 
-def module_bank(connection, art, user):
+def module_bank(user):
 	""" Ye Olde Bank """
 	thisQuit = False
 	while ( not thisQuit ):
-		func_slowecho(connection, menu_bank(user, art))
-		data = connection.recv(2)
+		user.write(menu_bank(user))
+		data = user.connection.recv(2)
 		if not data: break
 		if ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
-			connection.send('Q')
+			user.write('Q')
 			thisQuit = True
 		if ( data[0] == 'd' or data[0] == 'D' ):
-			connection.send('D')
-			func_slowecho(connection, "\r\n  \x1b[32mDeposit how much? \x1b[1;30m(1 for all) \x1b[1;32m:\x1b[0m ")
-			number = int(func_getLine(connection, True))
+			user.write('D')
+			user.write("\r\n  \x1b[32mDeposit how much? \x1b[1;30m(1 for all) \x1b[1;32m:\x1b[0m ")
+			try:
+				number = int(func_getLine(user.connection, True))
+			except ValueError:
+				number = 0
 			if ( number > user.getGold() ):
-				func_slowecho(func_casebold(connection, "\r\n  You don't have that much gold!\r\n", 1))
-				func_pauser(connection)
-			else:
+				user.write(func_casebold("\r\n  You don't have that much gold!\r\n", 1))
+				user.pause()
+			elif ( number > 0 ):
 				if ( number == 1 ):
 					number = user.getGold()
 				user.updateBank(number)
 				user.updateGold(number * -1)
-				func_slowecho(connection, func_casebold("\r\n  Gold deposited\r\n", 2))
-				func_pauser(connection)
-		if ( data[0] == 'w' or data[0] == 'W' ):
-			connection.send('W')
-			func_slowecho(connection, "\r\n  \x1b[32mWithdraw how much? \x1b[1;30m(1 for all) \x1b[1;32m:\x1b[0m ")
-			number = int(func_getLine(connection, True))
-			if ( number > user.getBank() ):
-				func_slowecho(connection, func_casebold("\r\n  You don't have that much gold in the bank!\r\n", 1))
-				func_pauser(connection)
+				user.write(func_casebold("\r\n  Gold deposited\r\n", 2))
+				user.pause()
 			else:
+				pass
+		if ( data[0] == 'w' or data[0] == 'W' ):
+			user.write('W')
+			user.write("\r\n  \x1b[32mWithdraw how much? \x1b[1;30m(1 for all) \x1b[1;32m:\x1b[0m ")
+			try:
+				number = int(func_getLine(user.connection, True))
+			except ValueError:
+				number = 0
+			if ( number > user.getBank() ):
+				user.write(func_casebold("\r\n  You don't have that much gold in the bank!\r\n", 1))
+				user.pause()
+			elif ( number > 0 ):
 				if ( number == 1 ):
 					number = user.getBank()
 				user.updateGold(number)
 				user.updateBank(number * -1)
-				func_slowecho(connection, func_casebold("\r\n  Gold widthdrawn\r\n", 2))
-				func_pauser(connection)
+				user.write(func_casebold("\r\n  Gold widthdrawn\r\n", 2))
+				user.pause()
+			else:
+				pass
 		if ( data[0] == 't' or data[0] == 'T' ):
-			connection.send('T')
-			touser = module_finduser(connection, user, "\r\n  \x1b[32mTransfer to which player? \x1b[1;32m:\x1b[0m ")
+			user.write('T')
+			touser = module_finduser(user, "\r\n  \x1b[32mTransfer to which player? \x1b[1;32m:\x1b[0m ")
 			if ( touser > 0 ):
-				func_slowecho(connection, "\r\n  \x1b[32mTransfer how much? \x1b[1;32m:\x1b[0m ")
-				number = int(func_getLine(connection, True))
+				user.write("\r\n  \x1b[32mTransfer how much? \x1b[1;32m:\x1b[0m ")
+				try:
+					number = int(func_getLine(user.connection, True))
+				except ValueError:
+					number = 0
 				if ( number > user.getGold() ):
-					func_slowecho(connection, func_casebold("\r\n  You don't have that much gold!\r\n", 1))
-					func_pauser(connection)
-				else:
+					user.write(func_casebold("\r\n  You don't have that much gold!\r\n", 1))
+					user.pause()
+				elif ( number > 0 ):
 					thisSQL = "UPDATE "+user.thisSord.sqlPrefix()+"stats SET gold = (gold + "+str(number)+") WHERE userid = "+str(touser)
 					user.db.execute(thisSQL)
 					user.updateGold(number * -1)
-					func_slowecho(connection, func_casebold("\r\n  Gold transfered\r\n", 2))
-					func_pauser(connection)
+					user.write(func_casebold("\r\n  Gold transfered\r\n", 2))
+					user.pause()
+				else:
+					user.write(func_casebold("\r\n Cheap Ass!\r\n", 2))
 			else:
-				func_slowecho(connection, func_casebold("\r\n  No user by that name found!\r\n", 1))
-				func_pauser(connection)
+				user.write(func_casebold("\r\n  No user by that name found!\r\n", 1))
+				user.pause()
 
-def module_abduls(connection, art, user):
+def module_abduls(user):
 	""" Abdul's Armor"""
 	thisQuit = False
 	while ( not thisQuit ):
  		if ( not user.expert ):
-			func_slowecho(connection, art.abdul())
-		func_slowecho(connection, menu_abdul(user))
-		data = connection.recv(2)
+			user.write(user.art.abdul())
+		user.write(menu_abdul(user))
+		data = user.connection.recv(2)
 		if not data: break
 		if ( data[0] == 'b' or data[0] == 'B' ):
-			connection.send('B')
-			func_slowecho(connection, art.armbuy())
-			func_slowecho(connection, "\r\n\r\n\x1b[32mYour choice? \x1b[1m:\x1b[22m-\x1b[1m:\x1b[0m ")
-			number = int(func_getLine(connection, True))
+			user.write('B')
+			user.write(user.art.armbuy())
+			user.write("\r\n\r\n\x1b[32mYour choice? \x1b[1m:\x1b[22m-\x1b[1m:\x1b[0m ")
+			try:
+				number = int(func_getLine(user.connection, True))
+			except ValueError:
+				number = 0
 			if ( number > 0 and number < 16 ):
 				if ( user.getArmor() > 0 ):
-					func_slowecho(connection, func_casebold("\r\nYou cannot hold 2 sets of Armor!\r\n", 1))
-					func_pauser(connection)
+					user.write(func_casebold("\r\nYou cannot hold 2 sets of Armor!\r\n", 1))
+					user.pause()
 				else:
 					if ( user.getGold() < armorprice[number] ):
-						func_slowecho(connection, func_casebold("\r\nYou do NOT have enough Gold!\n", 1))
-						func_pauser(connection)
+						user.write(func_casebold("\r\nYou do NOT have enough Gold!\n", 1))
+						user.pause()
 					else:
 						if ( user.getDefense() < armorndef[number] ):
-							func_slowecho(connection, func_casebold("\r\nYou are NOT strong enough for that!\r\n", 1))
-							func_pauser(connection)
+							user.write(func_casebold("\r\nYou are NOT strong enough for that!\r\n", 1))
+							user.pause()
 						else:
-							func_slowecho(connection, func_casebold("\r\nI'll sell you my Best "+armor[number]+" for "+str(armorprice[number])+" gold.  OK? ", 2)) 
-							yesno = connection.recv(2)
+							user.write(func_casebold("\r\nI'll sell you my Best "+armor[number]+" for "+str(armorprice[number])+" gold.  OK? ", 2)) 
+							yesno = user.connection.recv(2)
 							if not yesno: break
 							if ( yesno[0] == "Y" or yesno[0] == "y" ):
-								connection.send('Y')
+								user.write('Y')
 								user.setArmor(number)
 								user.updateGold(armorprice[number] * -1)
 								user.updateDefense(armordef[number])
-								func_slowecho(connection, func_casebold("\r\nPleasure doing business with you!\r\n", 2))
-								func_pauser(connection)
+								user.write(func_casebold("\r\nPleasure doing business with you!\r\n", 2))
+								user.pause()
 							else:
-								func_slowecho(connection, func_casebold("\r\nFine then...\r\n", 2))
-								func_pauser(connection)
+								user.write(func_casebold("\r\nFine then...\r\n", 2))
+								user.pause()
 		if ( data[0] == 's' or data[0] == 'S' ):
-			connection.send('S')
+			user.write('S')
 			sellpercent = 50 + random.randint(1, 10)
 			sellarmor = user.getArmor()
 			if ( sellarmor > 0 ):
 				sellprice = ((sellpercent * armorprice[sellarmor]) // 100 )
-				func_slowecho(connection, func_casebold("\r\nHmm...  I'll buy that "+armor[sellarmor]+" for "+str(sellprice)+" gold.  OK? ", 2))
-				yesno = connection.recv(2)
+				user.write(func_casebold("\r\nHmm...  I'll buy that "+armor[sellarmor]+" for "+str(sellprice)+" gold.  OK? ", 2))
+				yesno = user.connection.recv(2)
 				if not yesno: break
 				if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
-					connection.send('Y')
+					user.write('Y')
 					user.setArmour(0)
 					user.updateGold(sellprice)
 					unstrength = (60 * armordef[sellweapon]) // 100
 					user.updateDefense(unstrength * -1)
-					func_slowecho(connection, func_casebold("\r\nPleasure doing business with you!\r\n", 2))
-					func_pauser(connection)
+					user.write(func_casebold("\r\nPleasure doing business with you!\r\n", 2))
+					user.pause()
 				else:
-					func_slowecho(connection, func_casebold("\r\nFine then...\r\n", 2))
-					func_pauser(connection)
+					user.write(func_casebold("\r\nFine then...\r\n", 2))
+					user.pause()
 			else:
-				func_slowecho(connection, func_casebold("\r\nYou have nothing I want!\r\n", 1))
-				func_pauser(connection)
+				user.write(func_casebold("\r\nYou have nothing I want!\r\n", 1))
+				user.pause()
 		if ( data[0] == "?" ):
-			connection.send('?')
+			user.write('?')
 			if ( user.expert ):
-				func_slowecho(connection, art.abdul())
+				user.write(user.art.abdul())
 		if ( data[0] == 'Y' or data[0] == 'y' ):
-			connection.send('Y')
-			func_slowecho(connection, module_viewstats(art, user))
-			func_pauser(connection)
+			user.write('Y')
+			user.write(module_viewstats(user))
+			user.pause()
 		if ( data[0] == 'Q' or data[0] == 'q' or data[0] == 'R' or data[0] == 'r' ):
-			connection.send('Q')
+			user.write('R')
 			thisQuit = True;
 
-def module_arthurs(connection, art, user):
+def module_arthurs(user):
 	"""King Arthur's Weapons"""
 	thisQuit = False
 	while ( not thisQuit ):
  		if ( not user.expert ):
-			func_slowecho(connection, art.arthur())
-		func_slowecho(connection, menu_arthur(user))
-		data = connection.recv(2)
+			user.write(user.art.arthur())
+		user.write(menu_arthur(user))
+		data = user.connection.recv(2)
 		if not data: break
 		if ( data[0] == 'b' or data[0] == 'B' ):
-			connection.send('B')
-			func_slowecho(connection, art.wepbuy())
-			func_slowecho(connection, "\r\n\r\n\x1b[32mYour choice? \x1b[1m:\x1b[22m-\x1b[1m:\x1b[0m ")
-			number = int(func_getLine(connection, True))
+			user.write('B')
+			user.write(user.art.wepbuy())
+			user.write("\r\n\r\n\x1b[32mYour choice? \x1b[1m:\x1b[22m-\x1b[1m:\x1b[0m ")
+			try:
+				number = int(func_getLine(user.connection, True))
+			except ValueError:
+				number = 0
 			if ( number > 0 and number < 16 ):
 				if ( user.getWeapon() > 0 ):
-					func_slowecho(connection, func_casebold("\r\nYou cannot hold 2 Weapons!\r\n", 1))
-					func_pauser(connection)
+					user.write(func_casebold("\r\nYou cannot hold 2 Weapons!\r\n", 1))
+					user.pause()
 				else:
 					if ( user.getGold() < weaponprice[number] ):
-						func_slowecho(connection, func_casebold("\r\nYou do NOT have enough Gold!\n", 1))
-						func_pauser(connection)
+						user.write(func_casebold("\r\nYou do NOT have enough Gold!\n", 1))
+						user.pause
 					else:
 						if ( user.getStrength() < weaponnstr[number] ):
-							func_slowecho(connection, func_casebold("\r\nYou are NOT strong enough for that!\r\n", 1))
-							func_pauser(connection)
+							user.write(func_casebold("\r\nYou are NOT strong enough for that!\r\n", 1))
+							user.pause()
 						else:
-							func_slowecho(connection, func_casebold("\r\nI'll sell you my Favorite "+weapon[number]+" for "+str(weaponprice[number])+" gold.  OK? ", 2)) 
-							yesno = connection.recv(2)
+							user.write(func_casebold("\r\nI'll sell you my Favorite "+weapon[number]+" for "+str(weaponprice[number])+" gold.  OK? ", 2)) 
+							yesno = user.connection.recv(2)
 							if not yesno: break
 							if ( yesno[0] == "Y" or yesno[0] == "y" ):
-								connection.send('Y')
+								user.write('Y')
 								user.setWeapon(number)
 								user.updateGold(weaponprice[number] * -1)
 								user.updateStrength(weaponstr[number])
-								func_slowecho(connection, func_casebold("\r\nPleasure doing business with you!\r\n", 2))
-								func_pauser(connection)
+								user.write(func_casebold("\r\nPleasure doing business with you!\r\n", 2))
+								user.pause()
 							else:
-								func_slowecho(connection, func_casebold("\r\nFine then...\r\n", 2))
-								func_pauser(connection)
+								user.write(func_casebold("\r\nFine then...\r\n", 2))
+								user.pause()
 		if ( data[0] == 's' or data[0] == 'S' ):
-			connection.send('S')
+			user.write('S')
 			sellpercent = 50 + random.randint(1, 10)
 			sellweapon = user.getWeapon()
 			if ( sellweapon > 0 ):
 				sellprice = ((sellpercent * weaponprice[sellweapon]) // 100 )
-				func_slowecho(connection, func_casebold("\r\nHmm...  I'll buy that "+weapon[sellweapon]+" for "+str(sellprice)+" gold.  OK? ", 2))
-				yesno = connection.recv(2)
+				user.write(func_casebold("\r\nHmm...  I'll buy that "+weapon[sellweapon]+" for "+str(sellprice)+" gold.  OK? ", 2))
+				yesno = user.connection.recv(2)
 				if not yesno: break
 				if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
-					connection.send('Y')
+					user.write('Y')
 					user.setWeapon(0)
 					user.updateGold(sellprice)
 					unstrength = (60 * weaponstr[sellweapon]) // 100
 					user.updateStrength(unstrength * -1)
-					func_slowecho(connection, func_casebold("\r\nPleasure doing business with you!\r\n", 2))
-					func_pauser(connection)
+					user.write(func_casebold("\r\nPleasure doing business with you!\r\n", 2))
+					user.pause()
 				else:
-					func_slowecho(connection, func_casebold("\r\nFine then...\r\n", 2))
-					func_pauser(connection)
+					user.write(func_casebold("\r\nFine then...\r\n", 2))
+					user.pause()
 			else:
-				func_slowecho(connection, func_casebold("\r\nYou have nothing I want!\r\n", 1))
-				func_pauser(connection)
+				user.write(func_casebold("\r\nYou have nothing I want!\r\n", 1))
+				user.pause()
 		if ( data[0] == "?" ):
-			connection.send('?')
+			user.write('?')
 			if ( user.expert ):
-				func_slowecho(connection, art.abdul())
+				user.write(user.art.abdul())
 		if ( data[0] == 'Y' or data[0] == 'y' ):
-			connection.send('Y')
-			func_slowecho(connection, module_viewstats(art, user))
-			func_pauser(connection)
+			user.write('Y')
+			user.write(module_viewstats(user))
+			user.pause()
 		if ( data[0] == 'Q' or data[0] == 'q' or data[0] == 'R' or data[0] == 'r' ):
-			connection.send('Q')
+			user.write('R')
 			thisQuit = True;
 				
 

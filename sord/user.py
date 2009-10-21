@@ -18,10 +18,12 @@ class sordUser():
 	#Passed at init now. db = dbc.cursor()
 	expert = False
 	
-	def __init__(self, loginname, dbc, db):
+	def __init__(self, loginname, dbc, db, connection, art):
 		""" Find and set the userID in the object """
 		self.dbc = dbc
 		self.db = db
+		self.connection = connection
+		self.art = art
 		thisSQL = "SELECT userid,password,fullname FROM "+self.thisSord.sqlPrefix()+"users WHERE username = '"+loginname+"'"
 		self.thisUserName = loginname
 		self.db.execute(thisSQL)
@@ -35,6 +37,20 @@ class sordUser():
 			self.thisUserID = 0
 			self.thisPassword = ""
 			self.thisFullname = "unregistered"
+
+	def write(self, data):
+		for thisData in list(data):
+			time.sleep(0.001)
+			self.connection.send(thisData)
+
+	def pause(self):
+		self.write("\r\n    \x1b[1m\x1b[32m:\x1b[0m\x1b[32m-\x1b[1m\x1b[32m: P\x1b[0m\x1b[32mress \x1b[1m\x1b[32mA\x1b[0m\x1b[32mny \x1b[1m\x1b[32mK\x1b[0m\x1b[32mey \x1b[1m\x1b[32m:\x1b[0m\x1b[32m-\x1b[1m\x1b[32m:")
+		pauser_quit = False
+		while ( not pauser_quit ):
+			data = self.connection.recv(5)
+			if not data: break
+			pauser_quit = True
+			self.connection.send("\r\n")
 
 	def userExist(self, fullname):
 		searchname = self.dbc.escape_string(fullname)
