@@ -248,6 +248,10 @@ class sordUser():
 		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET horse = "+str(inst)+" WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		
+	def setFlirt(self):
+		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET flirt = 1 WHERE userid = "+str(self.thisUserID)
+		self.db.execute(thisSQL)
+		
 	def setBard(self):
 		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET sung = 1 WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)

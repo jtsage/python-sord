@@ -33,7 +33,7 @@ ECHO = chr(1)
 LINEMODE = chr(34) # Linemode option
 SORDDEBUG = False
 
-def now():				#Server Time
+def now():			  #Server Time
 	return time.ctime(time.time())
 	
 def handleClient(connection):
@@ -111,7 +111,7 @@ def handleClient(connection):
 				
 	currentUser.login()
 	print 'User Logged in::' + currentUser.thisFullname + ' ' + str(thisClientAddress)
-	
+
 	if currentUser.isDead() :
 		quitfull = 2
 		func_slowecho(connection, func_casebold("\r\nI'm Afraid You Are DEAD Right Now.  Sorry\r\n", 1))
@@ -188,7 +188,7 @@ def handleClient(connection):
 					
 """
 	func_slowecho(connection, func_casebold("\r\n\r\n   Quitting to the Fields... GoodBye!\r\n", 7))
-	currentUser.logout()	
+	currentUser.logout()
 	connection.close()
 	print 'Thread Disconnected::' + str(thisClientAddress)
 	thread.exit()
@@ -204,7 +204,5 @@ def dispatcher():
 			print 'Closing listener and exiting.'
 			sockobj.close()
 			sys.exit()
-		
-		
-			
-dispatcher()
+
+dispatcher()  #MAIN PROGRAM LOOP

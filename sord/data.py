@@ -329,3 +329,11 @@ forestdie = [
 	'Halder laughs at `g\'s plight.',
 	'The banker is already looking for `g\'s next of kin'];
 
+violet = [
+ [0, 5, 'You pluck up your courage, catch Violet\'s eye,\r\n  and seductivly wink...', 'Violet smiles and blushes deeply.\r\n  Your relationship is taking off!' ,'Violet glares back and returns to her work.'],
+ [1, 10, 'As Violet delivers your beer, you grab her hand,\n  pucker up and kiss it...', 'Violet giggles and blushes deeply.\n  Your relationship is taking off!', 'Violet pulls her hand back and slaps you across the face.'],
+ [3, 20, 'You bolt up as Violet takes your hard earned gold,\n  smile, and plant one on her lips...', 'Violet gasps and hurries away.\n  Your relationship is starting to really move now!', 'Violet knees you right in the family gem stones.'],
+ [7, 30, 'You beckon Violet over, and sit her on your lap...', 'Violet snuggles down for a moment, then hurries back to work.\n  Very smooth ex-lax.', 'Violet grabs a fork from the table and embeds it in your knee.'],
+ [15, 40, 'As you wander the bar, you spot Violet, and firmly caress\n  her glorious behind...', 'Violet yalps, spins around and gives you a peck on the cheek.\n  Lovely moves son...', 'Violet twists your arm behind your back, dumps a beer on\n  you, and walks away.  Ouch.'],
+ [31, 40, 'You slam your beer down, exclaim \'the hell with it\', grab Violet,\n  and head upstairs to the nearest unused room...', 'Violet shifts in your arms, revealing that she\n  \'forgot\' to wear something this morning.\n  Unfortunatally, women\'s personal uh... \'hygiene\' wasn\'t\n  what it is now in the dark ages.', 'Violet tears off your pants, grabs a knife, and only your \'small stature\'\n  prevents a Bobbit incident.  Bummer.']]
+
