@@ -5,6 +5,9 @@
  * @author J.T.Sage """
 import random, time
 from functions import *
+from data import *
+from modules import *
+from messaging import *
 
 def rdi_menu_main(art, user):
 	""" Main Menu """
@@ -20,10 +23,10 @@ def rdi_menu_main(art, user):
 		flirtwith = "Violet"
 	else:
 		flirtwith = "Seth Able"
-	thismenu += menu_2col("(F)lirt with "+flirtwith, "(T)alk to the Bartender", 5, 5)
-	thismenu += menu_2col("(G)et a Room", "(V)iew Your Stats", 5, 5)
-	thismenu += menu_2col("(H)ear Seth Able The Bard", "(M)ake Announcment", 5, 5)
-	thismenu += menu_2col("(R)eturn To Town", "", 5, 5)
+	thismenu += func_menu_2col("(F)lirt with "+flirtwith, "(T)alk to the Bartender", 5, 5)
+	thismenu += func_menu_2col("(G)et a Room", "(V)iew Your Stats", 5, 5)
+	thismenu += func_menu_2col("(H)ear Seth Able The Bard", "(M)ake Announcment", 5, 5)
+	thismenu += func_menu_2col("(R)eturn To Town", "", 5, 5)
 	return thismenu
 
 def rdi_prompt(user):
@@ -85,7 +88,7 @@ def rdi_getroom(connection, user):
 	""" Red Dragon Inn Get a Room """
 	price = user.getLevel() * 400
 	func_slowecho(connection, "\r\n  \x1b[32mThe bartender approaches you at the mention of a room.\x1b[0m\r\n")
-	func_slowecho(connection, "  \x1b[35m\"You want a room, eh?  That'll be "+price+" gold!\"\x1b[0m\r\n")
+	func_slowecho(connection, "  \x1b[35m\"You want a room, eh?  That'll be "+str(price)+" gold!\"\x1b[0m\r\n")
 	func_slowecho(connection, "  \x1b[32mDo you agree? \x1b[1m: \x1b[0m")
 	yesno = connection.recv(2)
 	if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
@@ -107,7 +110,7 @@ def rdi_converse(connection, user):
 	output  = "\r\n\r\n  \x1b[1;37mConverse with the Patrons\x1b[22;32m....\x1b[0m\r\n"
 	output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
 	user.db.execute(thisSQL)
-	for (nombre, data) in user.db.fetchall():
+	for (data, nombre) in user.db.fetchall():
 		output += "    \x1b[32m"+nombre+" \x1b[1;37msays... \x1b[0m\x1b[32m" + func_colorcode(data)
 		output += "\x1b[0m\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
 	output += "\r\n  \x1b[32mAdd to the conversation? \x1b[1m: \x1b[0m"
@@ -127,7 +130,7 @@ def rdi_menu_bard(connection, art, user):
 	ptime = func_maketime(user)
 	thismenu  = "\r\n\r\n  \x1b[1;37mSaga of the Red Dragon - \x1b[0m\x1b[32mSeth Able\x1b[0m\n"
 	thismenu += art.blueline()
-	thismenu += "  \x1b[32mYou stumble over to a dank corner of the Inn.\n  Seth able looks at you expectantly...\r\n\r\n"
+	thismenu += "  \x1b[32mYou stumble over to a dank corner of the Inn.\r\n  Seth able looks at you expectantly...\r\n\r\n"
 	thismenu += func_normmenu("(A)sk Seth Able to Sing")
 	thismenu += func_normmenu("(R)eturn to the Inn")
 	thismenu += "\r\n  \x1b[1;35mSeth Able the Bard\x1b[0m\x1b[1;30m (A,R,Q) (? for menu)\x1b[0m\r\n\r\n"
@@ -150,7 +153,6 @@ def rdi_hearbard(connection, user):
 		songnum = random.randint(1, 10)
 		for lyrics in thebard[songnum][0]:
 			time.sleep(1)
-			re.sub("\{(\d+)\}", "\x1b[" + r"\1" + "m" , text)
 			lyrics = re.sub("\.\.\.\"", "\x1b[37m...\"\x1b[32m", lyrics)
 			lyrics = re.sub("\"\.\.\.", "\x1b[37m\"...\x1b[0m", lyrics)
 			lyrics = re.sub("XX", "\x1b[1m"+user.thisFullname+"\x1b[22m", lyrics)
@@ -159,6 +161,7 @@ def rdi_hearbard(connection, user):
 		func_slowecho(connection, "\r\n  \x1b[1;34m"+thebard[songnum][1][1]+"\x1b[0m\r\n\r\n")
 		thisSQL = "UPDATE "+user.thisSord.sqlPrefix()+"stats SET "+thebard[songnum][2]+" WHERE userid = "+str(user.thisUserID)
 		user.db.execute(thisSQL)
+		user.setBard()
 		func_pauser(connection)
 	else:
 		func_slowecho(connection, func_casebold("\r\n  Seth says:  I'm a bit tired, maybe tommorow...\r\n", 2))
@@ -239,12 +242,12 @@ def rdi_flirt_violet(connection, user):
 			user.db.execute(thisSQL)
 
 def rdi_menu_flirt(connection, user):
-	thismenu = ""
+	thismenu = "\r\n"
 	for saying in flirts[user.getSex()]:
 		thismenu += func_normmenu(saying[1])
 	return thismenu
 
-def inn_bartend(connection, art, user):
+def rdi_bartend(connection, art, user):
 	""" Bartender Logic
 	@todo Bribe System """
 	thisQuit = False
@@ -285,8 +288,8 @@ def inn_bartend(connection, art, user):
 				else:
 					thisGoodName = False;
 					func_slowecho(connection, "\r\n  \x1b[32mWhat'll it be? \x1b[1m: \x1b[0m")
-					ann = func_getLine(connection)
-					if ( not ann.isalnum() ):
+					ann = func_getLine(connection, True)
+					if ( ann = "" ):
 						thisGoodName = False
 					elif ( ann.rfind('barak') >= 0 ):
 						func_slowecho(connection, "\r\n  \x1b[31m** \x1b[35mNaw, the real Barak would decapitate you if he found out. \x1b[31m**\x1b[0m\r\n")
@@ -311,6 +314,7 @@ def inn_bartend(connection, art, user):
 						thisSQL = "UPDATE "+user.thisSord.sqlPrefix()+"users SET fullname = '"+user.dbc.escape_string(ann)+"' WHERE userid = "+str(user.thisUserID)
 						user.db.execute(thisSQL)
 						user.updateGold(thisPrice * -1)
+						user.thisFullname = ann
 			else:
 				func_slowecho(connection, "\r\n  \x1b[35m\"Fine...Keep your stupid name...See if I care...\"\x1b[0m\r\n")
 			func_pauser(connection)

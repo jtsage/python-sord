@@ -125,7 +125,7 @@ class sordUser():
 		thisSQL = "SELECT sung FROM "+self.thisSord.sqlPrefix()+"stats WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		thisReturn = self.db.fetchone()
-		if ( thisReturn == 1 ):
+		if ( thisReturn[0] == 1 ):
 			return True
 		else:
 			return False
@@ -134,7 +134,7 @@ class sordUser():
 		thisSQL = "SELECT flirt FROM "+self.thisSord.sqlPrefix()+"stats WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		thisReturn = self.db.fetchone()
-		if ( thisReturn == 1 ):
+		if ( thisReturn[0] == 1 ):
 			return True
 		else:
 			return False
@@ -143,7 +143,7 @@ class sordUser():
 		thisSQL = "SELECT atinn FROM "+self.thisSord.sqlPrefix()+"stats WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		thisReturn = self.db.fetchone()
-		if ( thisReturn == 1 ):
+		if ( thisReturn[0] == 1 ):
 			return True
 		else:
 			return False
@@ -152,7 +152,7 @@ class sordUser():
 		thisSQL = "SELECT master FROM "+self.thisSord.sqlPrefix()+"stats WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		thisReturn = self.db.fetchone()
-		if ( thisReturn == 1 ):
+		if ( thisReturn[0] == 1 ):
 			return True
 		else:
 			return False
@@ -161,7 +161,7 @@ class sordUser():
 		thisSQL = "SELECT horse FROM "+self.thisSord.sqlPrefix()+"stats WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		thisReturn = self.db.fetchone()
-		if ( thisReturn == 1 ):
+		if ( thisReturn[0] == 1 ):
 			return True
 		else:
 			return False

@@ -32,6 +32,7 @@ WILL = chr(251)
 ECHO = chr(1)
 LINEMODE = chr(34) # Linemode option
 SORDDEBUG = False
+SORDDEBUG = True
 
 def now():			  #Server Time
 	return time.ctime(time.time())
