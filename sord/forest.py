@@ -14,7 +14,8 @@ def forest_special(user):
 	""" Forest Special Events
 	* @todo Add all elements as needed.
 	* 	- fairies forest_fairies()
-	* 	- dark horse tavern  darkhorse_login()  (new file) """
+	* 	- dark horse tavern  darkhorse_login()  (new file) 
+	* finish the flowers """
 	happening = random.randint(1, 12)
 	if ( happening == 1 ):   # Find Gems
 		thisfind = random.randint(1, 4)
@@ -88,30 +89,30 @@ def forest_special(user):
 		user.pause()
 	elif ( happening == 7 ): # Old Hag
 		user.write(user.art.line())
-		user.write("  \x1b[32mYou come across an old hag.\r\n  \x1b[1m\"Give me a gem my pretty, and I will completely heal you!\"\x1b[0,32m\r\n  She screeches!\x1b[0m\r\n")
+		user.write("  \x1b[32mYou come across an old hag.\r\n\r\n  \x1b[1m\"Give me a gem my pretty, and I will completely heal you!\"\x1b[0,32m\r\n  She screeches!\x1b[0m\r\n\r\n")
 		user.write(func_normmenu("(G)ive her a gem"))
 		user.write(func_normmenu("(K)ick her and run"))
 		user.write(func_normmenu("(L)eave polietly"))
-		user.write("  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
+		user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
 		miniQuit = False
 		while ( not miniQuit ):
 			data = user.connection.recv(2)
 			if ( data[0] == 'l' or data[0] == 'L' ):
-				user.write("L\r\n  \x1b[32mThe old hag begins following you like a lost puppy.\x1b[0m\r\n")
+				user.write("L\r\n\r\n  \x1b[32mThe old hag begins following you like a lost puppy.\x1b[0m\r\n")
 			elif ( data[0] == 'k' or data[0] == 'K' ):
-				user.write("K\r\n  \x1b[32mYou hate to be rude to your elders, but sometimes deperate times call for\r\n  deperate measures.  You which the old hag in the shin and run for it.\x1b[0m\r\n")
+				user.write("K\r\n\r\n  \x1b[32mYou hate to be rude to your elders, but sometimes deperate times call for\r\n  deperate measures.  You which the old hag in the shin and run for it.\x1b[0m\r\n")
 				miniQuit = True
 			elif ( data[0] == 'g' or data[0] == 'G' ):
 				user.write('G')
 				if ( user.getGems() > 0 ):
-					user.write("\r\n  \x1b[1,32m\"Thank you\"\x1b[0,32m she cackles.\r\n  \x1b[1mYou feel refreshed and renewed\x1b[0m\r\n")
+					user.write("\r\n\r\n  \x1b[1;32m\"Thank you\"\x1b[0;32m she cackles.\r\n  \x1b[1mYou feel refreshed and renewed\x1b[0m\r\n")
 					user.updateHPMax(1)
-					hptoadd = user.getHPMax - user.getHP()
+					hptoadd = user.getHPMax() - user.getHP()
 					user.updateHP(hptoadd)
 					user.updateGems(-1)
 					miniQuit = True
 				else:
-					user.write("\r\n  \x1b[1,32m\"You don't have any gems you stinky cow-pox pustule!\"\[33[0,32m she yells.\r\n  \x1b[1mCome to think of it, you feel rather like a cow-pie.\x1b[0m\r\n")
+					user.write("\r\n\r\n  \x1b[1,32m\"You don't have any gems you stinky cow-pox pustule!\"\[33[0,32m she yells.\r\n  \x1b[1mCome to think of it, you feel rather like a cow-pie.\x1b[0m\r\n")
 					hptoremove = user.getHP() - 1
 					user.updateHP(hptoremove * -1)
 					miniQuit = True
@@ -122,7 +123,7 @@ def forest_special(user):
 		user.write(user.art.line())
 		user.write("  \x1b[32mYou come across a grove of flowers, and decide to inspect them closer...\r\n  \x1b[1mThere is something written here!\x1b[0m\r\n")
 		user.pause()
-		module_flowers(user)
+		# do this! module_flowers(user)
 	elif ( happening == 9 ): # rescue man/maiden
 		user.write(user.art.line())
 		user.write("  \x1b[32mYou come upon a dead bird.  While gross, you begin to put it out of your\r\n  mind when you notice a scroll attached to it's leg\r\n\r\n")
@@ -141,7 +142,7 @@ def forest_special(user):
 				user.updateForestFight(-1)
 				thisMiniQuit = False
 				thisTower = 0
-				user.write("\r\n  \x1b[32mWhere do you wish to seek the maiden?\x1b[0m\r\n")
+				user.write("\r\n\r\n  \x1b[32mWhere do you wish to seek the maiden?\x1b[0m\r\n")
 				user.write(func_normmenu("(K)eep of Hielwain"))
 				user.write(func_normmenu("(S)tarbucks Seattle Spaceneedle"))
 				user.write(func_normmenu("(C)astle Morbidia"))
@@ -181,8 +182,8 @@ def forest_special(user):
 					user.updateGold(user.getLevel() * 500)
 				else: # WRONG
 					if ( random.randint(1, 2) == 1 ): # REALLY, REALLY WRONG
-						user.write("\r\n  \x1b[32mYou have choosen \x1b[1mpoorly.  really poorly.\x1b[0m\r\n")
-						user.write("  \x1b[32mYou hear a strange groan and out pops Ken the Magnificent, the disfigured midget (er, 'little person').\r\n  Sadly, 'little person' doesn't refer to all of him.\r\n  \x1b[1mYou feel terrible, both physically and mentally\x1b[0m\r\n")
+						user.write("\r\n  \x1b[32mYou have choosen \x1b[1mpoorly.  really poorly.\x1b[0m\r\n\r\n")
+						user.write("  \x1b[32mYou hear a strange groan and out pops Ken the Magnificent,\r\n the disfigured midget (er, 'little person').\r\n  Sadly, 'little person' doesn't refer to all of him.\r\n  \x1b[1mYou feel terrible, both physically and mentally\x1b[0m\r\n")
 						thistakeHP = user.getHP() - 1
 						user.updateHP(thistakeHP * -1)
 					else: # NOT SO BAD

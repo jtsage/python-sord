@@ -245,7 +245,7 @@ def module_heal(user):
 						canaffordtoheal = hptoheal
 					user.updateGold((canaffordtoheal * perhpgold) * -1)
 					user.updateHP(canaffordtoheal)
-					user.write("\n  \x1b[32m\x1b[1m"+str(canaffordtoheal)+" \x1b[22mHitPoints are healed and you feel much better!\x1b[0m\r\n")
+					user.write("\r\n  \x1b[32m\x1b[1m"+str(canaffordtoheal)+" \x1b[22mHitPoints are healed and you feel much better!\x1b[0m\r\n")
  					user.pause()
 		if ( data[0] == 'c' or data[0] == 'C' ):
 			user.write('C')
@@ -293,7 +293,7 @@ def module_forest(user):
 			module_viewstats(user)
 		if ( data[0] == 'l' or data[0] == 'l' ):
 			user.write("L\r\n")
-			if ( user.getForestFight > 0 ):
+			if ( user.getForestFight() > 0 ):
 				if ( random.randint(1, 8) == 3 ):
 					forest_special(user)
 				else:
