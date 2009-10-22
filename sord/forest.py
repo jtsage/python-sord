@@ -9,6 +9,49 @@
 import random, re, time
 from functions import *
 from data import *
+from modules import *
+
+def module_forest(user):
+	""" Forest Fight - Non-Combat """
+	thisQuit = False
+	while ( not thisQuit ):
+		if ( not user.expert ):
+			user.write(user.art.forest())
+		user.write(menu_forest(user))
+		data = user.connection.recv(2)
+		if ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
+			user.write('Q')
+			thisQuit = True
+		if ( data[0] == '?' ):
+			user.write('?')
+			if ( user.expert ):
+				user.write(user.art.forest())
+		if ( data[0] == 'h' or data[0] == 'H' ):
+			user.write('H')
+			module_heal(user)
+		if ( data[0] == 'v' or data[0] == 'V' or data[0] == 'y' or data[0] == 'Y' ):
+			module_viewstats(user)
+		if ( data[0] == 'l' or data[0] == 'l' ):
+			user.write("L\r\n")
+			if ( user.getForestFight() > 0 ):
+				if ( random.randint(1, 8) == 3 ):
+					forest_special(user)
+				else:
+					forest_fight(user)
+			else:
+				user.write(func_casebold("\r\n  You are mighty tired.  Try again tommorow\r\n", 2))
+		if ( data[0] == 'a' or data[0] == 'A' ):
+			user.write('A')
+			user.write(func_casebold("\r\n  You brandish your weapon dramatically.\r\n", 2))
+		if ( data[0] == 'd' or data[0] == 'D' ):
+			user.write('D')
+			user.write(func_casebold("\r\n  Your Death Knight skills cannot help your here.\r\n", 2))
+		if ( data[0] == 'm' or data[0] == 'M' ):
+			user.write('M')
+			user.write(func_casebold("\r\n  Your Mystical skills cannot help your here.\r\n", 2))
+		if ( data[0] == 't' or data[0] == 'T' ):
+			user.write('T')
+			user.write(func_casebold("\r\n  Your Thieving skills cannot help your here.\r\n", 2))
 
 def forest_special(user):
 	""" Forest Special Events
@@ -17,47 +60,47 @@ def forest_special(user):
 	* 	- dark horse tavern  darkhorse_login()  (new file) 
 	* finish the flowers """
 	happening = random.randint(1, 12)
-	if ( happening == 1 ):   # Find Gems
+	if ( happening == 1 ):   # Find Gems GOOD!
 		thisfind = random.randint(1, 4)
 		user.write(user.art.line())
 		user.write("  \x1b[32mFortune Smiles Upon You.  You find \x1b[1;37m"+str(thisfind)+"\x1b[0m\x1b[32m gems!\x1b[0m\r\n")
 		user.write(user.art.line())
 		user.pause()
 		user.updateGems(thisfind)
-	elif ( happening == 2 ): # Find Gold
+	elif ( happening == 2 ): # Find Gold  GOOD!
 		thisfind = random.randint(1, 4) * 200 * user.getLevel()
 		user.write(user.art.line())
 		user.write("  \x1b[32mFortune Smiles Upon You.  You find a sack full of \x1b[1;37m"+str(thisfind)+"\x1b[0m\x1b[32m gold!\x1b[0m\r\n")
 		user.write(user.art.line())
 		user.pause()
 		user.updateGold(thisfind)
-	elif ( happening == 3 ): # Hammerstone (attack str++)
+	elif ( happening == 3 ): # Hammerstone (attack str++)  GOOD!
 		user.write(user.art.line())
-		user.write("  \x1b[32mYou find a hammer stone.  You quickly hit it as hard as possible.\r\n \x1b[1mYour attack strength is raised by 1!\x1b[0m\r\n")
+		user.write("  \x1b[32mYou find a hammer stone.  You quickly hit it as hard as possible.\r\n\r\n  \x1b[1mYour attack strength is raised by 1!\x1b[0m\r\n")
 		user.write(user.art.line())
 		user.pause()
 		user.updateStrength(1)
 	elif ( happening == 4 ): # Merry Men (hp = hpmax)
 		user.write(user.art.line())
-		user.write("  \x1b[32mYou stumble across a group of merry men.  They offer you ale you can't resist.\r\n \x1b[1mYou feel refreshed!\x1b[0m\r\n")
+		user.write("  \x1b[32mYou stumble across a group of merry men.\r\n  They offer you ale you can't resist.\r\n  \x1b[1mYou feel refreshed!\x1b[0m\r\n")
 		user.write(user.art.line())
 		user.pause()
-		hptoadd = user.getHPMax - user.getHP
+		hptoadd = user.getHPMax() - user.getHP()
 		if ( hptoadd > 0 ):
 			user.updateHP(hptoadd)
-	elif ( happening == 5 ): # Old Man (gold + (lvl * 500) && charm +1 on help) (costs 1 fight)
+	elif ( happening == 5 ): # Old Man (gold + (lvl * 500) && charm +1 on help) (costs 1 fight) GOOD!
 		user.write(user.art.line())
-		user.write("  \x1b[32mYou come upon an old man wandering around.\r\n  He asks you for help back to town.\x1b[0m\r\n")
-		user.wrtie(func_normmenu("(H)elp the old man"))
+		user.write("  \x1b[32mYou come upon an old man wandering around.\r\n  He asks you for help back to town.\x1b[0m\r\n\r\n")
+		user.write(func_normmenu("(H)elp the old man"))
 		user.write(func_normmenu("(I)gnore him"))
-		user.write("  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
+		user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
 		miniQuit = False
 		while ( not miniQuit ):
 			data = user.connection.recv(2)
 			if ( data[0] == 'h' or data[0] == 'H' ):
 				user.write('H')
-				goldtoadd = user.getGold() * 500
-				user.write("\r\n  \x1b[32mYou help the old gentleman home.\x1b[1mHe gives you "+str(goldtoadd)+" gold and 1 charm!.\x1b[0m\r\n")
+				goldtoadd = user.getLevel() * 500
+				user.write("\r\n\r\n  \x1b[32mYou help the old gentleman home.\r\n  \x1b[1mHe gives you "+str(goldtoadd)+" gold and 1 charm!.\x1b[0m\r\n")
 				user.updateGold(goldtoadd)
 				user.updateCharm(1)
 				user.updateForestFight(-1)
@@ -69,15 +112,15 @@ def forest_special(user):
 			else:
 				pass
 		user.pause()
-	elif ( happening == 6 ): # Ugly (33%) and Pretty (66%) stick
+	elif ( happening == 6 ): # Ugly (33%) and Pretty (66%) stick GOOD!
 		user.write(user.art.line())
 		user.write("  \x1b[32mA demented penguin jumps from the bushes and whacks you with a")
 		sticktype = random.randint(1, 3)
 		if ( sticktype == 2 ):
-			user.write("\x1b[1,31mugly\x1b[0,32m")
+			user.write("\x1b[1;31m ugly \x1b[0;32m")
 		else:
-			user.write("\x1b[1mpretty\x1b[0,32m")
-		user.write("stick!  Your charm is ")
+			user.write("\x1b[1m pretty \x1b[0;32m")
+		user.write("stick!\r\n  Your charm is ")
 		if ( sticktype == 2 ):
 			user.write("lowered")
 			if ( user.getCharm() > 0 ):
@@ -85,17 +128,17 @@ def forest_special(user):
 		else:
 			user.write("raised")
 			user.updateCharm(1)
-		user.write("by 1!!\x1b[0m\r\n")
+		user.write(" by 1!!\x1b[0m\r\n")
 		user.pause()
-	elif ( happening == 7 ): # Old Hag
+	elif ( happening == 7 ): # Old Hag GOOD!
 		user.write(user.art.line())
-		user.write("  \x1b[32mYou come across an old hag.\r\n\r\n  \x1b[1m\"Give me a gem my pretty, and I will completely heal you!\"\x1b[0,32m\r\n  She screeches!\x1b[0m\r\n\r\n")
+		user.write("  \x1b[32mYou come across an old hag.\r\n\r\n  \x1b[1m\"Give me a gem my pretty, and I will completely heal you!\"\x1b[0;32m\r\n  She screeches!\x1b[0m\r\n\r\n")
 		user.write(func_normmenu("(G)ive her a gem"))
 		user.write(func_normmenu("(K)ick her and run"))
 		user.write(func_normmenu("(L)eave polietly"))
-		user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
 		miniQuit = False
 		while ( not miniQuit ):
+			user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
 			data = user.connection.recv(2)
 			if ( data[0] == 'l' or data[0] == 'L' ):
 				user.write("L\r\n\r\n  \x1b[32mThe old hag begins following you like a lost puppy.\x1b[0m\r\n")
@@ -112,19 +155,19 @@ def forest_special(user):
 					user.updateGems(-1)
 					miniQuit = True
 				else:
-					user.write("\r\n\r\n  \x1b[1,32m\"You don't have any gems you stinky cow-pox pustule!\"\[33[0,32m she yells.\r\n  \x1b[1mCome to think of it, you feel rather like a cow-pie.\x1b[0m\r\n")
+					user.write("\r\n\r\n  \x1b[1;32m\"You don't have any gems you stinky cow-pox pustule!\"\[33[0;32m she yells.\r\n  \x1b[1mCome to think of it, you feel rather like a cow-pie.\x1b[0m\r\n")
 					hptoremove = user.getHP() - 1
 					user.updateHP(hptoremove * -1)
 					miniQuit = True
 			else: 
 				pass
 		user.pause()
-	elif ( happening == 8 ): # Flowers in the forest.
+	elif ( happening == 8 ): # Flowers in the forest. GOOD!
 		user.write(user.art.line())
 		user.write("  \x1b[32mYou come across a grove of flowers, and decide to inspect them closer...\r\n  \x1b[1mThere is something written here!\x1b[0m\r\n")
 		user.pause()
-		# do this! module_flowers(user)
-	elif ( happening == 9 ): # rescue man/maiden
+		module_flowers(user)
+	elif ( happening == 9 ): # rescue man/maiden GOOD!
 		user.write(user.art.line())
 		user.write("  \x1b[32mYou come upon a dead bird.  While gross, you begin to put it out of your\r\n  mind when you notice a scroll attached to it's leg\r\n\r\n")
 		user.write("  \x1b[1mTo Whome It May Concern:\r\n    I have been locked in this terrible tower for many cycles.\r\n    Please save me soon!\n        ~ Elora\r\n\r\n")
@@ -183,7 +226,7 @@ def forest_special(user):
 				else: # WRONG
 					if ( random.randint(1, 2) == 1 ): # REALLY, REALLY WRONG
 						user.write("\r\n  \x1b[32mYou have choosen \x1b[1mpoorly.  really poorly.\x1b[0m\r\n\r\n")
-						user.write("  \x1b[32mYou hear a strange groan and out pops Ken the Magnificent,\r\n the disfigured midget (er, 'little person').\r\n  Sadly, 'little person' doesn't refer to all of him.\r\n  \x1b[1mYou feel terrible, both physically and mentally\x1b[0m\r\n")
+						user.write("  \x1b[32mYou hear a strange groan and out pops Ken the Magnificent,\r\n  the disfigured midget (er, 'little person').\r\n  Sadly, 'little person' doesn't refer to all of him.\r\n\r\n  \x1b[1mYou feel terrible, both physically and mentally\x1b[0m\r\n")
 						thistakeHP = user.getHP() - 1
 						user.updateHP(thistakeHP * -1)
 					else: # NOT SO BAD
@@ -191,7 +234,7 @@ def forest_special(user):
 						user.write("  \x1b[32mYou run like hell before anything bad happens.\x1b[0m\r\n")
 				miniQuit = True
 		user.pause()
-	elif ( happening == 10 ): # lessons
+	elif ( happening == 10 ): # lessons DKNIGHT GOOD, 
 		if ( user.getClass() == 1 ):
 			forest_lesson_d(user)
 		elif ( user.getClass() == 2 ):
@@ -250,7 +293,7 @@ def forest_fight(user):
 		data = user.connection.recv(2)
 		if ( data[0] == 's' or data[0] == 'S' ):
 			user.write('S')
-			user.write(forest_viewstats(user))
+			user.write(module_viewstats(user))
 		elif ( data[0] == 'a' or data[0] == 'A' ): # Attack!
 			user.write("A\r\n")
 			hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
@@ -321,126 +364,20 @@ def forest_menu(user, enemyHP, enemyName) :
 	thismenu += "\r\n  \x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? [\x1b[1;35mA\x1b[0m\x1b[32m] : \x1b[0m"
 	return thismenu
 
-def forest_viewstats(user):
-	""" View Player Stats
-	* @param int $userid User ID
-	* @return string Formatted output for display"""
-	output  = "\r\n\r\n\x1b[1m\x1b[37m"+user.thisFullname+"\x1b[0m\x1b[32m's Stats...\r\n"
-	output += user.art.line()
-	output += "\x1b[32m Experience    : \x1b[1m"+str(user.getExperience())+"\x1b[0m\r\n"
-	output += "\x1b[32m Level         : \x1b[1m"+str(user.getLevel())+"\x1b[0m" + padnumcol(str(user.getLevel()), 20) + "\x1b[32mHitPoints          : \x1b[1m"+str(user.getHP())+" \x1b[22mof\x1b[1m "+str(user.getHPMax())+"\x1b[0m\r\n"
-	output += "\x1b[32m Forest Fights : \x1b[1m"+str(user.getForestFight())+"\x1b[0m" + padnumcol(str(user.getForestFight()), 20) + "\x1b[32mPlayer Fights Left : \x1b[1m"+str(user.getPlayerFight())+"\x1b[0m\r\n"
-	output += "\x1b[32m Gold In Hand  : \x1b[1m"+str(user.getGold())+"\x1b[0m" + padnumcol(str(user.getGold()), 20) + "\x1b[32mGold In Bank       : \x1b[1m"+str(user.getBank())+"\x1b[0m\r\n"
-	output += "\x1b[32m Weapon        : \x1b[1m"+weapon[user.getWeapon()]+"\x1b[0m" + padnumcol(weapon[user.getWeapon()], 20) + "\x1b[32mAttack Strength    : \x1b[1m"+str(user.getStrength())+"\x1b[0m\r\n"
-	output += "\x1b[32m Armor         : \x1b[1m"+armor[user.getArmor()]+"\x1b[0m" + padnumcol(armor[user.getArmor()], 20) + "\x1b[32mDefensive Strength : \x1b[1m"+str(user.getDefense())+"\x1b[0m\r\n"
-	output += "\x1b[32m Charm         : \x1b[1m"+str(user.getCharm())+"\x1b[0m" + padnumcol(str(user.getCharm()), 20) + "\x1b[32mGems               : \x1b[1m"+str(user.getGems())+"\x1b[0m\r\n\r\n"
-	for skillnum in [1,2,3]:
-		if ( user.getClass() == skillnum or user.getSkillPoint(skillnum) > 0 ):
-			output += "\x1b[32m The "+classes[skillnum]+" Skills: \x1b[1m"
-			if ( user.getSkillUse(skillnum) > 0 ):
-				output +=  str(user.getSkillPoint(skillnum)) + padnumcol(str(user.getSkillPoint(skillnum)), 11)
-			else:
-				output += "NONE     "
-			output += padnumcol(classes[skillnum], 12)
-			output += "\x1b[0m\x1b[32mUses Today: (\x1b[1m"+str(user.getSkillUse(skillnum))+"\x1b[22m)\x1b[0m\r\n"
-	output += "\r\n \x1b[1;32mYou are currently interested in \x1b[37mThe "+classes[user.getClass()]+" \x1b[32mskills.\r\n\r\n";
-	return output
-"""
-function master_fight() {
-    "" Master Fight System ""
-	GLOBAL $userid, $masters, $masterwin, $db, $MYSQL_PREFIX;
-	$userlevel = user_getlevel($userid);
-	$thisunderdog = 0;
-	$userstr = user_getstr($userid);
-	$userdef = user_getdef($userid);
-	$userhstr = ($userstr - ($userstr % 2)) / 2;
-	$userhp = user_gethp($userid);
-	$dead = 0; $ran = 0; $win = 0;
-
-	$enemystr = $masters[$userlevel][7];
-	$enemydef = $masters[$userlevel][8];
-	$enemyhstr = ($enemystr - ($enemystr % 2)) / 2;
-	$enemyhp = $masters[$userlevel][6];
-	$enemyname = $masters[$userlevel][0];
-	$enemywep = $masters[$userlevel][1];
-	
-	slowecho("\n\n  \x1b[32m**\x1b[1;37mFIGHT\x1b[0m\x1b[32m**\n");
-	slowecho("\n  \x1b[32mYour skill allows you to get the first strike.\x1b[0m\n"); 
-	
-	while( $userhp > 0 && $enemyhp > 0 && !$dead && !$ran) {  ## FIGHT LOOP ##
-		$userhp = user_gethp($userid);
-		slowecho(forest_menu($userhp, $enemyhp, $enemyname));
-		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-		switch ($choice) {
-			case 'S':
-				module_viewstats($userid);
-				break;
-			case 'A':
-				$eattack =  (( $enemyhstr ) + rand(0, $enemyhstr) ) - $userdef;
-				$uattack =  (( $userhstr ) + rand(0, $userhstr)) - $enemydef;
-				if ( !$thisunderdog ) { if ( $uattack > $enemyhp ) { $eattack = 0; } }
-				if ( $eattack > $userhp ) { $eattack = $userhp; $dead = 1;}
-				if ( $eattack > 0 ) {
-					slowecho("\n  \x1b[32m{$enemyname} hits you with {$enemywep} for \x1b[1;31m{$eattack}\x1b[0m\x1b[32m damage\x1b[0m\n"); 
-					user_takehp($userid, $eattack);
-				}
-				if ( $uattack > 0 && !$dead) { 
-					slowecho("\n  \x1b[32mYou hit {$enemyname} for \x1b[1;31m{$uattack}\x1b[0m\x1b[32m damage\n"); 
-					$enemyhp = $enemyhp - $uattack;
-					if ( $enemyhp < 1 ) { 
-						slowecho("  \x1b[31m{$masters[$userlevel][5]}\n"); 
-						$win = 1; }
-				}
-				break;
-			case 'R':
-				slowecho("\n  \x1b[32mYou retire from the field before getting yourself killed.\x1b[0m\n"); 
-				$resethp = "UPDATE {$MYSQL_PREFIX}stats set hp = hpmax WHERE userid = {$userid}";
-				$masterql = "UPDATE {$MYSQL_PREFIX}stats SET master = 1 WHERE userid = {$userid}"; 
-				$result = mysql_query($resethp, $db);
-				$result = mysql_query($masterql, $db);
-				$ran = 1; 
-				break;
-		}
-	}
-	if ( $win ) {
-		$addexp = $masters[$userlevel][2] * .1;
-		user_giveexp($userid, $addexp);
-		user_givedef($userid, $masterwin[$userlevel][2]);
-		user_givestr($userid, $masterwin[$userlevel][1]);
-		user_givehpmax($userid, $masterwin[$userlevel][0]);
-		slowecho("\n  \x1b[32mYou have receieved \x1b[1m+{$masterwin[$userlevel][2]}\x1b[22m vitality, \x1b[1m+{$masterwin[$userlevel][1]}\x1b[22m strength, and \x1b[1m+{$masterwin[$userlevel][0]}\x1b[22m hitpoints.\x1b[0m\n");
-		$newlevel = user_getlevel($userid) + 1;
-		slowecho("  \x1b[32mYou have gained \x1b[1m{$addexp}\x1b[22m experience, and are now level \x1b[1m{$newlevel}\x1b[22m.\x1b[0m\n");
-		user_setlevel($userid, $newlevel);
-		$resethp = "UPDATE {$MYSQL_PREFIX}stats set hp = hpmax WHERE userid = {$userid}";
-		$result = mysql_query($resethp, $db);
-		pauser();
-	}
-	if ( $dead ) {
-		slowecho("\n  \x1b[31mTragically, you are horribly disfigured....  oh wait...\x1b[0m\n");
-		slowecho("  \x1b[31mYou always looked like that you say?...  That's unfortunate...\x1b[0m\n");
-		slowecho("  \x1b[32mAnyway, you lost.  Being the gracious master {$enemyname} is, he heals you and sends you away for the day.\x1b[0m\n");
-		$resethp = "UPDATE {$MYSQL_PREFIX}stats set hp = hpmax WHERE userid = {$userid}";
-		$masterql = "UPDATE {$MYSQL_PREFIX}stats SET master = 1 WHERE userid = {$userid}"; 
-		$result = mysql_query($resethp, $db);
-		$result = mysql_query($masterql, $db);
-		pauser();
-	}
-}"""
-
 def forest_lesson_d(user) :
 	""" Learn to be a death kniofht"""
 	user.write(user.art.line())
 	user.write("\r\n  \x1b[32mYou come upon a group of warriors, they carry the look of a proud people.\x1b[0m\r\n")
-	user.write("\r\n   \x1b[1,32mDeath Knight #1: \x1b[0,32mWe shall teach you the ways of the death knights weakling.\x1b[0m\r\n")
-	user.write("   \x1b[1,32mDeath Knight #2: \x1b[0,32mAye.  But you must prove your wisdom first.  This man is guilty of a crime.\x1b[0m\r\n")
-	user.write("   \x1b[1,32mDeath Knight #1: \x1b[0,32mYup.  Or he's completely innocent.  Decide wisely.!\x1b[0m\r\n")
+	user.write("\r\n   \x1b[1;32mDeath Knight #1: \x1b[0;32mWe shall teach you the ways of the death knights weakling.\x1b[0m\r\n")
+	user.write("   \x1b[1;32mDeath Knight #2: \x1b[0;32mAye.  But you must prove your wisdom first.\r\n                    This man is guilty of a crime.\x1b[0m\r\n")
+	user.write("   \x1b[1;32mDeath Knight #1: \x1b[0;32mYup.  Or he's completely innocent.  Decide wisely.!\x1b[0m\r\n")
 	user.write(func_normmenu("(K)ill Him"))
 	user.write(func_normmenu("(F)ree him as an innocent"))
 	user.write("\r\n  \x1b[0m\x1b[32mYour choice, \x1b[1m"+user.thisFullname+"\x1b[22m? (K,F) \x1b[0m\x1b[32m:-: \x1b[0m")
 	miniQuit = False
-	while ( miniQuit ):
+	while ( not miniQuit ):
 		data = user.connection.recv(2)
+		if not data: break
 		if ( data[0] == 'k' or data[0] == 'K' ):
 			user.write('K')
 			user.write("\r\n  \x1b[32mYou draw your weapon, and ram it as hard as you can through his midsection.\x1b[0m\r\n")
@@ -451,9 +388,7 @@ def forest_lesson_d(user) :
 			user.write("\r\n  \x1b[32mYou consider a moment, and shout \"Let him live!  He's done nothing wrong!\"\x1b[0m\r\n")
 			thisChoice = 2
 			miniQuit = True
-		else:
-			pass
-	
+
 	user.write("\r\n  \x1b[1;37m...")
 	time.sleep(1)
 	user.write("\x1b[31mAND\x1b[37m")
@@ -461,18 +396,18 @@ def forest_lesson_d(user) :
 	user.write("...\x1b[0m")
 	
 	if ( thisChoice == random.randint(1,2) ):
-		user.write("\r\n   \x1b[1,32mDeath Knight #1: \x1b[0,32mWell spotted young warrior.  We shall teach you!\x1b[0m\r\n")
-		user.write("  \x1b[32mYou recieve \x1b[1m1\x1b[0,32m use point")
+		user.write("\r\n   \x1b[1,32mDeath Knight #1: \x1b[0;32mWell spotted young warrior.                    We shall teach you!\x1b[0m\r\n")
+		user.write("  \x1b[32mYou recieve \x1b[1m1\x1b[0;32m use point")
 		user.updateSkillUse(1, 1)
 		addtohp = user.getHPMax() - user.getHP()
 		if ( addtohp > 0 ):
 			user.updateHP(addtohp)
 		if ( user.getSkillPoint(1) < 40 ):
 			user.updateSkillPoint(1, 1)
-			user.write(" and \x1b[1m1\x1b[0,32m skill point")
+			user.write(" and \x1b[1m1\x1b[0;32m skill point")
 		user.write(".\x1b[0m\r\n")
 	else:
-		user.write("\r\n   \x1b[1,32mDeath Knight #3: \x1b[0,32mOh god no!  That wasn't right at all!  Somebody get a mop and a bandaid!\x1b[0m\r\n")
+		user.write("\r\n   \x1b[1,32mDeath Knight #3: \x1b[0;32mOh god no!  That wasn't right at all!\r\n                    Somebody get a mop and a bandaid!\x1b[0m\r\n")
 
 def forest_lesson_t(user) :
 	""" LEarn to be a thief """
@@ -563,3 +498,131 @@ def forest_lesson_m(user) :
 				user.write(".\x1b[0m\r\n")
 			else:
 				user.write("\r\n  \x1b[32mBetter luck next time!\x1b[0m\r\n")
+
+""" Turgon's Warrior Training (pre-combat)
+ * 
+ * Visit the master
+ * 
+ * @todo Implement the hall of honor (V)
+ */
+function module_turgon() {
+	GLOBAL $db, $MYSQL_PREFIX, $masters, $userid;
+	$quitter = 0;
+	while ( !$quitter ) {
+		slowecho(menu_turgon());
+		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+		switch ($choice) {
+			case 'R': // QUIT
+				$quitter = 1; break;
+			case '?': // SHOW MENU
+				break;
+			case 'Q': // QUESTION MASTER
+				$ulvl = user_getlevel($userid);
+				$uexp = user_getexp($userid);
+				$nexp = $masters[$ulvl][2] - $uexp;
+				if ( $nexp < 0 ) { $nexp = 0; }
+				foreach ( $masters[$ulvl][3] as $wisdom ) {
+					slowecho("\n  \033[32m{$wisdom}\033[0m");
+				}
+				slowecho("\n\n  \033[1;37m{$masters[$ulvl][0]}\033[0m\033[32m looks at you closely and says...\n");
+				if ( $nexp == 0 ) { slowecho("  \033[32m{$masters[$ulvl][4]}\033[0m\n"); }
+				else { slowecho("  \033[32mYou need about \033[1;37m{$nexp}\033[0m\033[32m experience before you'll be as good as me.\033[0m\n"); }
+				pauser();
+				break;
+			case 'V': // VIEW HALL OF HONOR
+				control_noimp(); break;
+			case 'Y': // VIEW STATS
+				slowecho(module_viewstats($userid)); break;
+			case 'A': // FIGHT MASTER
+				if ( user_seenmaster($userid) ) { slowecho("\n\n  \033[32mI'm sorry my son, you may only fight me once per game-day\033[0m\n"); }
+				else { master_fight(); }
+				break;
+		}
+	}
+}
+
+
+
+function master_fight() {
+    "" Master Fight System ""
+	GLOBAL $userid, $masters, $masterwin, $db, $MYSQL_PREFIX;
+	$userlevel = user_getlevel($userid);
+	$thisunderdog = 0;
+	$userstr = user_getstr($userid);
+	$userdef = user_getdef($userid);
+	$userhstr = ($userstr - ($userstr % 2)) / 2;
+	$userhp = user_gethp($userid);
+	$dead = 0; $ran = 0; $win = 0;
+
+	$enemystr = $masters[$userlevel][7];
+	$enemydef = $masters[$userlevel][8];
+	$enemyhstr = ($enemystr - ($enemystr % 2)) / 2;
+	$enemyhp = $masters[$userlevel][6];
+	$enemyname = $masters[$userlevel][0];
+	$enemywep = $masters[$userlevel][1];
+	
+	slowecho("\n\n  \x1b[32m**\x1b[1;37mFIGHT\x1b[0m\x1b[32m**\n");
+	slowecho("\n  \x1b[32mYour skill allows you to get the first strike.\x1b[0m\n"); 
+	
+	while( $userhp > 0 && $enemyhp > 0 && !$dead && !$ran) {  ## FIGHT LOOP ##
+		$userhp = user_gethp($userid);
+		slowecho(forest_menu($userhp, $enemyhp, $enemyname));
+		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
+		switch ($choice) {
+			case 'S':
+				module_viewstats($userid);
+				break;
+			case 'A':
+				$eattack =  (( $enemyhstr ) + rand(0, $enemyhstr) ) - $userdef;
+				$uattack =  (( $userhstr ) + rand(0, $userhstr)) - $enemydef;
+				if ( !$thisunderdog ) { if ( $uattack > $enemyhp ) { $eattack = 0; } }
+				if ( $eattack > $userhp ) { $eattack = $userhp; $dead = 1;}
+				if ( $eattack > 0 ) {
+					slowecho("\n  \x1b[32m{$enemyname} hits you with {$enemywep} for \x1b[1;31m{$eattack}\x1b[0m\x1b[32m damage\x1b[0m\n"); 
+					user_takehp($userid, $eattack);
+				}
+				if ( $uattack > 0 && !$dead) { 
+					slowecho("\n  \x1b[32mYou hit {$enemyname} for \x1b[1;31m{$uattack}\x1b[0m\x1b[32m damage\n"); 
+					$enemyhp = $enemyhp - $uattack;
+					if ( $enemyhp < 1 ) { 
+						slowecho("  \x1b[31m{$masters[$userlevel][5]}\n"); 
+						$win = 1; }
+				}
+				break;
+			case 'R':
+				slowecho("\n  \x1b[32mYou retire from the field before getting yourself killed.\x1b[0m\n"); 
+				$resethp = "UPDATE {$MYSQL_PREFIX}stats set hp = hpmax WHERE userid = {$userid}";
+				$masterql = "UPDATE {$MYSQL_PREFIX}stats SET master = 1 WHERE userid = {$userid}"; 
+				$result = mysql_query($resethp, $db);
+				$result = mysql_query($masterql, $db);
+				$ran = 1; 
+				break;
+		}
+	}
+	if ( $win ) {
+		$addexp = $masters[$userlevel][2] * .1;
+		user_giveexp($userid, $addexp);
+		user_givedef($userid, $masterwin[$userlevel][2]);
+		user_givestr($userid, $masterwin[$userlevel][1]);
+		user_givehpmax($userid, $masterwin[$userlevel][0]);
+		slowecho("\n  \x1b[32mYou have receieved \x1b[1m+{$masterwin[$userlevel][2]}\x1b[22m vitality, \x1b[1m+{$masterwin[$userlevel][1]}\x1b[22m strength, and \x1b[1m+{$masterwin[$userlevel][0]}\x1b[22m hitpoints.\x1b[0m\n");
+		$newlevel = user_getlevel($userid) + 1;
+		slowecho("  \x1b[32mYou have gained \x1b[1m{$addexp}\x1b[22m experience, and are now level \x1b[1m{$newlevel}\x1b[22m.\x1b[0m\n");
+		user_setlevel($userid, $newlevel);
+		$resethp = "UPDATE {$MYSQL_PREFIX}stats set hp = hpmax WHERE userid = {$userid}";
+		$result = mysql_query($resethp, $db);
+		pauser();
+	}
+	if ( $dead ) {
+		slowecho("\n  \x1b[31mTragically, you are horribly disfigured....  oh wait...\x1b[0m\n");
+		slowecho("  \x1b[31mYou always looked like that you say?...  That's unfortunate...\x1b[0m\n");
+		slowecho("  \x1b[32mAnyway, you lost.  Being the gracious master {$enemyname} is, he heals you and sends you away for the day.\x1b[0m\n");
+		$resethp = "UPDATE {$MYSQL_PREFIX}stats set hp = hpmax WHERE userid = {$userid}";
+		$masterql = "UPDATE {$MYSQL_PREFIX}stats SET master = 1 WHERE userid = {$userid}"; 
+		$result = mysql_query($resethp, $db);
+		$result = mysql_query($masterql, $db);
+		pauser();
+	}
+}"""
+
+

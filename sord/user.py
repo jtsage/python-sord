@@ -360,10 +360,10 @@ class sordUser():
 
 	def updateSkillUse(self, skill, inst):
 		skillname = self.nameSkill(skill)
-		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET "+skillname+" = ( "+skillname+" + "+inst+" ) WHERE userid = "+str(self.thisUserID)
+		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET "+skillname+" = ( "+skillname+" + "+str(inst)+" ) WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		
 	def updateSkillPoint(self, skill, inst):
 		skillname = self.nameSkillPoint(skill)
-		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET "+skillname+" = ( "+skillname+" + "+inst+" ) WHERE userid = "+str(self.thisUserID)
+		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET "+skillname+" = ( "+skillname+" + "+str(inst)+" ) WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)

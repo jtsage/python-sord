@@ -12,7 +12,7 @@ import random
 from functions import *
 from data import *
 from menus import *
-from forest import forest_special, forest_fight
+#from forest import forest_special, forest_fight
 
 def module_newuser(user):
 	"""Create a user"""
@@ -37,7 +37,7 @@ def module_newuser(user):
 			thisLooper = True
 	thisLooper = False
 	while ( not thisLooper ):
-		user.write(casebold("\r\nPick a Password (12 characters MAX) :-: ", 2))
+		user.write(func_casebold("\r\nPick a Password (12 characters MAX) :-: ", 2))
 		newpass = func_getLine(user.connection, True)
 		newpass = newpass[:12]
 		if ( newpass == "" ):
@@ -59,7 +59,7 @@ def module_newuser(user):
 			newsexnum = 2
 			thisLooper = True
 			user.write(func_casebold("Gee sweetheart, hope you don't break a nail...\n", 2))
-	user.write(func_casebold("\r\nPick that which best describes your childhood.\nFrom an early age, you remember:\r\n\r\n", 2))
+	user.write(func_casebold("\r\nPick that which best describes your childhood.\r\nFrom an early age, you remember:\r\n\r\n", 2))
 	user.write(func_normmenu("(D)abbling in the mystical forces"))
 	user.write(func_normmenu("(K)illing a lot of woodland creatures"))
 	user.write(func_normmenu("(L)ying, cheating, and stealing from the blind"))
@@ -270,48 +270,6 @@ def module_heal(user):
 						user.updateHP(number)
 						user.write("\r\n  \x1b[32m\x1b[1m"+str(number)+" \x1b[22mHitPoints are healed and you feel much better!\x1b[0m\r\n")
 						user.pause()
-
-def module_forest(user):
-	""" Forest Fight - Non-Combat """
-	thisQuit = False
-	while ( not thisQuit ):
-		if ( not user.expert ):
-			user.write(user.art.forest())
-		user.write(menu_forest(user))
-		data = user.connection.recv(2)
-		if ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
-			user.write('Q')
-			thisQuit = True
-		if ( data[0] == '?' ):
-			user.write('?')
-			if ( user.expert ):
-				user.write(user.art.forest())
-		if ( data[0] == 'h' or data[0] == 'H' ):
-			user.write('H')
-			module_heal(user)
-		if ( data[0] == 'v' or data[0] == 'V' or data[0] == 'y' or data[0] == 'Y' ):
-			module_viewstats(user)
-		if ( data[0] == 'l' or data[0] == 'l' ):
-			user.write("L\r\n")
-			if ( user.getForestFight() > 0 ):
-				if ( random.randint(1, 8) == 3 ):
-					forest_special(user)
-				else:
-					forest_fight(user)
-			else:
-				user.write(func_casebold("\r\n  You are mighty tired.  Try again tommorow\r\n", 2))
-		if ( data[0] == 'a' or data[0] == 'A' ):
-			user.write('A')
-			user.write(func_casebold("\r\n  You brandish your weapon dramatically.\r\n", 2))
-		if ( data[0] == 'd' or data[0] == 'D' ):
-			user.write('D')
-			user.write(func_casebold("\r\n  Your Death Knight skills cannot help your here.\r\n", 2))
-		if ( data[0] == 'm' or data[0] == 'M' ):
-			user.write('M')
-			user.write(func_casebold("\r\n  Your Mystical skills cannot help your here.\r\n", 2))
-		if ( data[0] == 't' or data[0] == 'T' ):
-			user.write('T')
-			user.write(func_casebold("\r\n  Your Thieving skills cannot help your here.\r\n", 2))
 
 def module_bank(user):
 	""" Ye Olde Bank """
@@ -540,79 +498,29 @@ def module_arthurs(user):
 		if ( data[0] == 'Q' or data[0] == 'q' or data[0] == 'R' or data[0] == 'r' ):
 			user.write('R')
 			thisQuit = True;
-				
 
-""" Turgon's Warrior Training (pre-combat)
- * 
- * Visit the master
- * 
- * @todo Implement the hall of honor (V)
- */
-function module_turgon() {
-	GLOBAL $db, $MYSQL_PREFIX, $masters, $userid;
-	$quitter = 0;
-	while ( !$quitter ) {
-		slowecho(menu_turgon());
-		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-		switch ($choice) {
-			case 'R': // QUIT
-				$quitter = 1; break;
-			case '?': // SHOW MENU
-				break;
-			case 'Q': // QUESTION MASTER
-				$ulvl = user_getlevel($userid);
-				$uexp = user_getexp($userid);
-				$nexp = $masters[$ulvl][2] - $uexp;
-				if ( $nexp < 0 ) { $nexp = 0; }
-				foreach ( $masters[$ulvl][3] as $wisdom ) {
-					slowecho("\n  \033[32m{$wisdom}\033[0m");
-				}
-				slowecho("\n\n  \033[1;37m{$masters[$ulvl][0]}\033[0m\033[32m looks at you closely and says...\n");
-				if ( $nexp == 0 ) { slowecho("  \033[32m{$masters[$ulvl][4]}\033[0m\n"); }
-				else { slowecho("  \033[32mYou need about \033[1;37m{$nexp}\033[0m\033[32m experience before you'll be as good as me.\033[0m\n"); }
-				pauser();
-				break;
-			case 'V': // VIEW HALL OF HONOR
-				control_noimp(); break;
-			case 'Y': // VIEW STATS
-				slowecho(module_viewstats($userid)); break;
-			case 'A': // FIGHT MASTER
-				if ( user_seenmaster($userid) ) { slowecho("\n\n  \033[32mI'm sorry my son, you may only fight me once per game-day\033[0m\n"); }
-				else { master_fight(); }
-				break;
-		}
-	}
-}
+def module_flowers(user):
+	""" The forest flowers
+	@todo random sayings for here in the backend """
+	thisSQL = "SELECT data, nombre FROM (SELECT * FROM "+user.thisSord.sqlPrefix()+"flowers ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id"
+	output  = "\r\n\r\n  \x1b[1;37mStudy the forest flowers\x1b[22;32m....\x1b[0m\r\n"
+	output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+	user.db.execute(thisSQL)
+	for (data, nombre) in user.db.fetchall():
+		output += "    \x1b[32m"+nombre+" \x1b[1;37msays... \x1b[0m\x1b[32m" + func_colorcode(data)
+		output += "\x1b[0m\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+	output += "\r\n  \x1b[32mAdd to the conversation? (Y/N) \x1b[1m: \x1b[0m"
+	user.write(output)
+	yesno = user.connection.recv(2)
+	if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
+		user.write(func_casebold("Y\r\n  What!? What do you want? :-: ", 2))
+		ann = func_getLine(user.connection, True)
+		safeann = user.dbc.escape_string(ann)
+		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"flowers ( `data`, `nombre` ) VALUES ('"+safeann+"', '"+user.thisFullname+"')"
+		user.db.execute(thisSQL)
+		user.write(func_casebold("\r\n  Idiocy added!\r\n", 2))
+		user.pause()
+	else:
+		user.write('N\r\n')
 
-/** Look at the forest flowers
- * 
- * Yet another in-game message board.
- *
- * @todo random sayings generator for this section
- */
-function module_flowers() {
-	GLOBAL $db, $MYSQL_PREFIX, $userid;
-	$sql = "SELECT data, nombre FROM (SELECT * FROM {$MYSQL_PREFIX}flowers ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id";
-	$result = mysql_query($sql, $db);
-	$output = "\n\n  \033[1;37mStudy the forest flowers\033[22;32m....\033[0m\n";
-	$output .= "\033[32m                                      -=-=-=-=-=-\033[0m\n";
-	while ( $line = mysql_fetch_array($result) ) {
-		$output .= "    \033[32m{$line['nombre']} \033[1;37msays... \033[0m\033[32m" . func_colorcode($line['data']);
-		$output .= "\033[0m\n\033[32m                                      -=-=-=-=-=-\033[0m\n";
-	}
-	$output .= "\n  \033[32mAdd to the conversation? \033[1m: \033[0m";
-	slowecho($output);
-	$yesno = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-	if ( $yesno == "Y" ) {
-		slowecho(func_casebold("\n  What!?  What do you want? :-: ", 2));
-		$ann = preg_replace("/\r\n/", "", chop(fgets(STDIN)));
-		$insann = mysql_real_escape_string($ann);
-		$insnme = user_gethandle($userid);
-		$sql = "INSERT INTO {$MYSQL_PREFIX}flowers ( `data`, `nombre` ) VALUES ('{$insann}', '{$insnme}')";
-		$result = mysql_query($sql, $db);
-		slowecho(func_casebold("\n  Idiocy added!\n", 2));
-		pauser();
-	}
-}
-"""
 

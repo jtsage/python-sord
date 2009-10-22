@@ -31,7 +31,7 @@ WILL = chr(251)
 ECHO = chr(1)
 LINEMODE = chr(34) # Linemode option
 SORDDEBUG = False
-#SORDDEBUG = True
+SORDDEBUG = True
 
 def now():			  #Server Time
 	return time.ctime(time.time())
@@ -101,7 +101,7 @@ def handleClient(connection):
 			if ( username == "new" ):
 				print 'New User! ' + str(thisClientAddress)
 				newusername = module_newuser(currentUser)
-				currentUser = sordUser(newusername, mySQLconn, mySQLcurs)
+				currentUser = sordUser(newusername, mySQLconn, mySQLcurs, connection, artwork)
 				newclass = currentUser.getClass()
 				currentUser.updateSkillUse(newclass, 1)
 				currentUser.updateSkillPoint(newclass, 1)
