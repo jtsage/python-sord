@@ -23,8 +23,6 @@ sockobj = socket(AF_INET6, SOCK_STREAM)
 sockobj.bind((myHost, myPort))
 sockobj.listen(5)
 
-
-
 IAC  = chr(255) # "Interpret As Command"
 DONT = chr(254)
 DO   = chr(253)
@@ -190,11 +188,9 @@ def handleClient(connection):
 			skipDisp = True
 		
 		"""
-		case 'F': // THE FOREST
-			module_forest(); break;
 		case 'T': // WARRIOR TRAINING
 			module_turgon(); break;
-					
+		case 'S': // SLAUGHTER
 """
 	currentUser.write(func_casebold("\r\n\r\n   Quitting to the Fields... GoodBye!\r\n", 7))
 	currentUser.logout()
