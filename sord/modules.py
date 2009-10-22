@@ -12,7 +12,7 @@ import random
 from functions import *
 from data import *
 from menus import *
-
+from forest import forest_special, forest_fight
 
 def module_newuser(user):
 	"""Create a user"""
@@ -271,51 +271,47 @@ def module_heal(user):
 						user.write("\r\n  \x1b[32m\x1b[1m"+str(number)+" \x1b[22mHitPoints are healed and you feel much better!\x1b[0m\r\n")
 						user.pause()
 
-"""/** Forest Fight Menu (non-combat)
- * 
- * Visit the forest
- */
-function module_forest() {
-	GLOBAL $userid, $xprt;
-	$quitter = 0;
-	while (!$quitter) {
-		if ( !$xprt ) { slowecho(art_forest()); }
-		slowecho(menu_forest());
-		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-		switch ($choice) {
-			case 'Q': // QUIT
-				$quitter = 1; break;
-			case 'R': // QUIT
-				$quitter = 1; break;
-			case '?': // SHOW MENU
-				if ( $xprt ) { slowecho(art_forest()); } break;
-			case 'H': // HEALERS HUT
-				module_heal(); break;
-			case 'Y': // VIEW STATS
-				module_viewstats($userid); break;
-			case 'V': // VIEW STATS
-				module_viewstats($userid); break;
-			case 'L': // LOOK FOR SOMETHING TO KILL
-				$ffights = user_getffight($userid);
-				if ( $ffights > 0 ) {
-					$happening = rand(1, 8);
-					if ( $happening == 3 ) { forest_special(); }
-					else { forest_fight(); }
-				} else { slowecho(func_casebold("  You are mighty tired.  Try again tommorow\n", 2)); }
-				break;
-			case 'A': // ATTACK NOTHING
-				slowecho(func_casebold("  You brandish your weapon dramatically.\n", 2)); break;
-			case 'D': // SPECIAL ATTACK NOTHING
-				slowecho(func_casebold("  Your Death Knight skills cannot help your here.\n", 2)); break;
-			case 'M': // SPECIAL ATTACK NOTHING
-				slowecho(func_casebold("  Your Mystical skills cannot help your here.\n", 2)); break;
-			case 'T': // SPECIAL ATTACK NOTHING
-				slowecho(func_casebold("  Your Thieving skills cannot help your here.\n", 2)); break;
-		}
-	}
-}
-
-"""
+def module_forest(user):
+	""" Forest Fight - Non-Combat """
+	thisQuit = False
+	while ( not thisQuit ):
+		if ( not user.expert ):
+			user.write(user.art.forest())
+		user.write(menu_forest(user))
+		data = user.connection.recv(2)
+		if ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
+			user.write('Q')
+			thisQuit = True
+		if ( data[0] == '?' ):
+			user.write('?')
+			if ( user.expert ):
+				user.write(user.art.forest())
+		if ( data[0] == 'h' or data[0] == 'H' ):
+			user.write('H')
+			module_heal(user)
+		if ( data[0] == 'v' or data[0] == 'V' or data[0] == 'y' or data[0] == 'Y' ):
+			module_viewstats(user)
+		if ( data[0] == 'l' or data[0] == 'l' ):
+			user.write("L\r\n")
+			if ( user.getForestFight > 0 ):
+				if ( random.randint(1, 8) == 3 ):
+					forest_special(user)
+				else:
+					forest_fight(user)
+			else:
+				user.write(func_casebold("\r\n  You are mighty tired.  Try again tommorow\r\n", 2))
+		if ( data[0] == 'a' or data[0] == 'A' ):
+			user.write('A')
+			user.write(func_casebold("\r\n  You brandish your weapon dramatically.\r\n", 2))
+		if ( data[0] == 'd' or data[0] == 'D' ):
+			user.write('D')
+			user.write(func_casebold("\r\n  Your Death Knight skills cannot help your here.\r\n", 2))
+		if ( data[0] == 'm' or data[0] == 'M' ):
+			user.write('M')
+			user.write(func_casebold("\r\n  Your Mystical skills cannot help your here.\r\n", 2))
+		if ( data[0] == 't' or data[0] == 'T' ):
+			user.write('T')
+			user.write(func_casebold("\r\n  Your Thieving skills cannot help your here.\r\n", 2))
 
 def module_bank(user):
 	""" Ye Olde Bank """

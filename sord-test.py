@@ -11,6 +11,7 @@ from sord.modules import *
 from sord.menus import *
 from sord.messaging import *
 from sord.rdi import *
+from sord.forest import *
 
 from config import sord
 from socket import *
@@ -182,6 +183,9 @@ def handleClient(connection):
 		elif ( data[0] == "i" or data[0] == "I" ):
 			connection.send('I')
 			rdi_logic(currentUser)
+		elif ( data[0] == "f" or data[0] == "F" ):
+			connection.send('F')
+			module_forest(currentUser)
 		else:
 			skipDisp = True
 		
@@ -194,6 +198,7 @@ def handleClient(connection):
 """
 	currentUser.write(func_casebold("\r\n\r\n   Quitting to the Fields... GoodBye!\r\n", 7))
 	currentUser.logout()
+	connection.shutdown(SHUT_RD)
 	connection.close()
 	print 'Thread Disconnected::' + str(thisClientAddress)
 	thread.exit()

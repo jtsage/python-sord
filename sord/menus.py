@@ -52,7 +52,7 @@ def menu_bank(user):
  * @return string Fully formatted menu """
 def menu_forest(user):
 	ptime = func_maketime(user)
-	thismenu = "  \x1b[32mHitPoints: (\x1b[1m" + str(user.getHP()) + "\x1b[22m of \x1b[1m" + str(user.getHPMax())
+	thismenu = "\r\n  \x1b[32mHitPoints: (\x1b[1m" + str(user.getHP()) + "\x1b[22m of \x1b[1m" + str(user.getHPMax())
 	thismenu += "\x1b[22m)  Fights: \x1b[1m" + str(user.getForestFight()) + "\x1b[22m  Gold: \x1b[1m" + str(user.getGold())
 	thismenu += "\x1b[22m  Gems: \x1b[1m" + str(user.getGems()) + "\x1b[0m\r\n"
 	thismenu += "  \x1b[1;35mThe Forest  \x1b[1;30m(L,H,R,Q) (? for menu)\x1b[0m\r\n\r\n"
