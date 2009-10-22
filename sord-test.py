@@ -31,7 +31,7 @@ WILL = chr(251)
 ECHO = chr(1)
 LINEMODE = chr(34) # Linemode option
 SORDDEBUG = False
-SORDDEBUG = True
+#SORDDEBUG = True
 
 def now():			  #Server Time
 	return time.ctime(time.time())
@@ -65,7 +65,7 @@ def handleClient(connection):
 			quitfull = True
 		if ( data == "L" or data == "l" ):
 			func_slowecho(connection, module_list(artwork, mySQLcurs, mySord.sqlPrefix()))
-			pauser(connection)
+			func_pauser(connection)
 		if ( data == "E" or data == "e" ):
 			print 'User Logging In::' + str(thisClientAddress)
 			quitter = True

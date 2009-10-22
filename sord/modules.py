@@ -239,7 +239,7 @@ def module_heal(user):
 				if ( usergold < perhpgold ):
 					user.write(func_casebold("\r\n  You are too poor to heal anything!\r\n)", 2))
 				else:
-					fullcosttoheal = hptoheal * perhpfold
+					fullcosttoheal = hptoheal * perhpgold
 					canaffordtoheal =  ( usergold - ( usergold % perhpgold ) ) / perhpgold
 					if ( canaffordtoheal >= hptoheal ):
 						canaffordtoheal = hptoheal
