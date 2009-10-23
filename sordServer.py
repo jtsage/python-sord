@@ -1,8 +1,16 @@
 #!/usr/bin/python
-# Copyright (c) 2001-2004 Twisted Matrix Laboratories.
-# See LICENSE for details.
+""" Saga of the Red Dragon - Main Program Loop
 
-#
+  * A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  
+  * All attempts were made to be as close to the original as possible, 
+  * including some original artwork, the original fight equations, and 
+  * most especially the original spelling and punctuation mistakes.  Enjoy.
+
+  * @author J.T.Sage
+  * @copyright 2009-2011
+  * @license http://sord.jtsage.com/LICENSE Disclaimer's License
+  * @version 0.9.9
+  @todo IGM framework, main menu '1' for image."""
 import thread, threading, time, MySQLdb, sys
 from sord.art import *
 from sord.functions import *
