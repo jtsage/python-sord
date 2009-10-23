@@ -84,7 +84,6 @@ def rdi_logic(user):
 			user.write('G')
 			rdi_getroom(user)
 		if ( data[0] == 'e' or data[0] == 'E' ):
-			print user.jennielevel
 			if ( user.jennielevel == 4 and not user.jennieused ):
 				user.jennielevel = 0
 				user.jennieused = False #True
