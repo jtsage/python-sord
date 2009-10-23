@@ -24,6 +24,8 @@ class sordUser():
 		self.db = db
 		self.connection = connection
 		self.art = art
+		self.jennielevel = 0
+		self.jennieused = False
 		thisSQL = "SELECT userid,password,fullname FROM "+self.thisSord.sqlPrefix()+"users WHERE username = '"+loginname+"'"
 		self.thisUserName = loginname
 		self.db.execute(thisSQL)

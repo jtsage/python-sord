@@ -25,7 +25,10 @@ def menu_turgon(user):
 	thismenu += func_normmenu("(A)ttack Master")
 	thismenu += "  \x1b[32m(\x1b[1;37mV\x1b[0m\x1b[32m)\x1b[1;37misit The Hall Of Honor\x1b[0m\r\n"
 	thismenu += func_normmenu("(R)eturn to Town")
-	thismenu += "\r\n  \x1b[32mYour master is \x1b[1;37m"+masters[user.getLevel()][0]+"\x1b[0m\x1b[32m.\x1b[0m\r\n\r\n"
+	try:
+		thismenu += "\r\n  \x1b[32mYour master is \x1b[1;37m"+masters[user.getLevel()][0]+"\x1b[0m\x1b[32m.\x1b[0m\r\n\r\n"
+	except IndexError:
+		thismenu += "\r\n  \x1b[32mYou have no master.  You are as smart as you can possibly get.\x1b[0m\r\n\r\n"
 	thismenu += "\x1b[1;35m  Turgon's Warrior Training \x1b[1;30m(Q,A,V,R) (? for menu)\x1b[0m\r\n\r\n"
 	thismenu += "  \x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
 	return thismenu

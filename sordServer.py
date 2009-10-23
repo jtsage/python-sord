@@ -84,7 +84,7 @@ def handleClient(connection):
 		loggedin = True
 		currentUser = sordUser('jtsage', mySQLconn, mySQLcurs, connection, artwork)
 
-	while ( not loggedin ):
+	while ( not loggedin and not quitfull ):
 		username = ""
 		password = ""
 		currentUser = ""
@@ -117,12 +117,13 @@ def handleClient(connection):
 			else:
 				func_slowecho(connection, func_casebold("\r\nUser Name Not Found!\r\n",2))
 				
-	currentUser.login()
-	print 'User Logged in::' + currentUser.thisFullname + ' ' + str(thisClientAddress)
+	if ( not quitfull ):
+		currentUser.login()
+		print 'User Logged in::' + currentUser.thisFullname + ' ' + str(thisClientAddress)
 
-	if currentUser.isDead() :
-		quitfull = 2
-		currentUser.write(func_casebold("\r\nI'm Afraid You Are DEAD Right Now.  Sorry\r\n", 1))
+		if currentUser.isDead() :
+			quitfull = 2
+			currentUser.write(func_casebold("\r\nI'm Afraid You Are DEAD Right Now.  Sorry\r\n", 1))
 		
 	if ( not quitfull ):
 		if ( not SORDDEBUG ):
@@ -147,63 +148,100 @@ def handleClient(connection):
 			quitfull = True
 		elif ( data[0] == "x" or data[0] == "X" ):
 			connection.send('X')
+			currentUser.jennielevel = 0
 			currentUser.toggleXprt()
 		elif ( data[0] == "v" or data[0] == "V" ):
 			connection.send('V')
+			currentUser.jennielevel = 0
 			currentUser.write(module_viewstats(currentUser))
 			currentUser.pause()
 		elif ( data[0] == "d" or data[0] == "D" ):
 			connection.send('D')
+			currentUser.jennielevel = 0
 			currentUser.write(module_dailyhappen(True, mySQLcurs, mySord.sqlPrefix()))
 			currentUser.pause()
 		elif ( data[0] == "?" ):
 			connection.send('?')
+			currentUser.jennielevel = 0
 			if ( currentUser.expert ):
 				currentUser.write(menu_mainlong(currentUser))
 		elif ( data[0] == "p" or data[0] == "P" ):
 			connection.send('P')
+			currentUser.jennielevel = 0
 			currentUser.write(module_who(artwork, mySQLcurs, mySord.sqlPrefix()))
 			currentUser.pause()
 		elif ( data[0] == "l" or data[0] == "L" ):
 			connection.send('L')
+			currentUser.jennielevel = 0
 			currentUser.write(module_list(artwork, mySQLcurs, mySord.sqlPrefix()))
 			currentUser.pause()
 		elif ( data[0] == "a" or data[0] == "A" ):
 			connection.send('A')
+			currentUser.jennielevel = 0
 			module_abduls(currentUser)
 		elif ( data[0] == "k" or data[0] == "K" ):
 			connection.send('K')
+			currentUser.jennielevel = 0
 			module_arthurs(currentUser)
 		elif ( data[0] == "y" or data[0] == "Y" ):
 			connection.send('Y')
+			currentUser.jennielevel = 0
 			module_bank(currentUser)
 		elif ( data[0] == "h" or data[0] == "H" ):
 			connection.send('H')
+			currentUser.jennielevel = 0
 			module_heal(currentUser)
 		elif ( data[0] == "m" or data[0] == "M" ):
 			connection.send('M')
+			currentUser.jennielevel = 0
 			msg_announce(currentUser)
 		elif ( data[0] == "w" or data[0] == "W" ):
 			connection.send('W')
+			currentUser.jennielevel = 0
 			msg_sendmail(currentUser)
 		elif ( data[0] == "i" or data[0] == "I" ):
 			connection.send('I')
 			rdi_logic(currentUser)
 		elif ( data[0] == "f" or data[0] == "F" ):
 			connection.send('F')
+			currentUser.jennielevel = 0
 			module_forest(currentUser)
 		elif ( data[0] == 't' or data[0] == 'T' ):
 			connection.send('T')
+			currentUser.jennielevel = 0
 			module_turgon(currentUser)
 		elif ( data[0] == "1" ):
 			connection.send("1\r\n")
+			currentUser.jennielevel = 0
 			currentUser.write(artwork.info(currentUser))
 			currentUser.pause()
 		elif ( data[0] == 's' or data[0] == 'S' ):
 			connection.send('S')
+			currentUser.jennielevel = 0
 			module_killer(currentUser)
+		elif ( data[0] == 'j' or data[0] == 'J' ):
+			skipDisp = True
+			if currentUser.jennielevel == 0 :
+				currentUser.jennielevel = 1
+			else:
+				currentUser.jennielevel = 0
+		elif ( data[0] == 'e' or data[0] == 'E' ):
+			skipDisp = True
+			if currentUser.jennielevel == 1:
+				currentUser.jennielevel = 2
+			else:
+				currentUser.jennielevel = 0
+		elif ( data[0] == 'n' or data[0] == 'N' ):
+			skipDisp = True
+			if currentUser.jennielevel == 2:
+				currentUser.jennielevel = 3
+			elif currentUser.jennielevel == 3:
+				currentUser.jennielevel = 4
+			else:
+				currentUser.jennielevel = 0
 		else:
 			skipDisp = True
+			currentUser.jennielevel = 0
 
 	currentUser.write(func_casebold("\r\n\r\n   Quitting to the Fields... GoodBye!\r\n", 7))
 	currentUser.logout()

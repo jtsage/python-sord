@@ -83,6 +83,14 @@ def rdi_logic(user):
 		if ( data[0] == 'g' or data[0] == 'G' ):
 			user.write('G')
 			rdi_getroom(user)
+		if ( data[0] == 'e' or data[0] == 'E' ):
+			print user.jennielevel
+			if ( user.jennielevel == 4 and not user.jennieused ):
+				user.jennielevel = 0
+				user.jennieused = False #True
+				user.write("\r\n  \x1b[32mJennie, eh?  Describe Her :\x1b[0m ")
+				desc = func_getLine(user.connection, true)
+				user.write("\r\nCODE TRIGGERED\r\n")
 
 def rdi_getroom(user):
 	""" Red Dragon Inn Get a Room """
@@ -96,11 +104,11 @@ def rdi_getroom(user):
 			user.write("\r\n  \x1b[35m\"How bout you find yourself a nice stretch of cardboard box ya bum?\x1b[0m\r\n")
 		else:
 			user.updateGold(price * -1)
+			user.write("\r\n  \x1b[32mEnjoy your stay.  At next login, you will automatically leave the inn.\x1b[0m\r\n")
 			thisSQL = "UPDATE "+user.thisSord.sqlPrefix()+"stats SET atinn = 1 WHERE userid = "+str(user.thisUserID)
 			user.db.execute(thisSQL)
 			user.logout()
 			user.connection.close()
-			thread.exit()
 	else:
 		user.write("\r\n  \x1b[35m\"Suit yourself...\"\x1b[0m\r\n")
 

@@ -591,25 +591,33 @@ def module_turgon(user):
 			user.write("?\r\n")
 		elif ( data[0] == 'q' or data[0] == 'Q' ):
 			user.write("Q\r\n")
-			thisUserLevel = user.getLevel()
-			thisUserExp   = user.getExperience()
-			thisNeedExp   = masters[thisUserLevel][2] - thisUserExp
-			for thisWisdom in masters[thisUserLevel][3]:
-				user.write("\r\n  \x1b[32m"+thisWisdom+"\x1b[0m")
-			user.write("\r\n\r\n  \x1b[1;37m"+masters[thisUserLevel][0]+"\x1b[0;32m looks at you closely and says...\r\n")
-			if ( thisNeedExp < 1 ):
-				user.write("\r\n  \x1b[32m"+masters[thisUserLevel][4]+"\x1b[0m\r\n")
+			if ( user.getLevel() < 12 ):
+				thisUserLevel = user.getLevel()
+				thisUserExp   = user.getExperience()
+				thisNeedExp   = masters[thisUserLevel][2] - thisUserExp
+				for thisWisdom in masters[thisUserLevel][3]:
+					user.write("\r\n  \x1b[32m"+thisWisdom+"\x1b[0m")
+				user.write("\r\n\r\n  \x1b[1;37m"+masters[thisUserLevel][0]+"\x1b[0;32m looks at you closely and says...\r\n")
+				if ( thisNeedExp < 1 ):
+					user.write("\r\n  \x1b[32m"+masters[thisUserLevel][4]+"\x1b[0m\r\n")
+				else:
+					user.write("\r\n  \x1b[32mYou need about \x1b[1;37m"+str(thisNeedExp)+"\x1b[0;32m experience before you'll be as good as me.\x1b[0m\r\n")
 			else:
-				user.write("\r\n  \x1b[32mYou need about \x1b[1;37m"+str(thisNeedExp)+"\x1b[0;32m experience before you'll be as good as me.\x1b[0m\r\n")
+				user.write("\r\n  \x1b[32mYou have learned all that you can.  This place holds nothing more for you!\x1b[0m\r\n")
 			user.pause()
 		elif ( data[0] == 'v' or data[0] == 'V' ):
+			user.write('V')
 			user.write("\r\n  Not Yet Implemented, sorry.\r\n")
 			user.pause()
 		elif ( data[0] == 'y' or data[0] == 'Y' ):
+			user.write('Y')
 			user.write(module_viewstats(user))
 			user.pause()
 		elif ( data[0] == 'a' or data[0] == 'A' ):
-			if ( user.didMaster() ):
+			user.write('A')
+			if ( user.getLevel() > 11 ):
+				user.write("\r\n\r\n  \x1b[32mThere is no master for you to attack stoopid!\x1b[0m\r\n")
+			elif ( user.didMaster() ):
 				user.write("\r\n\r\n  \x1b[32mI'm sorry my son, you may only fight me once per game-day\x1b[0m\r\n")
 			else:
 				master_fight(user)
