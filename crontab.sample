@@ -1,0 +1,7 @@
+# m h  dom mon dow   command
+MAILTO=""
+
+# 24 hour game day
+0 0 * * * /path/to/sord/BackendSord.php
+# 8 hour game day
+#0 0,8,16 * * * /path/to/sord/BackendSord.php

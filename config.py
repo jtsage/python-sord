@@ -45,10 +45,10 @@ class sord():
 		return "JTSage"
 		
 	def dayLength(self):
-		return 8
+		return 24
 		
 	def bankInterest(self):
-		return 10
+		return 2
 		
 	def deleteInactive(self):
 		return 256
