@@ -89,7 +89,46 @@ def rdi_logic(user):
 				user.jennieused = False #True
 				user.write("\r\n  \x1b[32mJennie, eh?  Describe Her :\x1b[0m ")
 				desc = func_getLine(user.connection, true)
-				user.write("\r\nCODE TRIGGERED\r\n")
+				if ( desc == "babe" or desc == "BABE" ):
+					user.write("\r\n  \x1b[32mI agree!\x1b[0m\r\n")
+					user.updateForestFight(1)
+				elif ( desc == "cool" or desc == "COOL" ):
+					user.write("\r\n  \x1b[32mYes, yes she is.\x1b[0m\r\n")
+					user.updateCharm(1)
+				elif ( desc == "dumb" or desc == "DUMB" ):
+					user.write("\r\n  \x1b[31mNo, *you're* dumb!\x1b[0m\r\n")
+				elif ( desc == "dung" or desc == "DUNG" ):
+					user.write("\r\n  \x1b[31mBe a frog stoopid.\x1b[0m\r\n")
+				elif ( desc == "fair" or desc == "FAIR" ):
+					user.setFlirt()
+					user.write("\r\n  \x1b[31mYeah, a bit more than that though.\x1b[0m\r\n")
+				elif ( desc == "foxy" or desc == "FOXY" ):
+					user.updateGems(1)
+					user.write("\r\n  \x1b[32mAnd how!\x1b[0m\r\n")
+				elif ( desc == "gift" or desc == "GIFT" ):
+					addskill = user.getSkillPoint(user.getClass()) - user.getSkillUse(user.getClass())
+					if ( addskill > 0 ):
+						user.updateSkillUse(user.getClass(), addskill)
+					user.write("\r\n  \x1b[32mOk, she can give you a gift.\x1b[0m\r\n")
+				elif ( desc == "hott" or desc == "HOTT" ):
+					user.write("\r\n  \x1b[32mHell yeah she is!\x1b[0m\r\n")
+					addtohp = user.getHPMax() - user.getHP()
+					addtohp = addtohp + ( user.getHPMax() / 5 )
+					user.updateHP(addtohp)
+				elif ( desc == "lady" or desc == "LADY" ):
+					user.write("\r\n  \x1b[32mShe's a lady... woo woo woo\x1b[0m\r\n")
+					user.updateGold(user.getLevel() * 1000)
+				elif ( desc == "nice" or desc == "NICE" or desc == "star" or desc == "STAR" ):
+					user.write("\r\n  \x1b[32mDuh.\x1b[0m\r\n")
+				elif ( desc == "sexy" or desc == "SEXY" ):
+					user.write("\r\n  \x1b[32mIndeed.\x1b[0m\r\n")
+					user.updatePlayerFight(1)
+				elif ( desc == "ugly" or desc == "UGLY" ):
+					user.write("\r\n  \x1b[31mYou're an ass.\x1b[0m\r\n")
+					hptorem = user.getHP() - 1
+					user.updateHP(hptorem * -1)
+				else:
+					user.write("\r\n  \x1b[34mBetter luck next time.\x1b[0m\r\n")
 
 def rdi_getroom(user):
 	""" Red Dragon Inn Get a Room """
