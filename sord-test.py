@@ -31,7 +31,7 @@ WILL = chr(251)
 ECHO = chr(1)
 LINEMODE = chr(34) # Linemode option
 SORDDEBUG = False
-SORDDEBUG = True
+#SORDDEBUG = True
 
 def now():			  #Server Time
 	return time.ctime(time.time())
@@ -184,14 +184,19 @@ def handleClient(connection):
 		elif ( data[0] == "f" or data[0] == "F" ):
 			connection.send('F')
 			module_forest(currentUser)
+		elif ( data[0] == 't' or data[0] == 'T' ):
+			connection.send('T')
+			module_turgon(currentUser)
+		elif ( data[0] == "1" ):
+			connection.send("1\r\n")
+			currentUser.write(artwork.info(currentUser))
+			currentUser.pause()
+		elif ( data[0] == 's' or data[0] == 'S' ):
+			connection.send('S')
+			module_killer(currentUser)
 		else:
 			skipDisp = True
-		
-		"""
-		case 'T': // WARRIOR TRAINING
-			module_turgon(); break;
-		case 'S': // SLAUGHTER
-"""
+
 	currentUser.write(func_casebold("\r\n\r\n   Quitting to the Fields... GoodBye!\r\n", 7))
 	currentUser.logout()
 	connection.shutdown(SHUT_RD)

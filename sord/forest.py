@@ -10,6 +10,81 @@ import random, re, time
 from functions import *
 from data import *
 from modules import *
+from user import sordUser
+
+def module_killer(user):
+	""" Forest Fight - Non-Combat """
+	thisQuit = False
+	while ( not thisQuit ):
+		user.write(menu_slaughter(user))
+		data = user.connection.recv(2)
+		if ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
+			user.write('R')
+			thisQuit = True
+		if ( data[0] == 'e' or data[0] == 'E' ):
+			user.write('E')
+			module_dirt(user)
+		if ( data[0] == 'w' or data[0] == 'W' ):
+			user.write('W')
+			if ( user.getKiller() > 0 ):
+				user.write(func_casebold("\r\n  Carve what in the soft dirt? :-: ", 2))
+				ann = func_getLine(user.connection, True)
+				safeann = user.dbc.escape_string(ann)
+				thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"dirt ( `data`, `nombre` ) VALUES ('"+safeann+"', '"+user.thisFullname+"')"
+				user.db.execute(thisSQL)
+				user.write(func_casebold("\r\n  Carving Added!\r\n", 2))
+				user.pause()
+			else:
+				user.write("\r\n  \x1b[32mYou have to accomplish something here before you can trash talk!\x1b[0m\r\n")
+		if ( data[0] == 'l' or data[0] == 'L' ):
+			user.write('L')
+			user.write(killer_list(user))
+			user.pause()
+		if ( data[0] == 's' or data[0] == 'S' ):
+			user.write("S\r\n")
+			tokillID = module_finduser(user, "\r\n  \x1b[32mKill Who ?")
+			if ( tokillID > 0 ):
+				tokillName = user.userGetLogin(tokillID)
+				usertoKill = sordUser(tokillName, user.dbc, user.db, user.connection, user.art)
+				if ( usertoKill.isDead() ):
+					user.write("\r\n  \x1b[31mAlready dead your holiness...\x1b[0m\r\n")
+					user.pause()
+				elif ( usertoKill.isOnline() ):
+					user.write("\r\n  \x1b[32mThey are online right now!  (and real time player fights are not yet supported.  sorry)\x1b[0m\r\n")
+					user.pause()
+				else:
+					killer_fight(user, usertoKill)
+			else:
+				user.write("\r\n  \x1b[32mNo user by that name found.\x1b[0m\r\n")
+
+def killer_list(user):
+	""" Player List
+	* @return string Formatted output for display """
+	thisSQL = "SELECT u.userid, fullname, exp, level, class, sex, alive FROM "+user.thisSord.sqlPrefix()+"users u, "+user.thisSord.sqlPrefix()+"stats s WHERE u.userid = s.userid AND s.atinn = 0 AND u.userid <> "+str(user.thisUserID)+" AND u.userid NOT IN ( SELECT userid FROM "+user.thisSord.sqlPrefix()+"online ) ORDER BY exp DESC"
+	user.db.execute(thisSQL)
+	output = "\r\n\r\n\x1b[32m    Name                    Experience    Level     Status\x1b[0m\r\n";
+	output += user.art.line()
+	for line in user.db.fetchall():
+		if ( line[5] == 2 ):
+			lineSex = "\x1b[1;35mF\x1b[0m "
+		else:
+			lineSex = "  "
+			
+		if ( line[4] == 1 ):
+			lineClass = "\x1b[1;31mD \x1b[0m"
+		elif ( line[4] == 2 ):
+			lineClass = "\x1b[1;31mM \x1b[0m"
+		else:
+			lineClass = "\x1b[1;31mT \x1b[0m"
+
+		if ( line[6] == 1 ):
+			lineStatus = "\x1b[1;32mAlive\x1b[0m"
+		else:
+			lineStatus = "\x1b[31mDead\x1b[0m"
+
+		output += lineSex + lineClass + "\x1b[32m" + line[1] + padnumcol(str(line[1]), 23) + padright(str(line[2]), 11)
+		output += padright(str(line[3]), 6) + "        " + lineStatus + "\r\n"
+	return output + "\r\n"
 
 def module_forest(user):
 	""" Forest Fight - Non-Combat """
@@ -26,6 +101,9 @@ def module_forest(user):
 			user.write('?')
 			if ( user.expert ):
 				user.write(user.art.forest())
+		if ( data[0] == 'x' or data[0] == 'X' ):
+			user.write('X')
+			user.toggleXprt()
 		if ( data[0] == 'h' or data[0] == 'H' ):
 			user.write('H')
 			module_heal(user)
@@ -499,130 +577,238 @@ def forest_lesson_m(user) :
 			else:
 				user.write("\r\n  \x1b[32mBetter luck next time!\x1b[0m\r\n")
 
-""" Turgon's Warrior Training (pre-combat)
- * 
- * Visit the master
- * 
- * @todo Implement the hall of honor (V)
- */
-function module_turgon() {
-	GLOBAL $db, $MYSQL_PREFIX, $masters, $userid;
-	$quitter = 0;
-	while ( !$quitter ) {
-		slowecho(menu_turgon());
-		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-		switch ($choice) {
-			case 'R': // QUIT
-				$quitter = 1; break;
-			case '?': // SHOW MENU
-				break;
-			case 'Q': // QUESTION MASTER
-				$ulvl = user_getlevel($userid);
-				$uexp = user_getexp($userid);
-				$nexp = $masters[$ulvl][2] - $uexp;
-				if ( $nexp < 0 ) { $nexp = 0; }
-				foreach ( $masters[$ulvl][3] as $wisdom ) {
-					slowecho("\n  \033[32m{$wisdom}\033[0m");
-				}
-				slowecho("\n\n  \033[1;37m{$masters[$ulvl][0]}\033[0m\033[32m looks at you closely and says...\n");
-				if ( $nexp == 0 ) { slowecho("  \033[32m{$masters[$ulvl][4]}\033[0m\n"); }
-				else { slowecho("  \033[32mYou need about \033[1;37m{$nexp}\033[0m\033[32m experience before you'll be as good as me.\033[0m\n"); }
-				pauser();
-				break;
-			case 'V': // VIEW HALL OF HONOR
-				control_noimp(); break;
-			case 'Y': // VIEW STATS
-				slowecho(module_viewstats($userid)); break;
-			case 'A': // FIGHT MASTER
-				if ( user_seenmaster($userid) ) { slowecho("\n\n  \033[32mI'm sorry my son, you may only fight me once per game-day\033[0m\n"); }
-				else { master_fight(); }
-				break;
-		}
-	}
-}
+def module_turgon(user):
+	""" Visit the master 
+	@todo Hall of honor """
+	thisQuit = False
+	while ( not thisQuit ):
+		user.write(menu_turgon(user))
+		data = user.connection.recv(2)
+		if ( data[0] == 'r' or data[0] == 'R' ):
+			user.write('R')
+			thisQuit = True
+		elif ( data[0] == '?' ):
+			user.write("?\r\n")
+		elif ( data[0] == 'q' or data[0] == 'Q' ):
+			user.write("Q\r\n")
+			thisUserLevel = user.getLevel()
+			thisUserExp   = user.getExperience()
+			thisNeedExp   = masters[thisUserLevel][2] - thisUserExp
+			for thisWisdom in masters[thisUserLevel][3]:
+				user.write("\r\n  \x1b[32m"+thisWisdom+"\x1b[0m")
+			user.write("\r\n\r\n  \x1b[1;37m"+masters[thisUserLevel][0]+"\x1b[0;32m looks at you closely and says...\r\n")
+			if ( thisNeedExp < 1 ):
+				user.write("\r\n  \x1b[32m"+masters[thisUserLevel][4]+"\x1b[0m\r\n")
+			else:
+				user.write("\r\n  \x1b[32mYou need about \x1b[1;37m"+str(thisNeedExp)+"\x1b[0;32m experience before you'll be as good as me.\x1b[0m\r\n")
+			user.pause()
+		elif ( data[0] == 'v' or data[0] == 'V' ):
+			user.write("\r\n  Not Yet Implemented, sorry.\r\n")
+			user.pause()
+		elif ( data[0] == 'y' or data[0] == 'Y' ):
+			user.write(module_viewstats(user))
+			user.pause()
+		elif ( data[0] == 'a' or data[0] == 'A' ):
+			if ( user.didMaster() ):
+				user.write("\r\n\r\n  \x1b[32mI'm sorry my son, you may only fight me once per game-day\x1b[0m\r\n")
+			else:
+				master_fight(user)
 
-
-
-function master_fight() {
-    "" Master Fight System ""
-	GLOBAL $userid, $masters, $masterwin, $db, $MYSQL_PREFIX;
-	$userlevel = user_getlevel($userid);
-	$thisunderdog = 0;
-	$userstr = user_getstr($userid);
-	$userdef = user_getdef($userid);
-	$userhstr = ($userstr - ($userstr % 2)) / 2;
-	$userhp = user_gethp($userid);
-	$dead = 0; $ran = 0; $win = 0;
-
-	$enemystr = $masters[$userlevel][7];
-	$enemydef = $masters[$userlevel][8];
-	$enemyhstr = ($enemystr - ($enemystr % 2)) / 2;
-	$enemyhp = $masters[$userlevel][6];
-	$enemyname = $masters[$userlevel][0];
-	$enemywep = $masters[$userlevel][1];
+def master_fight(user):
+	""" Master Fight System """
+	thisUserLevel = user.getLevel()
+	thisTopEnemy  = len(enemies[thisUserLevel]) - 1
+	thisUserDefense = user.getDefense()
+	thisUserHit     = user.getStrength() / 2
+	ctrlDead = False
+	ctrlRan  = False
+	ctrlWin  = False
+	thisEnemyHit     = masters[thisUserLevel][7] / 2
+	thisEnemyDefense = masters[thisUserLevel][8]
+	thisEnemyHP      = masters[thisUserLevel][6]
+	thisEnemyName    = masters[thisUserLevel][0]
+	thisEnemyWeapon  = masters[thisUserLevel][1]
 	
-	slowecho("\n\n  \x1b[32m**\x1b[1;37mFIGHT\x1b[0m\x1b[32m**\n");
-	slowecho("\n  \x1b[32mYour skill allows you to get the first strike.\x1b[0m\n"); 
-	
-	while( $userhp > 0 && $enemyhp > 0 && !$dead && !$ran) {  ## FIGHT LOOP ##
-		$userhp = user_gethp($userid);
-		slowecho(forest_menu($userhp, $enemyhp, $enemyname));
-		$choice = preg_replace("/\r\n/", "", strtoupper(substr(fgets(STDIN), 0, 1)));
-		switch ($choice) {
-			case 'S':
-				module_viewstats($userid);
-				break;
-			case 'A':
-				$eattack =  (( $enemyhstr ) + rand(0, $enemyhstr) ) - $userdef;
-				$uattack =  (( $userhstr ) + rand(0, $userhstr)) - $enemydef;
-				if ( !$thisunderdog ) { if ( $uattack > $enemyhp ) { $eattack = 0; } }
-				if ( $eattack > $userhp ) { $eattack = $userhp; $dead = 1;}
-				if ( $eattack > 0 ) {
-					slowecho("\n  \x1b[32m{$enemyname} hits you with {$enemywep} for \x1b[1;31m{$eattack}\x1b[0m\x1b[32m damage\x1b[0m\n"); 
-					user_takehp($userid, $eattack);
-				}
-				if ( $uattack > 0 && !$dead) { 
-					slowecho("\n  \x1b[32mYou hit {$enemyname} for \x1b[1;31m{$uattack}\x1b[0m\x1b[32m damage\n"); 
-					$enemyhp = $enemyhp - $uattack;
-					if ( $enemyhp < 1 ) { 
-						slowecho("  \x1b[31m{$masters[$userlevel][5]}\n"); 
-						$win = 1; }
-				}
-				break;
-			case 'R':
-				slowecho("\n  \x1b[32mYou retire from the field before getting yourself killed.\x1b[0m\n"); 
-				$resethp = "UPDATE {$MYSQL_PREFIX}stats set hp = hpmax WHERE userid = {$userid}";
-				$masterql = "UPDATE {$MYSQL_PREFIX}stats SET master = 1 WHERE userid = {$userid}"; 
-				$result = mysql_query($resethp, $db);
-				$result = mysql_query($masterql, $db);
-				$ran = 1; 
-				break;
-		}
-	}
-	if ( $win ) {
-		$addexp = $masters[$userlevel][2] * .1;
-		user_giveexp($userid, $addexp);
-		user_givedef($userid, $masterwin[$userlevel][2]);
-		user_givestr($userid, $masterwin[$userlevel][1]);
-		user_givehpmax($userid, $masterwin[$userlevel][0]);
-		slowecho("\n  \x1b[32mYou have receieved \x1b[1m+{$masterwin[$userlevel][2]}\x1b[22m vitality, \x1b[1m+{$masterwin[$userlevel][1]}\x1b[22m strength, and \x1b[1m+{$masterwin[$userlevel][0]}\x1b[22m hitpoints.\x1b[0m\n");
-		$newlevel = user_getlevel($userid) + 1;
-		slowecho("  \x1b[32mYou have gained \x1b[1m{$addexp}\x1b[22m experience, and are now level \x1b[1m{$newlevel}\x1b[22m.\x1b[0m\n");
-		user_setlevel($userid, $newlevel);
-		$resethp = "UPDATE {$MYSQL_PREFIX}stats set hp = hpmax WHERE userid = {$userid}";
-		$result = mysql_query($resethp, $db);
-		pauser();
-	}
-	if ( $dead ) {
-		slowecho("\n  \x1b[31mTragically, you are horribly disfigured....  oh wait...\x1b[0m\n");
-		slowecho("  \x1b[31mYou always looked like that you say?...  That's unfortunate...\x1b[0m\n");
-		slowecho("  \x1b[32mAnyway, you lost.  Being the gracious master {$enemyname} is, he heals you and sends you away for the day.\x1b[0m\n");
-		$resethp = "UPDATE {$MYSQL_PREFIX}stats set hp = hpmax WHERE userid = {$userid}";
-		$masterql = "UPDATE {$MYSQL_PREFIX}stats SET master = 1 WHERE userid = {$userid}"; 
-		$result = mysql_query($resethp, $db);
-		$result = mysql_query($masterql, $db);
-		pauser();
-	}
-}"""
+	user.write("\r\n\r\n  \x1b[32m**\x1b[1;37mFIGHT\x1b[0m\x1b[32m**\r\n")
+	user.write("\r\n  \x1b[32mYou have encountered "+thisEnemyName+"!!\x1b[0m\r\n")
 
+	while ( user.getHP() > 0 and thisEnemyHP > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
+		user.write(forest_menu(user, thisEnemyHP, thisEnemyName))
+		data = user.connection.recv(2)
+		if ( data[0] == 's' or data[0] == 'S' ):
+			user.write('S')
+			user.write(module_viewstats(user))
+		elif ( data[0] == 'a' or data[0] == 'A' ): # Attack!
+			user.write("A\r\n")
+			hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
+			myAttack  = ( thisUserHit + random.randint(0, thisUserHit)) - thisEnemyDefense
+			if ( False ): # We Hit First (always)
+				if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
+					hisAttack = 0
+			if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+				ctrlDead = True
+				hisAttack = user.getHP() # No insult to injury
+			if ( hisAttack > 0 ): # He hit us
+				user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+				user.updateHP(hisAttack * -1)
+			else: 
+				user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
+			if ( myAttack > 0 and not ctrlDead ): # We hit him!
+				user.write("\r\n  \x1b[32mYou hit "+thisEnemyName+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+				thisEnemyHP = thisEnemyHP - myAttack
+				if ( thisEnemyHP < 1 ): # We Win!
+					ctrlWin = True
+					user.write("\r\n  \x1b[31m"+masters[thisUserLevel][5]+"\x1b[0m\r\n")
+		elif ( data[0] == 'r' or data[0] == 'R' ): # Run Away
+			user.write("\r\n  \x1b[32mYou retire from the field before getting yourself killed.\x1b[0m\r\n")
+			hptogive = user.getHPMax() - user.getHP()
+			if ( hptogive > 0 ):
+				user.updateHP(hptogive)
+			user.setMaster()
+			ctrlRan = True
+		elif ( data[0] == 'q' or data[0] == 'Q' ):
+			user.write("\r\n  \x1b[31mYou are in Combat!  Try Running!\x1b[0m\r\n")
+		elif ( data[0] == 'h' or data[0] == 'H' ):
+			user.write("\r\n  \x1b[32mYou are in combat, and they don't make house calls!\x1b[0m\r\n")
+
+	if ( ctrlWin ) :
+		addExp = masters[thisUserLevel][2] / 10
+		newLvl = user.getLevel() + 1
+		user.setLevel(newLvl)
+		user.updateExperience(addExp)
+		user.updateDefense(masterwin[thisUserLevel][2])
+		user.updateStrength(masterwin[thisUserLevel][1])
+		user.updateHPMax(masterwin[thisUserLevel][0])
+		hptoheal = user.getHPMax() - user.getHP()
+		if ( hptoheal > 0 ):
+			user.updateHP(hptoheal)
+		user.write("\r\n  \x1b[32mYou have receieved \x1b[1m+"+str(masterwin[thisUserLevel][2])+"\x1b[22m vitality, \x1b[1m+"+str(masterwin[thisUserLevel][1])+"\x1b[22m strength, and \x1b[1m+"+str(masterwin[thisUserLevel][0])+"\x1b[22m hitpoints.\x1b[0m\r\n")
+		user.write("  \x1b[32mYou have gained \x1b[1m"+str(addExp)+"\x1b[22m experience, and are now level \x1b[1m"+str(newLvl)+"\x1b[22m.\x1b[0m\r\n")
+		user.pause()
+	if ( ctrlDead ) :
+		user.setMaster()
+		hptoheal = user.getHPMax() - user.getHP()
+		if ( hptoheal > 0 ):
+			user.updateHP(hptoheal)
+		user.write("\r\n  \x1b[31mTragically, you are horribly disfigured....  oh wait...\x1b[0m\r\n")
+		user.write("  \x1b[31mYou always looked like that you say?...  That's unfortunate...\x1b[0m\r\n")
+		user.write("  \x1b[32mAnyway, you lost.  Being the gracious master "+thisEnemyName+" is, he heals\r\n  you and sends you away for the day.\x1b[0m\r\n")
+		user.pause()
+		
+def killer_fight(user, usertokill):
+	""" Master Fight System """
+	user.updatePlayerFight(-1)
+	thisUserDefense = user.getDefense()
+	thisUserHit     = user.getStrength() / 2
+	ctrlDead = False
+	ctrlRan  = False
+	ctrlWin  = False
+	thisEnemyHit     = usertokill.getStrength() / 2
+	thisEnemyDefense = usertokill.getDefense()
+	thisEnemyWeapon  = weapon[usertokill.getWeapon()]
+	
+	user.write("\r\n\r\n  \x1b[32m**\x1b[1;37mFIGHT\x1b[0m\x1b[32m**\r\n")
+	user.write("\r\n  \x1b[32mYou have encountered "+usertokill.thisFullname+"!!\x1b[0m\r\n")
+
+	while ( user.getHP() > 0 and usertokill.getHP() > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
+		user.write(forest_menu(user, usertokill.getHP(), usertokill.thisFullname))
+		data = user.connection.recv(2)
+		if ( data[0] == 's' or data[0] == 'S' ):
+			user.write('S')
+			user.write(module_viewstats(user))
+		elif ( data[0] == 'a' or data[0] == 'A' ): # Attack!
+			user.write("A\r\n")
+			hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
+			myAttack  = ( thisUserHit + random.randint(0, thisUserHit)) - thisEnemyDefense
+			if ( True ): # We Hit First (always)
+				if ( myAttack >= usertokill.getHP() ): # If he's dead, he didn't hit us at all - also, set our attack to zero him
+					myAttack = usertokill.getHP()
+					hisAttack = 0
+			if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+				ctrlDead = True
+				hisAttack = user.getHP() # No insult to injury
+			if ( hisAttack > 0 ): # He hit us
+				user.write("\r\n  \x1b[32m"+usertokill.thisFullname+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+				user.updateHP(hisAttack * -1)
+			else: 
+				user.write("\r\n  \x1b[32m"+usertokill.thisFullname+" misses you completely\x1b[0m\r\n")
+			if ( myAttack > 0 and not ctrlDead ): # We hit him!
+				user.write("\r\n  \x1b[32mYou hit "+usertokill.thisFullname+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+				usertokill.updateHP(myAttack * -1)
+				if ( usertokill.getHP() < 1 ): # We Win!
+					ctrlWin = True
+					user.write("\r\n  \x1b[31m"+usertokill.thisFullname+" lies diead at your feet!\x1b[0m\r\n")
+		elif ( data[0] == 'r' or data[0] == 'R' ): # Run Away
+			user.write('R')
+			if ( random.randint(1, 10) == 4 ): # Hit in the back.
+				hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
+				if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+					ctrlDead = True
+					hisAttack = user.getHP() # No insult to injury
+				if ( hisAttack > 0 ): # He hit us
+					user.write("\r\n  \x1b[32m"+usertokill.thisFullname+" hits you in the back with it's "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\r\n")
+					user.updateHP(hisAttack)
+			else:
+				user.write("\r\n  \x1b[32mYou narrowly escape harm.\x1b[0m\r\n")
+				ctrlRan = True
+		elif ( data[0] == 'q' or data[0] == 'Q' ):
+			user.write("Q\r\n  \x1b[31mYou are in Combat!  Try Running!\x1b[0m\r\n")
+		elif ( data[0] == 'h' or data[0] == 'H' ):
+			user.write("H\r\n  \x1b[32mYou are in combat, and they don't make house calls!\x1b[0m\r\n")
+
+	if ( ctrlWin ) :
+		user.setKiller()
+		addExp = usertokill.getExperience() / 2
+		delExp = usertokill.getExperience() / 10
+		addGems = usertokill.getGems() / 2
+		if ( addGems < 1 ):
+			addGems = 0
+		else:
+			user.updateGems(addGems)
+			usertokill.updateGems(addGems * -1)
+		addGold = usertokill.getGold()
+		if ( addGold > 0 ):
+			user.updateGold(addGold)
+			usertokill.updateGold(addGold * -1)
+		user.updateExperience(addExp)
+		usertokill.updateExperience(delExp * -1)
+		usertokill.setDead()
+		user.write("\r\n  \x1b[32mYou have gained \x1b[1m"+str(addExp)+"\x1b[0;32m experience, \x1b[1m"+str(addGems)+"\x1b[0;32m gems, and \x1b[1m"+str(addGold)+"\x1b[0;32m gold.\x1b[0m\r\n")
+		lamentTop = len(killerwin) - 1
+		lamentThis = killerwin[random.randint(0, lamentTop)]
+		lamentThis = re.sub("`n", "\r\n", lamentThis)
+		lamentThis = re.sub("`g", user.thisFullname, lamentThis)
+		lamentThis = re.sub("`e", usertokill.thisFullname, lamentThis)
+		lamentThis = user.dbc.escape_string(lamentThis)
+		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+lamentThis+"')"
+		user.db.execute(thisSQL)
+		user.pause()
+	if ( ctrlDead ) :
+		usertokill.setKiller()
+		addExp = user.getExperience() / 2
+		delExp = user.getExperience() / 10
+		addGems = user.getGems() / 2
+		if ( addGems < 1 ):
+			addGems = 0
+		else:
+			user.updateGems(addGems * -1)
+			usertokill.updateGems(addGems)
+		addGold = user.getGold()
+		if ( addGold > 0 ):
+			user.updateGold(addGold * -1)
+			usertokill.updateGold(addGold)
+		user.updateExperience(delExp * -1)
+		usertokill.updateExperience(addExp)
+		user.setDead()
+		user.logout()
+		lamentTop = len(killerlose) - 1
+		lamentThis = killerlose[random.randint(0, lamentTop)]
+		lamentThis = re.sub("`n", "\r\n", lamentThis)
+		lamentThis = re.sub("`g", user.thisFullname, lamentThis)
+		lamentThis = re.sub("`e", usertokill.thisFullname, lamentThis)
+		lamentThis = user.dbc.escape_string(lamentThis)
+		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+lamentThis+"')"
+		user.db.execute(thisSQL)
+		user.write(func_casebold("  Tragically, you died.  Returning to the mundane world for the day...\n", 1))
+		user.connection.close()
 

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from functions import func_normmenu
+from data import charmsay
 
 """
  * Artwork headers.
@@ -40,16 +41,42 @@ ESC = "\x1b["
 	
 class art():
 	
-	""" Dark Green Horizontal Rule """
 	def line(self):
+		""" Dark Green Horizontal Rule """
 		return ESC+"32m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"+ESC+"0m\r\n"
 
-	""" Dark Blue Horizontal Rule """
 	def blueline(self): 
+		""" Dark Blue Horizontal Rule """
 		return ESC+"34m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"+ESC+"0m\r\n"
 
-	""" Game System Information Banner"""
+	def info(self, user):
+		""" Game System Information Banner"""
+		rundays = 0
+		thisSQL = "SELECT valueint FROM "+user.thisSord.sqlPrefix()+"setup WHERE `name` = 'gdays'"
+		user.db.execute(thisSQL)
+		for valueint in user.db.fetchall():
+			rundays = valueint[0]
+		thismsg  = "\r\n"+ESC+"32m                           Saga Of The Red Dragon"+ESC+"0m\r\n"
+		thismsg += ESC+"32m                           "+user.thisSord.host()+"\r\n\r\n"+ESC+"0m\r\n"
+		thismsg += ESC+"32m                    Compiled June 25, 2009: Version "+ESC+"1;37m"+user.thisSord.version()+ESC+"0m\r\n"
+		thismsg += ESC+"22;32m                        (c) pre-2009 by Someone Else\r\n\r\n"+ESC+"0m\r\n"
+		thismsg += ESC+"32m                           "+ESC+"1;37mREGISTERED TO "+ESC+"0m"+ESC+"1;34m"+user.thisSord.admin()+ESC+"0m\r\n\r\n"
+		thismsg += ESC+"32m             The current game has been running for "+ESC+"1m"+str(rundays)+ESC+"22m game days.\r\n"+ESC+"0m\r\n"
+		thismsg += ESC+"32m            Players are deleted after "+ESC+"1m"+str(user.thisSord.deleteInactive())+ESC+"22m real days of inactivity."+ESC+"0m\r\n"
+		thismsg += ESC+"32m               Players are enjoying "+ESC+"1m"+str(user.thisSord.forestFights())+ESC+"22m forest fights per day."+ESC+"0m\r\n"
+		thismsg += ESC+"32m               Players are enjoying "+ESC+"1m"+str(user.thisSord.playerFights())+ESC+"22m player fights per day."+ESC+"0m\r\n"
+		thismsg += ESC+"32m            Players are enjoying "+ESC+"1m"+str(user.thisSord.bankInterest())+"%"+ESC+"22m interest at the bank per day."+ESC+"0m\r\n"
+		thismsg += ESC+"32m                   The current game day is "+ESC+"1m"+str(user.thisSord.dayLength())+ESC+"22m real hours long.\r\n"+ESC+"0m\r\n"
+		thismsg += "\r\n"+ESC+"32m  The peasants say this about you : \r\n    "
+		try: 
+			thismsg += charmsay[user.getSex()][user.getCharm()]
+		except IndexError:
+			thismsg += "nothing at all."
+		thismsg += "\x1b[0m\r\n"
+		return thismsg
+
 	def banner(self, sordGame, sqlCurs):
+		""" Game System Information Banner"""
 		rundays = 0
 		thisSQL = "SELECT valueint FROM "+sordGame.sqlPrefix()+"setup WHERE `name` = 'gdays'"
 		sqlCurs.execute(thisSQL)
@@ -72,8 +99,8 @@ class art():
 		thismsg += ESC+"32m                         Your choice, warrior? ["+ESC+"1mE"+ESC+"22m]: "+ESC+"0m"+ESC+"0m "
 		return thismsg
 
-	""" Game Welcome Screen - in use """
 	def header(self):
+		""" Game Welcome Screen - in use """
 		thismsg = "\r\n"+ESC + "0m                          " + A220 + A220 + A220 + A220 + A220 +"                                                " + ESC + "0m\r\n"
 		thismsg += "                      "+A220+A220+A219+A219+A219+A219+ESC+"1;47m"+A176+A177+A178+ESC+"40m"+A219+A219+A220+A220+ESC+"0m                                            "+ESC+"0m\r\n"
 		thismsg += ESC+"1m  "+ESC+"31mS"+ESC+"0;31mAGA"+ESC+"37m               "+A219+A219+ESC+"30;47mo"+ESC+"37;40m"+A219+ESC+"1;47m"+A176+A176+A177+A177+A178+ESC+"40m"+A219+A219+A219+A219+A219+A219+ESC+"0m                                           "+ESC+"0m\r\n"
@@ -121,8 +148,8 @@ class art():
 		thismsg += ESC+"37m                                                                               "+ESC+"0m\r\n"
 		return thismsg
 
-	""" Abdul's Armoury, Opening Screen """
 	def abdul(self):
+		""" Abdul's Armoury, Opening Screen """
 		thismsg  = "\r\n"+ESC+"1;33m"+A220+A220+A220+A220+ESC+"0;33m"+A220+A220+ESC+"1m"+A220+A220+ESC+"0;33m"+A220+ESC+"1m"+A220+A220+A220+ESC+"0;33m"+A220+ESC+"1m"+A220+A220+ESC+"0;33m"+A220+ESC+"1m"+A220+ESC+"0;33m"+A220+A220+ESC+"1m"+A220+ESC+"0;33m"+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+ESC+"1;30m"+A220+ESC+"C"+ESC+"0;33m"+A220+A220+A220+A220+"\r\n"
 		thismsg += ESC+"A"+ESC+"79C"+A220+ESC+"1;43m"+A219+A178+ESC+"0;33m"+A219+A219+A219+A223+A219+A219+A223+ESC+"32m"+A220+ESC+"33m"+A223+ESC+"32m"+A220+ESC+"C"+A254+ESC+"33m"+A219+A219+A219+A219+A219+A219+A219+A219+A219+ESC+"1;30;43m"+A176+ESC+"C"+ESC+"0;33m"+A219+ESC+"1;43m"+A177+A176+ESC+"C"+A176+ESC+"C"+ESC+"37;40mSaga"+ESC+"Cof"+ESC+"Cthe"+ESC+"CRed"+ESC+"CDragon"+ESC+"C-"+ESC+"C"+ESC+"33mAbduls"+ESC+"CArmour    "+ESC+"C"+ESC+"0;33m"+A223+"\r\n"
 		thismsg += ESC+"1;43m"+A219+ESC+"0;33m"+A219+A219+A223+ESC+"32m"+A220+ESC+"1;42m"+A177+ESC+"0;32m"+A220+ESC+"C"+A223+ESC+"1m"+A223+ESC+"2C"+ESC+"0;33m"+A223+A223+A223+ESC+"30;43m"+A177+A176+ESC+"33;40m"+A219+A219+A219+A219+A219+A219+ESC+"1;30;43m"+A176+ESC+"2C"+ESC+"0;33m"+A223+A219+ESC+"C"+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+"\r\n"
@@ -142,8 +169,8 @@ class art():
 		thismsg += ESC+"A"+ESC+"79C"+A223+ESC+"0m\r\n"
 		return thismsg
 
-	"""Abdul's Armoury, Buy Screen"""
 	def armbuy(self):
+		"""Abdul's Armoury, Buy Screen"""
 		thismsg  = "\r\n"+ESC+"12C"+ESC+"1;33m"+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+ESC+"0;33m"+A220+ESC+"1m"+A220+A220+A220+ESC+"0;33m"+A220+ESC+"1m"+A220+ESC+"0;33m"+A220+A220+ESC+"1m"+A220+ESC+"0;33m"+A220+ESC+"1m"+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+"\r\n"
 		thismsg += ESC+"12C"+ESC+"47m"+A178+ESC+"40m"+A223+ESC+"2C"+ESC+"37m The"+ESC+"CSaga"+ESC+"Cof"+ESC+"Cthe"+ESC+"CRed"+ESC+"CDragon"+ESC+"C-"+ESC+"C"+ESC+"33mArmour"+ESC+"CList "+ESC+"2C"+A220+ESC+"47m"+A178+ESC+"40m\r\n"
 		thismsg += ESC+"12C"+ESC+"47m"+A178+A219+ESC+"40m"+A223+A223+A223+A223+A223+A223+A223+ESC+"0;33m"+A223+ESC+"1m"+A223+A223+A223+A223+ESC+"0;33m"+A223+ESC+"1m"+A223+A223+A223+ESC+"0;33m"+A223+ESC+"1m"+A223+A223+ESC+"0;33m"+A223+ESC+"1m"+A223+ESC+"0;33m"+A223+A223+ESC+"1m"+A223+ESC+"0;33m"+A223+ESC+"1m"+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+ESC+"47m"+A178+A178+ESC+"40m\r\n"
@@ -165,10 +192,9 @@ class art():
 		thismsg += ESC+"12C"+A219+ESC+"C15."+ESC+"CArmour"+ESC+"COf"+ESC+"CLore"+ESC+"1;30m................."+ESC+"33m400,000,000"+ESC+"C"+ESC+"43m"+A176+ESC+"40m\r\n"
 		thismsg += ESC+"12C"+ESC+"43m"+A176+ESC+"0;33m"+A219+A220+A220+A220+A220+A220+A220+A178+A220+A220+A220+A176+A220+A220+A178+A220+ESC+"C"+A220+A220+A220+A220+A178+A220+A220+A220+ESC+"C"+A220+A220+A221+A220+A220+A220+A220+A178+A220+A220+A176+ESC+"C"+A220+A220+A220+A220+A178+A220+A220+A220+A220+A219+ESC+"1;43m"+A176+ESC+"40m"+ESC+"0m\r\n"
 		return thismsg
-
-
-	""" King Arthur's Weapons, Opening Screen """
+	
 	def arthur(self):
+		""" King Arthur's Weapons, Opening Screen """
 		thismsg = "\r\n"+ESC+"34m"+A220+ESC+"1;44m"+A176+ESC+"0;34m"+A220+A223+A176+ESC+"C"+A178+A176+A254+ESC+"2C"+A220+A254+ESC+"6C"+A220+A178+ESC+"C"+A220+A178+ESC+"C"+ESC+"1;44m"+A177+ESC+"40m"+A223+ESC+"0;34m"+A223+ESC+"1m"+A223+A223+ESC+"0;34m"+A223+ESC+"1m"+A223+ESC+"0;34m"+A223+A223+A223+A223+ESC+"1m"+A223+ESC+"0;34m"+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+ESC+"C"+A223+"\r\n"
 		thismsg += ESC+"C"+A223+ESC+"2C"+A176+A223+A223+ESC+"1;37m"+A220+A220+A220+A220+ESC+"0m"+A220+ESC+"1m"+A223+A223+ESC+"0m"+A223+ESC+"1m"+A223+A223+ESC+"0m"+A223+ESC+"1m"+A223+A220+ESC+"0m"+A220+A220+A220+A220+ESC+"C"+ESC+"34m"+A223+ESC+"3C"+ESC+"1;37mSaga"+ESC+"Cof"+ESC+"Cthe"+ESC+"CRed"+ESC+"CDragon"+ESC+"C-"+ESC+"C"+ESC+"34mKing"+ESC+"CArthurs"+ESC+"CWeapons    "+ESC+"C"+ESC+"0;34m"+A219+"\r\n"
 		thismsg += A223+ESC+"1;37m"+A220+A223+A223+A223+A223+A223+ESC+"C"+ESC+"0m"+A220+A220+A220+A220+A220+A219+A219+A219+ESC+"30;47m"+A223+ESC+"37;40m"+A219+A220+A220+A220+A220+A220+ESC+"C"+A223+ESC+"1;30m"+A223+ESC+"0m"+A223+ESC+"1;30m"+A223+A223+A220+ESC+"4C"+ESC+"0;34m"+A220+A220+A220+A220+ESC+"C"+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+ESC+"C"+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A178+A220+A220+A220+A220+ESC+"C"+A220+A220+"\r\n"
@@ -187,9 +213,9 @@ class art():
 		thismsg += ESC+"A"+ESC+"79C"+ESC+"37m "+ESC+"C"+ESC+"34m"+A223+ESC+"C"+A220+A254+A178+A219+A219+A220+A220+ESC+"37m"+A223+A223+A223+A220+ESC+"C"+ESC+"1;30m"+A223+ESC+"C"+A220+A223+A223+A223+ESC+"C"+ESC+"0;34m"+A176+A176+A223+A178+A178+A176+ESC+"2C"+ESC+"1;44m"+A176+ESC+"0;34m"+A223+A223+A223+A178+A223+A223+ESC+"C"+A223+A178+A223+ESC+"C"+A223+A223+ESC+"C"+A223+A176+ESC+"C"+A223+ESC+"C"+A223+A223+ESC+"C"+A223+A223+ESC+"30;44m"+A177+ESC+"19C"+ESC+"34;40m"+A223+A223+A223+A223+"\r\n"
 		thismsg += ESC+"A"+ESC+"79C"+ESC+"37m "+ESC+"34m"+A177+A178+A219+A220+ESC+"C"+A176+A223+A178+A178+A178+A178+A223+A176+ESC+"C"+ESC+"37m"+A223+ESC+"1;30m"+A220+A223+ESC+"C"+ESC+"0;34m"+A223+A178+A176+ESC+"4C"+A176+ESC+"C"+A220+A219+ESC+"30;44m"+A176+" "+ESC+"34;40m"+A254+ESC+"37m                      "+ESC+"34m"+A220+ESC+"30;44m"+A176+A178+ESC+"34;40m"+A219+A219+A219+ESC+"30;44m"+A176+ESC+"34;40m"+A219+A220+A219+A219+A219+A219+A219+A222+A219+A219+"\r\n"
 		return thismsg
-		
-	""" King Arthur's Weapons, Buy Screen """
+
 	def wepbuy(self):
+		""" King Arthur's Weapons, Buy Screen """
 		thismsg  = "\r\n"+ESC+"14C"+ESC+"1;34m"+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+ESC+"0;34m"+A220+ESC+"1m"+A220+A220+A220+A220+ESC+"0;34m"+A220+ESC+"1m"+A220+ESC+"0;34m"+A220+A220+ESC+"1m"+A220+ESC+"0;34m"+A220+ESC+"1m"+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+"\r\n"
 		thismsg += ESC+"14C"+ESC+"46m"+A178+ESC+"40m"+A223+ESC+"2C"+ESC+"37m The"+ESC+"CSaga"+ESC+"Cof"+ESC+"Cthe"+ESC+"CRed"+ESC+"CDragon"+ESC+"C-"+ESC+"C"+ESC+"34mWeapons"+ESC+"CList "+ESC+"C"+A220+ESC+"46m"+A178+ESC+"40m\r\n"
 		thismsg += ESC+"14C"+ESC+"46m"+A178+ESC+"44m"+A219+ESC+"40m"+A223+A223+A223+A223+ESC+"0;34m"+A223+ESC+"1m"+A223+A223+A223+ESC+"0;34m"+A223+ESC+"1m"+A223+A223+ESC+"0;34m"+A223+ESC+"1m"+A223+ESC+"0;34m"+A223+A223+ESC+"1m"+A223+ESC+"0;34m"+A223+ESC+"1m"+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+A223+ESC+"46m"+A178+A178+ESC+"40m\r\n"
@@ -213,8 +239,8 @@ class art():
 		thismsg += ESC+"0m\r\n";
 		return thismsg
 
-	""" Forest Fight Screen """
 	def forest(self):
+		""" Forest Fight Screen """
 		thismsg  = "\r\n"+ESC+"C"+ESC+"30m"+A220+ESC+"C"+A220+A220+ESC+"C"+A220+A220+A220+ESC+"C"+A220+A220+A220+A220+A220+A220+A178+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A178+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+ESC+"C"+ESC+"37m"+A220+A220+ESC+"C"+ESC+"30m"+A220+A220+ESC+"C"+ESC+"32m"+A220+ESC+"2C"+A220+ESC+"1;42m"+A177+ESC+"0;32m"+A223+ESC+"C"+A219+ESC+"30;42m"+A176+ESC+"32;40m"+A220+ESC+"C"+ESC+"1;30m"+A220+A220+A220+"\r\n"
 		thismsg += ESC+"2C"+ESC+"0;30;47m"+A219+ESC+"37;40m"+A220+A220+A178+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+A220+ESC+"30;47m"+A223+A223+A223+A223+A223+A223+A223+ESC+"37;40m"+A220+A220+ESC+"C"+ESC+"1;47m"+A222+ESC+"40m"+A219+ESC+"47m"+A178+ESC+"40m"+A178+ESC+"2C"+ESC+"32;42m"+A177+ESC+"0;32m"+A223+A219+ESC+"C"+ESC+"1;42m"+A176+ESC+"0;32m"+A220+A219+ESC+"1;42m"+A176+ESC+"0;32m"+A219+A223+ESC+"30;42m"+A177+ESC+"C"+ESC+"37;40m"+A220+ESC+"C"+ESC+"1;30m"+A223+A178+"\r\n"
 		thismsg += ESC+"2C"+ESC+"0;30;47m"+A178+A177+A176+ESC+"37;40m"+A219+ESC+"1;47m  Saga of the Red Dragon"+ESC+"0m"+A219+ESC+"30;47m- Forest   "+A176+A177+ESC+"37;40m"+A220+ESC+"1m"+A223+ESC+"0m"+A223+A220+ESC+"C"+ESC+"1;32;42m"+A176+ESC+"0;32m"+A223+A220+ESC+"30;42m"+A176+A177+ESC+"32;40m"+A254+ESC+"33m"+A222+ESC+"32m"+A223+ESC+"33m"+A220+A223+ESC+"32m"+A223+ESC+"37m"+A220+A219+A219+A178+"\r\n"
@@ -229,8 +255,8 @@ class art():
 		thismsg += func_normmenu("(R)eturn to town")
 		return thismsg 
 
-	""" Rescue maiden intermediate screen """
 	def tower(self):
+		""" Rescue maiden intermediate screen """
 		thismsg  = "\r\n"+ESC+"255D"+ESC+"0;1;44m                                                          "+ESC+"40m\r\n"
 		thismsg += ESC+"A"+ESC+"58C"+ESC+"44m                  "+ESC+"40m\r\n"
 		thismsg += ESC+"44m                                                                    "+ESC+"40m\r\n"

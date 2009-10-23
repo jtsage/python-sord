@@ -523,4 +523,14 @@ def module_flowers(user):
 	else:
 		user.write('N\r\n')
 
-
+def module_dirt(user):
+	""" The slaughter dirt """
+	thisSQL = "SELECT data, nombre FROM (SELECT * FROM "+user.thisSord.sqlPrefix()+"dirt ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id"
+	output  = "\r\n\r\n  \x1b[1;37mExamine the dirt\x1b[22;32m....\x1b[0m\r\n"
+	output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+	user.db.execute(thisSQL)
+	for (data, nombre) in user.db.fetchall():
+		output += "    \x1b[32m"+nombre+" \x1b[1;37msays... \x1b[0m\x1b[32m" + func_colorcode(data)
+		output += "\x1b[0m\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+	user.write(output)
+	user.pause()

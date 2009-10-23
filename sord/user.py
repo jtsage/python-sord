@@ -82,6 +82,23 @@ class sordUser():
 		else:
 			return 0
 			
+	def userGetLogin(self, someID):
+		thisSQL = "SELECT username FROM "+self.thisSord.sqlPrefix()+"users WHERE userid = "+str(someID)
+		self.db.execute(thisSQL)
+		if self.db.rowcount > 0:
+			thisReturn = self.db.fetchone()
+			return thisReturn[0]
+		else:
+			return 0
+			
+	def isOnline(self):
+		thisSQL = "SELECT * FROM "+self.thisSord.sqlPrefix()+"online WHERE userid = "+str(self.thisUserID)
+		self.db.execute(thisSQL)
+		if self.db.rowcount > 0:
+			return True
+		else:
+			return False
+			
 	def toggleXprt(self):
 		if self.expert == False:
 			self.expert = True
@@ -248,6 +265,18 @@ class sordUser():
 		thisReturn = self.db.fetchone()
 		return int(thisReturn[0])
 		
+	def getKiller(self):
+		thisSQL = "SELECT pkill FROM "+self.thisSord.sqlPrefix()+"stats WHERE userid = "+str(self.thisUserID)
+		self.db.execute(thisSQL)
+		thisReturn = self.db.fetchone()
+		return int(thisReturn[0])
+		
+	def getDragon(self):
+		thisSQL = "SELECT dkill FROM "+self.thisSord.sqlPrefix()+"stats WHERE userid = "+str(self.thisUserID)
+		self.db.execute(thisSQL)
+		thisReturn = self.db.fetchone()
+		return int(thisReturn[0])
+		
 	def getForestFight(self):
 		thisSQL = "SELECT ffight FROM "+self.thisSord.sqlPrefix()+"stats WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
@@ -266,6 +295,18 @@ class sordUser():
 		
 	def setFlirt(self):
 		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET flirt = 1 WHERE userid = "+str(self.thisUserID)
+		self.db.execute(thisSQL)
+		
+	def setMaster(self):
+		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET master = 1 WHERE userid = "+str(self.thisUserID)
+		self.db.execute(thisSQL)
+		
+	def setKiller(self):
+		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET pkill = pkill + 1 WHERE userid = "+str(self.thisUserID)
+		self.db.execute(thisSQL)
+		
+	def setDragon(self):
+		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET dkill = dkill + 1 WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		
 	def setBard(self):
