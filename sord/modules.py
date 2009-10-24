@@ -397,7 +397,7 @@ def module_abduls(user):
 				if not yesno: break
 				if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 					user.write('Y')
-					user.setArmour(0)
+					user.setArmor(0)
 					user.updateGold(sellprice)
 					unstrength = (60 * armordef[sellweapon]) // 100
 					user.updateDefense(unstrength * -1)
