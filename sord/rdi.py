@@ -86,7 +86,7 @@ def rdi_logic(user):
 		if ( data[0] == 'e' or data[0] == 'E' ):
 			if ( user.jennielevel == 4 and not user.jennieused ):
 				user.jennielevel = 0
-				user.jennieused = False #True
+				user.jennieused = True
 				user.write("\r\n  \x1b[32mJennie, eh?  Describe Her :\x1b[0m ")
 				desc = func_getLine(user.connection, True)
 				if ( desc == "babe" or desc == "BABE" ):
