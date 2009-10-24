@@ -88,7 +88,7 @@ def rdi_logic(user):
 				user.jennielevel = 0
 				user.jennieused = False #True
 				user.write("\r\n  \x1b[32mJennie, eh?  Describe Her :\x1b[0m ")
-				desc = func_getLine(user.connection, true)
+				desc = func_getLine(user.connection, True)
 				if ( desc == "babe" or desc == "BABE" ):
 					user.write("\r\n  \x1b[32mI agree!\x1b[0m\r\n")
 					user.updateForestFight(1)
