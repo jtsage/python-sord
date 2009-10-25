@@ -399,7 +399,7 @@ def module_abduls(user):
 					user.write('Y')
 					user.setArmor(0)
 					user.updateGold(sellprice)
-					unstrength = (60 * armordef[sellweapon]) // 100
+					unstrength = (60 * armordef[sellarmor]) // 100
 					user.updateDefense(unstrength * -1)
 					user.write(func_casebold("\r\nPleasure doing business with you!\r\n", 2))
 					user.pause()
