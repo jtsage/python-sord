@@ -149,7 +149,7 @@ def handleClient(connection):
 				currentUser.write(menu_mainlong(currentUser))
 			currentUser.write(menu_mainshort(currentUser))
 		skipDisp = False
-		connection.settimeout(20)
+		connection.settimeout(120)
 		try:
 			data = connection.recv(2)
 		except Exception, errorcode:
