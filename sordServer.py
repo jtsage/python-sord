@@ -12,6 +12,7 @@
   * @version 0.9.9
   @todo IGM framework, main menu '1' for image."""
 import thread, threading, time, MySQLdb, sys
+import socket
 from sord.art import *
 from sord.functions import *
 from sord.user import *
@@ -21,8 +22,8 @@ from sord.messaging import *
 from sord.rdi import *
 from sord.forest import *
 
-from config import sord
 from socket import *
+from config import sord
 myHost = ''  #all hosts.
 myPort = 6969
 mySord = sord()
@@ -39,7 +40,7 @@ WILL = chr(251)
 ECHO = chr(1)
 LINEMODE = chr(34) # Linemode option
 SORDDEBUG = False
-#SORDDEBUG = True
+SORDDEBUG = True
 
 def now():			  #Server Time
 	return time.ctime(time.time())
@@ -66,8 +67,15 @@ def handleClient(connection):
 		quitter = True
 	while ( not quitter ):
 		func_slowecho(connection, artwork.banner(mySord,mySQLcurs))
-		data = connection.recv(1)
+		connection.settimeout(60)
+		try:
+			data = connection.recv(1)
+		except socket.timeout:
+			print "Connection Timeout (Login Menu): " + str(connection.getpeername())
+			connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+			connection.close()
 		if not data: break
+		connection.settimeout(None)
 		if ( data == "Q" or data == "q" ):
 			quitter = True
 			quitfull = True
@@ -141,7 +149,15 @@ def handleClient(connection):
 				currentUser.write(menu_mainlong(currentUser))
 			currentUser.write(menu_mainshort(currentUser))
 		skipDisp = False
-		data = connection.recv(2)
+		connection.settimeout(20)
+		try:
+			data = connection.recv(2)
+		except Exception, errorcode:
+			print "Connection Timeout (Main Menu)("+str(errorcode)+"): " + str(connection.getpeername())
+			connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+			currentUser.logout()
+			connection.close()
+		connection.settimeout(None)
 		if not data: break
 		elif ( data[0] == "q" or data[0] == "Q" ):
 			connection.send('Q')

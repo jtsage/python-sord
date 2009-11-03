@@ -47,7 +47,15 @@ def module_newuser(user):
 	thisLooper = False
 	while ( not thisLooper ):
 		user.write(func_casebold("\r\nYour Sex (M/F) :-: ", 2))
-		data = user.connection.recv(2)
+		user.connection.settimeout(120)
+		try:
+			data = user.connection.recv(2)
+		except Exception, errorcode:
+			print "Connection Timeout (New User)("+str(errorcode)+"): " + str(user.connection.getpeername())
+			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+			user.logout()
+			user.connection.close()
+		user.connection.settimeout(None)
 		if not data: break
 		if ( data[0] == 'm' or data[0] == 'M' ):
 			user.write('M')
@@ -66,7 +74,15 @@ def module_newuser(user):
 	thisLooper = False
 	while ( not thisLooper ):
 		user.write(func_casebold("\r\nYour Choice (D/K/L) :-: ", 2))
-		data = user.connection.recv(2)
+		user.connection.settimeout(120)
+		try:
+			data = user.connection.recv(2)
+		except Exception, errorcode:
+			print "Connection Timeout (New User)("+str(errorcode)+"): " + str(user.connection.getpeername())
+			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+			user.logout()
+			user.connection.close()
+		user.connection.settimeout(None)
 		if not data: break
 		if ( data[0] == 'k' or data[0] == 'K' ):
 			user.write('K')
@@ -102,7 +118,15 @@ def module_finduser(user, prompter):
 			return 0
 		else:
 			user.write("\r\n  \x1b[32mDid you mean \x1b[1m" + user.userGetName(returnID) +"\x1b[0m \x1b[1;30m(Y/N)\x1b[0m\x1b[32m ?\x1b[0m ")
-			yesno = user.connection.recv(2)
+			user.connection.settimeout(120)
+			try:
+				yesno = user.connection.recv(2)
+			except Exception, errorcode:
+				print "Connection Timeout (Find User)("+str(errorcode)+"): " + str(user.connection.getpeername())
+				user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+				user.logout()
+				user.connection.close()
+			user.connection.settimeout(None)
 			if ( yesno[0] == "Y" or yesno[0] == "y" ):
 				return returnID
 			else:
@@ -221,14 +245,25 @@ def module_list(art, db, prefix):
 def module_heal(user):
 	""" Healers Hut Logic """
 	thisQuit = False
+	skipDisp = False
 	while ( not thisQuit ):
-		user.write(menu_heal(user))
-		data = user.connection.recv(2)
+		if ( not skipDisp ):
+			user.write(menu_heal(user))
+		skipDisp = False
+		user.connection.settimeout(120)
+		try:
+			data = user.connection.recv(2)
+		except Exception, errorcode:
+			print "Connection Timeout (Healers Menu)("+str(errorcode)+"): " + str(user.connection.getpeername())
+			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+			user.logout()
+			user.connection.close()
+		user.connection.settimeout(None)
 		if not data: break
-		if ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
+		elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
 			user.write('R')
 			thisQuit = True
-		if ( data[0] == 'h' or data[0] == 'H' ):
+		elif ( data[0] == 'h' or data[0] == 'H' ):
 			user.write('H')
 			hptoheal = user.getHPMax() - user.getHP()
 			if ( hptoheal < 1 ):
@@ -247,7 +282,7 @@ def module_heal(user):
 					user.updateHP(canaffordtoheal)
 					user.write("\r\n  \x1b[32m\x1b[1m"+str(canaffordtoheal)+" \x1b[22mHitPoints are healed and you feel much better!\x1b[0m\r\n")
  					user.pause()
-		if ( data[0] == 'c' or data[0] == 'C' ):
+		elif ( data[0] == 'c' or data[0] == 'C' ):
 			user.write('C')
 			hptoheal = user.getHPMax() - user.getHP()
 			if ( hptoheal < 1 ):
@@ -270,18 +305,31 @@ def module_heal(user):
 						user.updateHP(number)
 						user.write("\r\n  \x1b[32m\x1b[1m"+str(number)+" \x1b[22mHitPoints are healed and you feel much better!\x1b[0m\r\n")
 						user.pause()
+		else:
+			skipDisp = True
 
 def module_bank(user):
 	""" Ye Olde Bank """
 	thisQuit = False
+	skipDisp = False
 	while ( not thisQuit ):
-		user.write(menu_bank(user))
-		data = user.connection.recv(2)
+		if ( not skipDisp ):
+			user.write(menu_bank(user))
+		skipDisp = False
+		user.connection.settimeout(120)
+		try:
+			data = user.connection.recv(2)
+		except Exception, errorcode:
+			print "Connection Timeout (Bank Menu)("+str(errorcode)+"): " + str(user.connection.getpeername())
+			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+			user.logout()
+			user.connection.close()
+		user.connection.settimeout(None)
 		if not data: break
-		if ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
+		elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
 			user.write('Q')
 			thisQuit = True
-		if ( data[0] == 'd' or data[0] == 'D' ):
+		elif ( data[0] == 'd' or data[0] == 'D' ):
 			user.write('D')
 			user.write("\r\n  \x1b[32mDeposit how much? \x1b[1;30m(1 for all) \x1b[1;32m:\x1b[0m ")
 			try:
@@ -300,7 +348,7 @@ def module_bank(user):
 				user.pause()
 			else:
 				pass
-		if ( data[0] == 'w' or data[0] == 'W' ):
+		elif ( data[0] == 'w' or data[0] == 'W' ):
 			user.write('W')
 			user.write("\r\n  \x1b[32mWithdraw how much? \x1b[1;30m(1 for all) \x1b[1;32m:\x1b[0m ")
 			try:
@@ -319,7 +367,7 @@ def module_bank(user):
 				user.pause()
 			else:
 				pass
-		if ( data[0] == 't' or data[0] == 'T' ):
+		elif ( data[0] == 't' or data[0] == 'T' ):
 			user.write('T')
 			touser = module_finduser(user, "\r\n  \x1b[32mTransfer to which player? \x1b[1;32m:\x1b[0m ")
 			if ( touser > 0 ):
@@ -342,17 +390,30 @@ def module_bank(user):
 			else:
 				user.write(func_casebold("\r\n  No user by that name found!\r\n", 1))
 				user.pause()
+		else:
+			skipDisp = True
 
 def module_abduls(user):
 	""" Abdul's Armor"""
 	thisQuit = False
+	skipDisp = False
 	while ( not thisQuit ):
- 		if ( not user.expert ):
-			user.write(user.art.abdul())
-		user.write(menu_abdul(user))
-		data = user.connection.recv(2)
+ 		if ( not skipDisp):
+			if ( not user.expert ):
+				user.write(user.art.abdul())
+			user.write(menu_abdul(user))
+		skipDisp = False
+		user.connection.settimeout(120)
+		try:
+			data = user.connection.recv(2)
+		except Exception, errorcode:
+			print "Connection Timeout (Armor Menu)("+str(errorcode)+"): " + str(user.connection.getpeername())
+			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+			user.logout()
+			user.connection.close()
+		user.connection.settimeout(None)
 		if not data: break
-		if ( data[0] == 'b' or data[0] == 'B' ):
+		elif ( data[0] == 'b' or data[0] == 'B' ):
 			user.write('B')
 			user.write(user.art.armbuy())
 			user.write("\r\n\r\n\x1b[32mYour choice? \x1b[1m:\x1b[22m-\x1b[1m:\x1b[0m ")
@@ -374,7 +435,15 @@ def module_abduls(user):
 							user.pause()
 						else:
 							user.write(func_casebold("\r\nI'll sell you my Best "+armor[number]+" for "+str(armorprice[number])+" gold.  OK? ", 2)) 
-							yesno = user.connection.recv(2)
+							user.connection.settimeout(120)
+							try:
+								yesno = user.connection.recv(2)
+							except Exception, errorcode:
+								print "Connection Timeout (Buy Armor Screen)("+str(errorcode)+"): " + str(user.connection.getpeername())
+								user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+								user.logout()
+								user.connection.close()
+							user.connection.settimeout(None)
 							if not yesno: break
 							if ( yesno[0] == "Y" or yesno[0] == "y" ):
 								user.write('Y')
@@ -386,14 +455,22 @@ def module_abduls(user):
 							else:
 								user.write(func_casebold("\r\nFine then...\r\n", 2))
 								user.pause()
-		if ( data[0] == 's' or data[0] == 'S' ):
+		elif ( data[0] == 's' or data[0] == 'S' ):
 			user.write('S')
 			sellpercent = 50 + random.randint(1, 10)
 			sellarmor = user.getArmor()
 			if ( sellarmor > 0 ):
 				sellprice = ((sellpercent * armorprice[sellarmor]) // 100 )
 				user.write(func_casebold("\r\nHmm...  I'll buy that "+armor[sellarmor]+" for "+str(sellprice)+" gold.  OK? ", 2))
-				yesno = user.connection.recv(2)
+				user.connection.settimeout(120)
+				try:
+					yesno = user.connection.recv(2)
+				except Exception, errorcode:
+					print "Connection Timeout (Sell Armor Screen)("+str(errorcode)+"): " + str(user.connection.getpeername())
+					user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+					user.logout()
+					user.connection.close()
+				user.connection.settimeout(None)
 				if not yesno: break
 				if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 					user.write('Y')
@@ -409,28 +486,41 @@ def module_abduls(user):
 			else:
 				user.write(func_casebold("\r\nYou have nothing I want!\r\n", 1))
 				user.pause()
-		if ( data[0] == "?" ):
+		elif ( data[0] == "?" ):
 			user.write('?')
 			if ( user.expert ):
 				user.write(user.art.abdul())
-		if ( data[0] == 'Y' or data[0] == 'y' ):
+		elif ( data[0] == 'Y' or data[0] == 'y' ):
 			user.write('Y')
 			user.write(module_viewstats(user))
 			user.pause()
-		if ( data[0] == 'Q' or data[0] == 'q' or data[0] == 'R' or data[0] == 'r' ):
+		elif ( data[0] == 'Q' or data[0] == 'q' or data[0] == 'R' or data[0] == 'r' ):
 			user.write('R')
-			thisQuit = True;
+			thisQuit = True
+		else:
+			skipDisp = True
 
 def module_arthurs(user):
 	"""King Arthur's Weapons"""
 	thisQuit = False
+	skipDisp = False
 	while ( not thisQuit ):
- 		if ( not user.expert ):
-			user.write(user.art.arthur())
-		user.write(menu_arthur(user))
-		data = user.connection.recv(2)
+		if ( not skipDisp ):
+			if ( not user.expert ):
+				user.write(user.art.arthur())
+			user.write(menu_arthur(user))
+		skipDisp = False
+		user.connection.settimeout(120)
+		try:
+			data = user.connection.recv(2)
+		except Exception, errorcode:
+			print "Connection Timeout (Weapons Menu)("+str(errorcode)+"): " + str(user.connection.getpeername())
+			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+			user.logout()
+			user.connection.close()
+		user.connection.settimeout(None)
 		if not data: break
-		if ( data[0] == 'b' or data[0] == 'B' ):
+		elif ( data[0] == 'b' or data[0] == 'B' ):
 			user.write('B')
 			user.write(user.art.wepbuy())
 			user.write("\r\n\r\n\x1b[32mYour choice? \x1b[1m:\x1b[22m-\x1b[1m:\x1b[0m ")
@@ -452,7 +542,15 @@ def module_arthurs(user):
 							user.pause()
 						else:
 							user.write(func_casebold("\r\nI'll sell you my Favorite "+weapon[number]+" for "+str(weaponprice[number])+" gold.  OK? ", 2)) 
-							yesno = user.connection.recv(2)
+							user.connection.settimeout(120)
+							try:
+								yesno = user.connection.recv(2)
+							except Exception, errorcode:
+								print "Connection Timeout (Buy Weapon Screen)("+str(errorcode)+"): " + str(user.connection.getpeername())
+								user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+								user.logout()
+								user.connection.close()
+							user.connection.settimeout(None)
 							if not yesno: break
 							if ( yesno[0] == "Y" or yesno[0] == "y" ):
 								user.write('Y')
@@ -464,14 +562,22 @@ def module_arthurs(user):
 							else:
 								user.write(func_casebold("\r\nFine then...\r\n", 2))
 								user.pause()
-		if ( data[0] == 's' or data[0] == 'S' ):
+		elif ( data[0] == 's' or data[0] == 'S' ):
 			user.write('S')
 			sellpercent = 50 + random.randint(1, 10)
 			sellweapon = user.getWeapon()
 			if ( sellweapon > 0 ):
 				sellprice = ((sellpercent * weaponprice[sellweapon]) // 100 )
 				user.write(func_casebold("\r\nHmm...  I'll buy that "+weapon[sellweapon]+" for "+str(sellprice)+" gold.  OK? ", 2))
-				yesno = user.connection.recv(2)
+				user.connection.settimeout(120)
+				try:
+					yesno = user.connection.recv(2)
+				except Exception, errorcode:
+					print "Connection Timeout (Sell Weapon Screen)("+str(errorcode)+"): " + str(user.connection.getpeername())
+					user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+					user.logout()
+					user.connection.close()
+				user.connection.settimeout(None)
 				if not yesno: break
 				if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 					user.write('Y')
@@ -487,17 +593,19 @@ def module_arthurs(user):
 			else:
 				user.write(func_casebold("\r\nYou have nothing I want!\r\n", 1))
 				user.pause()
-		if ( data[0] == "?" ):
+		elif ( data[0] == "?" ):
 			user.write('?')
 			if ( user.expert ):
 				user.write(user.art.abdul())
-		if ( data[0] == 'Y' or data[0] == 'y' ):
+		elif ( data[0] == 'Y' or data[0] == 'y' ):
 			user.write('Y')
 			user.write(module_viewstats(user))
 			user.pause()
-		if ( data[0] == 'Q' or data[0] == 'q' or data[0] == 'R' or data[0] == 'r' ):
+		elif ( data[0] == 'Q' or data[0] == 'q' or data[0] == 'R' or data[0] == 'r' ):
 			user.write('R')
-			thisQuit = True;
+			thisQuit = True
+		else:
+			skipDisp = True
 
 def module_flowers(user):
 	""" The forest flowers
@@ -511,7 +619,15 @@ def module_flowers(user):
 		output += "\x1b[0m\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
 	output += "\r\n  \x1b[32mAdd to the conversation? (Y/N) \x1b[1m: \x1b[0m"
 	user.write(output)
-	yesno = user.connection.recv(2)
+	user.connection.settimeout(120)
+	try:
+		yesno = user.connection.recv(2)
+	except Exception, errorcode:
+		print "Connection Timeout (Forest Flowers Screen)("+str(errorcode)+"): " + str(user.connection.getpeername())
+		user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+		user.logout()
+		user.connection.close()
+	user.connection.settimeout(None)
 	if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 		user.write(func_casebold("Y\r\n  What!? What do you want? :-: ", 2))
 		ann = func_getLine(user.connection, True)

@@ -15,16 +15,28 @@ from user import sordUser
 def module_killer(user):
 	""" Forest Fight - Non-Combat """
 	thisQuit = False
+	skipDisp = False
 	while ( not thisQuit ):
-		user.write(menu_slaughter(user))
-		data = user.connection.recv(2)
-		if ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
+		if ( not skipDisp ):
+			user.write(menu_slaughter(user))
+		skipDisp = False
+		user.connection.settimeout(120)
+		try:
+			data = user.connection.recv(2)
+		except Exception, errorcode:
+			print "Connection Timeout (Slaughter Menu)("+str(errorcode)+"): " + str(user.connection.getpeername())
+			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+			user.logout()
+			user.connection.close()
+		user.connection.settimeout(None)
+		if not data: break
+		elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
 			user.write('R')
 			thisQuit = True
-		if ( data[0] == 'e' or data[0] == 'E' ):
+		elif ( data[0] == 'e' or data[0] == 'E' ):
 			user.write('E')
 			module_dirt(user)
-		if ( data[0] == 'w' or data[0] == 'W' ):
+		elif ( data[0] == 'w' or data[0] == 'W' ):
 			user.write('W')
 			if ( user.getKiller() > 0 ):
 				user.write(func_casebold("\r\n  Carve what in the soft dirt? :-: ", 2))
@@ -36,11 +48,11 @@ def module_killer(user):
 				user.pause()
 			else:
 				user.write("\r\n  \x1b[32mYou have to accomplish something here before you can trash talk!\x1b[0m\r\n")
-		if ( data[0] == 'l' or data[0] == 'L' ):
+		elif ( data[0] == 'l' or data[0] == 'L' ):
 			user.write('L')
 			user.write(killer_list(user))
 			user.pause()
-		if ( data[0] == 's' or data[0] == 'S' ):
+		elif ( data[0] == 's' or data[0] == 'S' ):
 			user.write("S\r\n")
 			tokillID = module_finduser(user, "\r\n  \x1b[32mKill Who ?")
 			if ( tokillID > 0 ):
@@ -56,6 +68,8 @@ def module_killer(user):
 					killer_fight(user, usertoKill)
 			else:
 				user.write("\r\n  \x1b[32mNo user by that name found.\x1b[0m\r\n")
+		else:
+			skipDisp = True
 
 def killer_list(user):
 	""" Player List
@@ -89,27 +103,39 @@ def killer_list(user):
 def module_forest(user):
 	""" Forest Fight - Non-Combat """
 	thisQuit = False
+	skipDisp = False
 	while ( not thisQuit ):
-		if ( not user.expert ):
-			user.write(user.art.forest())
-		user.write(menu_forest(user))
-		data = user.connection.recv(2)
-		if ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
+		if ( not skipDisp ):
+			if ( not user.expert ):
+				user.write(user.art.forest())
+			user.write(menu_forest(user))
+		skipDisp = False
+		user.connection.settimeout(120)
+		try:
+			data = user.connection.recv(2)
+		except Exception, errorcode:
+			print "Connection Timeout (Main Menu)("+str(errorcode)+"): " + str(user.connection.getpeername())
+			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+			user.logout()
+			user.connection.close()
+		user.connection.settimeout(None)
+		if not data: break
+		elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
 			user.write('Q')
 			thisQuit = True
-		if ( data[0] == '?' ):
+		elif ( data[0] == '?' ):
 			user.write('?')
 			if ( user.expert ):
 				user.write(user.art.forest())
-		if ( data[0] == 'x' or data[0] == 'X' ):
+		elif ( data[0] == 'x' or data[0] == 'X' ):
 			user.write('X')
 			user.toggleXprt()
-		if ( data[0] == 'h' or data[0] == 'H' ):
+		elif ( data[0] == 'h' or data[0] == 'H' ):
 			user.write('H')
 			module_heal(user)
-		if ( data[0] == 'v' or data[0] == 'V' or data[0] == 'y' or data[0] == 'Y' ):
+		elif ( data[0] == 'v' or data[0] == 'V' or data[0] == 'y' or data[0] == 'Y' ):
 			module_viewstats(user)
-		if ( data[0] == 'l' or data[0] == 'l' ):
+		elif ( data[0] == 'l' or data[0] == 'l' ):
 			user.write("L\r\n")
 			if ( user.getForestFight() > 0 ):
 				if ( random.randint(1, 8) == 3 ):
@@ -118,18 +144,20 @@ def module_forest(user):
 					forest_fight(user)
 			else:
 				user.write(func_casebold("\r\n  You are mighty tired.  Try again tommorow\r\n", 2))
-		if ( data[0] == 'a' or data[0] == 'A' ):
+		elif ( data[0] == 'a' or data[0] == 'A' ):
 			user.write('A')
 			user.write(func_casebold("\r\n  You brandish your weapon dramatically.\r\n", 2))
-		if ( data[0] == 'd' or data[0] == 'D' ):
+		elif ( data[0] == 'd' or data[0] == 'D' ):
 			user.write('D')
 			user.write(func_casebold("\r\n  Your Death Knight skills cannot help your here.\r\n", 2))
-		if ( data[0] == 'm' or data[0] == 'M' ):
+		elif ( data[0] == 'm' or data[0] == 'M' ):
 			user.write('M')
 			user.write(func_casebold("\r\n  Your Mystical skills cannot help your here.\r\n", 2))
-		if ( data[0] == 't' or data[0] == 'T' ):
+		elif ( data[0] == 't' or data[0] == 'T' ):
 			user.write('T')
 			user.write(func_casebold("\r\n  Your Thieving skills cannot help your here.\r\n", 2))
+		else:
+			skipDisp = True
 
 def forest_special(user):
 	""" Forest Special Events
@@ -174,7 +202,15 @@ def forest_special(user):
 		user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
 		miniQuit = False
 		while ( not miniQuit ):
-			data = user.connection.recv(2)
+			user.connection.settimeout(120)
+			try:
+				data = user.connection.recv(2)
+			except Exception, errorcode:
+				print "Connection Timeout (Forest Special Happening)("+str(errorcode)+"): " + str(user.connection.getpeername())
+				user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+				user.logout()
+				user.connection.close()
+			user.connection.settimeout(None)
 			if ( data[0] == 'h' or data[0] == 'H' ):
 				user.write('H')
 				goldtoadd = user.getLevel() * 500
@@ -217,7 +253,15 @@ def forest_special(user):
 		miniQuit = False
 		while ( not miniQuit ):
 			user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
-			data = user.connection.recv(2)
+			user.connection.settimeout(120)
+			try:
+				data = user.connection.recv(2)
+			except Exception, errorcode:
+				print "Connection Timeout (Forest Special Happening)("+str(errorcode)+"): " + str(user.connection.getpeername())
+				user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+				user.logout()
+				user.connection.close()
+			user.connection.settimeout(None)
 			if ( data[0] == 'l' or data[0] == 'L' ):
 				user.write("L\r\n\r\n  \x1b[32mThe old hag begins following you like a lost puppy.\x1b[0m\r\n")
 			elif ( data[0] == 'k' or data[0] == 'K' ):
@@ -254,7 +298,15 @@ def forest_special(user):
 		user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
 		miniQuit = False
 		while ( not miniQuit ):
-			data = user.connection.recv(2)
+			user.connection.settimeout(120)
+			try:
+				data = user.connection.recv(2)
+			except Exception, errorcode:
+				print "Connection Timeout (Forest Special Happening)("+str(errorcode)+"): " + str(user.connection.getpeername())
+				user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+				user.logout()
+				user.connection.close()
+			user.connection.settimeout(None)
 			if ( data[0] == 'i' or data[0] == 'I' ):
 				user.write('I')
 				miniQuit = True
@@ -271,7 +323,15 @@ def forest_special(user):
 				user.write(func_normmenu("(B)logshares Brutal Belfry"))
 				user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
 				while ( not thisMiniQuit ):
-					miniData = user.connection.recv(2)
+					user.connection.settimeout(120)
+					try:
+						miniData = user.connection.recv(2)
+					except Exception, errorcode:
+						print "Connection Timeout (Forest Special Happening)("+str(errorcode)+"): " + str(user.connection.getpeername())
+						user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+						user.logout()
+						user.connection.close()
+					user.connection.settimeout(None)
 					if ( miniData[0] == 'k' or miniData[0] == 'K' ):
 						user.write('K')
 						thisTower = 1
@@ -366,10 +426,22 @@ def forest_fight(user):
 	else:
 		user.write("\r\n  \x1b[32mYour skill allows you to get the first strike.\x1b[0m\r\n")
 
+	skipDisp = False
 	while ( user.getHP() > 0 and thisEnemyHP > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
-		user.write(forest_menu(user, thisEnemyHP, thisEnemyName))
-		data = user.connection.recv(2)
-		if ( data[0] == 's' or data[0] == 'S' ):
+		if ( not skipDisp ):
+			user.write(forest_menu(user, thisEnemyHP, thisEnemyName))
+		skipDisp = False
+		user.connection.settimeout(120)
+		try:
+			data = user.connection.recv(2)
+		except Exception, errorcode:
+			print "Connection Timeout (Forest Fight)("+str(errorcode)+"): " + str(user.connection.getpeername())
+			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+			user.logout()
+			user.connection.close()
+		user.connection.settimeout(None)
+		if not data: break
+		elif ( data[0] == 's' or data[0] == 'S' ):
 			user.write('S')
 			user.write(module_viewstats(user))
 		elif ( data[0] == 'a' or data[0] == 'A' ): # Attack!
@@ -411,6 +483,8 @@ def forest_fight(user):
 			user.write("\r\n  \x1b[32mYou are in combat, and they don't make house calls!\x1b[0m\r\n")
 		elif ( data[0] == 'l' or data[0] == 'L' ):
 			user.write("\r\n  \x1b[32mWhat?!  You want to fight two at once?\x1b[0m\r\n")
+		else:
+			skipDisp = True
 
 	if ( ctrlWin ) :
 		user.updateExperience(enemies[thisUserLevel][thisEnemy][5])
@@ -454,9 +528,17 @@ def forest_lesson_d(user) :
 	user.write("\r\n  \x1b[0m\x1b[32mYour choice, \x1b[1m"+user.thisFullname+"\x1b[22m? (K,F) \x1b[0m\x1b[32m:-: \x1b[0m")
 	miniQuit = False
 	while ( not miniQuit ):
-		data = user.connection.recv(2)
+		user.connection.settimeout(120)
+		try:
+			data = user.connection.recv(2)
+		except Exception, errorcode:
+			print "Connection Timeout (Forest Special Happening)("+str(errorcode)+"): " + str(user.connection.getpeername())
+			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+			user.logout()
+			user.connection.close()
+		user.connection.settimeout(None)
 		if not data: break
-		if ( data[0] == 'k' or data[0] == 'K' ):
+		elif ( data[0] == 'k' or data[0] == 'K' ):
 			user.write('K')
 			user.write("\r\n  \x1b[32mYou draw your weapon, and ram it as hard as you can through his midsection.\x1b[0m\r\n")
 			thisChoice = 1
@@ -498,8 +580,17 @@ def forest_lesson_t(user) :
 	user.write("\r\n  \x1b[0m\x1b[32mYour choice, \x1b[1m"+user.thisFullname+"\x1b[22m? (G,S,M) \x1b[0m\x1b[32m:-: \x1b[0m")
 	miniQuit = False
 	while ( not miniQuit ):
-		data = user.connection.recv(2)
-		if ( data[0] == 's' or data[0] == 'S' ):
+		user.connection.settimeout(120)
+		try:
+			data = user.connection.recv(2)
+		except Exception, errorcode:
+			print "Connection Timeout (Forest Special Happening)("+str(errorcode)+"): " + str(user.connection.getpeername())
+			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+			user.logout()
+			user.connection.close()
+		user.connection.settimeout(None)
+		if not data: break
+		elif ( data[0] == 's' or data[0] == 'S' ):
 			user.write("S\r\n  \x1b[32mAs you spit on him, the thief looks at you closely.  He almost looks proud.\x1b[0m\r\n")
 			miniQuit = True
 		elif ( data[0] == 'm' or data[0] == 'M' ):
@@ -531,12 +622,25 @@ def forest_lesson_m(user) :
 	miniQuit2 = False
 	
 	while ( not miniQuit1 ):
-		data = user.connection.recv(2)
-		if ( data[0] == 'k' or data[0] == 'K' or data[0] == 'b' or data[0] == 'B' ):
+		user.connection.settimeout(120)
+		try:
+			data = user.connection.recv(2)
+		except Exception, errorcode:
+			print "Connection Timeout (Forest Special Happening)("+str(errorcode)+"): " + str(user.connection.getpeername())
+			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+			user.logout()
+			user.connection.close()
+		user.connection.settimeout(None)
+		if not data: break
+		elif ( data[0] == 'k' or data[0] == 'K' ):
 			user.write(data[0])
 			user.write("\r\n  \x1b[32mYou knock polietly on the door.\x1b[0m\n")
 			miniQuit1 = True
-		if ( data[0] == 'l' or data[0] == 'L' ):
+		elif ( data[0] == 'b' or data[0] == 'B' ):
+			user.write(data[0])
+			user.write("\r\n  \x1b[32mYou bang wildly on the door.\x1b[0m\n")
+			miniQuit1 = True
+		elif ( data[0] == 'l' or data[0] == 'L' ):
 			user.write("\n  \x1b[32mYou leave, confident in finding better things to do.\x1b[0m\n")
 			miniQuit1 = True
 			miniQuit2 = True
@@ -581,10 +685,22 @@ def module_turgon(user):
 	""" Visit the master 
 	@todo Hall of honor """
 	thisQuit = False
+	skipDisp = False
 	while ( not thisQuit ):
-		user.write(menu_turgon(user))
-		data = user.connection.recv(2)
-		if ( data[0] == 'r' or data[0] == 'R' ):
+		if ( not skipDisp ):
+			user.write(menu_turgon(user))
+		skipDisp = False
+		user.connection.settimeout(120)
+		try:
+			data = user.connection.recv(2)
+		except Exception, errorcode:
+			print "Connection Timeout (Training Menu)("+str(errorcode)+"): " + str(user.connection.getpeername())
+			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+			user.logout()
+			user.connection.close()
+		user.connection.settimeout(None)
+		if not data: break
+		elif ( data[0] == 'r' or data[0] == 'R' ):
 			user.write('R')
 			thisQuit = True
 		elif ( data[0] == '?' ):
@@ -621,6 +737,8 @@ def module_turgon(user):
 				user.write("\r\n\r\n  \x1b[32mI'm sorry my son, you may only fight me once per game-day\x1b[0m\r\n")
 			else:
 				master_fight(user)
+		else:
+			skipDisp = True
 
 def master_fight(user):
 	""" Master Fight System """
@@ -640,10 +758,22 @@ def master_fight(user):
 	user.write("\r\n\r\n  \x1b[32m**\x1b[1;37mFIGHT\x1b[0m\x1b[32m**\r\n")
 	user.write("\r\n  \x1b[32mYou have encountered "+thisEnemyName+"!!\x1b[0m\r\n")
 
+	skipDisp = False
 	while ( user.getHP() > 0 and thisEnemyHP > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
-		user.write(forest_menu(user, thisEnemyHP, thisEnemyName))
-		data = user.connection.recv(2)
-		if ( data[0] == 's' or data[0] == 'S' ):
+		if ( not skipDisp ):
+			user.write(forest_menu(user, thisEnemyHP, thisEnemyName))
+		skipDisp = False
+		user.connection.settimeout(120)
+		try:
+			data = user.connection.recv(2)
+		except Exception, errorcode:
+			print "Connection Timeout (Master Fight)("+str(errorcode)+"): " + str(user.connection.getpeername())
+			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+			user.logout()
+			user.connection.close()
+		user.connection.settimeout(None)
+		if not data: break
+		elif ( data[0] == 's' or data[0] == 'S' ):
 			user.write('S')
 			user.write(module_viewstats(user))
 		elif ( data[0] == 'a' or data[0] == 'A' ): # Attack!
@@ -678,6 +808,8 @@ def master_fight(user):
 			user.write("\r\n  \x1b[31mYou are in Combat!  Try Running!\x1b[0m\r\n")
 		elif ( data[0] == 'h' or data[0] == 'H' ):
 			user.write("\r\n  \x1b[32mYou are in combat, and they don't make house calls!\x1b[0m\r\n")
+		else:
+			skipDisp = True
 
 	if ( ctrlWin ) :
 		addExp = masters[thisUserLevel][2] / 10
@@ -718,10 +850,22 @@ def killer_fight(user, usertokill):
 	user.write("\r\n\r\n  \x1b[32m**\x1b[1;37mFIGHT\x1b[0m\x1b[32m**\r\n")
 	user.write("\r\n  \x1b[32mYou have encountered "+usertokill.thisFullname+"!!\x1b[0m\r\n")
 
+	skipDisp = False
 	while ( user.getHP() > 0 and usertokill.getHP() > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
-		user.write(forest_menu(user, usertokill.getHP(), usertokill.thisFullname))
-		data = user.connection.recv(2)
-		if ( data[0] == 's' or data[0] == 'S' ):
+		if ( not skipDisp ):
+			user.write(forest_menu(user, usertokill.getHP(), usertokill.thisFullname))
+		skipDisp = False
+		user.connection.settimeout(120)
+		try:
+			data = user.connection.recv(2)
+		except Exception, errorcode:
+			print "Connection Timeout (Player Fight)("+str(errorcode)+"): " + str(user.connection.getpeername())
+			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+			user.logout()
+			user.connection.close()
+		user.connection.settimeout(None)
+		if not data: break
+		elif ( data[0] == 's' or data[0] == 'S' ):
 			user.write('S')
 			user.write(module_viewstats(user))
 		elif ( data[0] == 'a' or data[0] == 'A' ): # Attack!
@@ -763,6 +907,8 @@ def killer_fight(user, usertokill):
 			user.write("Q\r\n  \x1b[31mYou are in Combat!  Try Running!\x1b[0m\r\n")
 		elif ( data[0] == 'h' or data[0] == 'H' ):
 			user.write("H\r\n  \x1b[32mYou are in combat, and they don't make house calls!\x1b[0m\r\n")
+		else:
+			skipDisp = True
 
 	if ( ctrlWin ) :
 		user.setKiller()

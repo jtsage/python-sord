@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from functions import *
+from modules import *
 """
  * Communications functions
  * 
