@@ -260,7 +260,10 @@ def handleClient(connection):
 			currentUser.jennielevel = 0
 
 	connection.send(func_casebold("\r\n\r\n   Quitting to the Fields... GoodBye!\r\n", 7))
-	currentUser.logout()
+	try:
+		currentUser.logout()
+	except:
+		print "Logged out before auth...."
 	connection.shutdown(SHUT_RD)
 	connection.close()
 	print 'Thread Disconnected::' + str(thisClientAddress)
