@@ -351,10 +351,10 @@ def rdi_bartend(user):
 	""" Bartender Logic
 	@todo Bribe System """
 	thisQuit = False
+	dispSkip = False
 	if ( user.getLevel() < 2 ):
 		user.write("\r\n  \x1b[32mNever heard of ya...  Come back when you've done something.\x1b[0m\r\n")
 		thisQuit = True
-		dispSkip = False
 	while ( not thisQuit ):
 		if ( not dispSkip ):
 			user.write(rdi_menu_bartend(user))
