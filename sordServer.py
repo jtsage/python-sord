@@ -21,6 +21,7 @@ from sord.menus import *
 from sord.messaging import *
 from sord.rdi import *
 from sord.forest import *
+from sord.data import *
 
 from socket import *
 from config import sord
@@ -41,6 +42,8 @@ ECHO = chr(1)
 LINEMODE = chr(34) # Linemode option
 SORDDEBUG = False
 #SORDDEBUG = True
+SKIPLONGANSI = False
+#SKIPLONGANSI = True
 
 def now():			  #Server Time
 	return time.ctime(time.time())
@@ -58,33 +61,44 @@ def handleClient(connection):
 	connection.send("Welcome to SORD\r\n")
 	func_pauser(connection)
 	if ( not SORDDEBUG ):
-		func_slowecho(connection, artwork.header())
+		if ( not SKIPLONGANSI ):
+			func_slowecho(connection, artwork.header())
 		func_pauser(connection)
 	
 	quitter = False
 	quitfull = False
 	if ( SORDDEBUG):
 		quitter = True
+	skipDisp = False
 	while ( not quitter ):
-		func_slowecho(connection, artwork.banner(mySord,mySQLcurs))
+		if ( not skipDisp ):
+			func_slowecho(connection, artwork.banner(mySord,mySQLcurs))
+		skipDisp = False
 		connection.settimeout(60)
 		try:
 			data = connection.recv(1)
-		except socket.timeout:
-			print "Connection Timeout (Login Menu): " + str(connection.getpeername())
+		except Exception, errorcode:
+			print "Connection Timeout (Login Menu)("+str(errorcode)+"): " + str(connection.getpeername())
 			connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
 			connection.close()
-		if not data: break
 		connection.settimeout(None)
-		if ( data == "Q" or data == "q" ):
+		if not data: break
+		elif ( data == "Q" or data == "q" ):
 			quitter = True
 			quitfull = True
-		if ( data == "L" or data == "l" ):
+		elif ( data == "L" or data == "l" ):
 			func_slowecho(connection, module_list(artwork, mySQLcurs, mySord.sqlPrefix()))
 			func_pauser(connection)
-		if ( data == "E" or data == "e" ):
+		elif ( data == "E" or data == "e" ):
 			print 'User Logging In::' + str(thisClientAddress)
 			quitter = True
+		elif ( data == 'S' or data == 's' ):
+			func_slowecho(connection, "S\r\n")
+			for storyitem in story:
+				func_slowecho(connection, func_casebold("  \x1b[37m" + storyitem + "\r\n", 7))
+			func_pauser(connection)
+		else:
+			skipDisp = True
 
 	loggedin = False
 	ittr = 0
@@ -259,7 +273,10 @@ def handleClient(connection):
 			skipDisp = True
 			currentUser.jennielevel = 0
 
-	connection.send(func_casebold("\r\n\r\n   Quitting to the Fields... GoodBye!\r\n", 7))
+	exitQuote = ['The black thing inside rejoices at your departure.', 'The very earth groans at your depature.', 'The very trees seem to moan as you leave.', 'Echoing screams fill the wastelands as you close your eyes.', 'Your very soul aches as you wake up from your favorite dream.']
+	exitTop = len(exitQuote) - 1
+	exitThis = exitQuote[random.randint(0, exitTop)]
+	connection.send(func_casebold("\r\n\r\n   "+exitThis+"\r\n\r\n", 7))
 	try:
 		currentUser.logout()
 	except:

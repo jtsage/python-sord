@@ -429,7 +429,7 @@ def forest_fight(user):
 	skipDisp = False
 	while ( user.getHP() > 0 and thisEnemyHP > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
 		if ( not skipDisp ):
-			user.write(forest_menu(user, thisEnemyHP, thisEnemyName))
+			user.write(forest_menu(user, thisEnemyHP, thisEnemyName, True))
 		skipDisp = False
 		user.connection.settimeout(120)
 		try:
@@ -465,6 +465,56 @@ def forest_fight(user):
 				if ( thisEnemyHP < 1 ): # We Win!
 					ctrlWin = True
 					user.write("\r\n  \x1b[31m"+enemies[thisUserLevel][thisEnemy][6]+"\x1b[0m\r\n")
+		elif ( data[0] == 'd' or data[0] == 'D' ): # Attack!
+			user.write("D\r\n")
+			if ( user.getSkillUse(1) > 0 ):
+				user.updateSkillUse(1, -1)
+				hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
+				myAttack  = ( thisUserHit + (random.randint(2,5) * random.randint((thisUserHit / 2), thisUserHit))) + thisUserHit
+				if ( not thisUnderdog ): # We Hit First
+					if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
+						hisAttack = 0
+				if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+					ctrlDead = True
+					hisAttack = user.getHP() # No insult to injury
+				if ( hisAttack > 0 ): # He hit us
+					user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+					user.updateHP(hisAttack * -1)
+				else: 
+					user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
+				if ( myAttack > 0 and not ctrlDead ): # We hit him!
+					user.write("\r\n  \x1b[1;32mUltra Powerful Move!\x1b[0m\r\n  \x1b[32mYou hit "+thisEnemyName+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+					thisEnemyHP = thisEnemyHP - myAttack
+					if ( thisEnemyHP < 1 ): # We Win!
+						ctrlWin = True
+						user.write("\r\n  \x1b[31m"+enemies[thisUserLevel][thisEnemy][6]+"\x1b[0m\r\n")
+			else:
+				user.write("\r\n  \x1b[32mYou have no Death Knight Skill Use Points!\x1b[0m\r\n\r\n")
+		elif ( data[0] == 't' or data[0] == 'T' ): # Attack!
+			user.write("T\r\n")
+			if ( user.getSkillUse(3) > 0 ):
+				user.updateSkillUse(3, -1)
+				hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - ( thisUserDefense * 2 )
+				myAttack  = ( thisUserHit + (random.randint(1,3) * random.randint((thisUserHit / 2), thisUserHit))) + thisUserHit
+				if ( not thisUnderdog ): # We Hit First
+					if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
+						hisAttack = 0
+				if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+					ctrlDead = True
+					hisAttack = user.getHP() # No insult to injury
+				if ( hisAttack > 0 ): # He hit us
+					user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+					user.updateHP(hisAttack * -1)
+				else: 
+					user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
+				if ( myAttack > 0 and not ctrlDead ): # We hit him!
+					user.write("\r\n  \x1b[1;32mUltra Sneaky Move!\x1b[0m\r\n  \x1b[32mYou hit "+thisEnemyName+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+					thisEnemyHP = thisEnemyHP - myAttack
+					if ( thisEnemyHP < 1 ): # We Win!
+						ctrlWin = True
+						user.write("\r\n  \x1b[31m"+enemies[thisUserLevel][thisEnemy][6]+"\x1b[0m\r\n")
+			else:
+				user.write("\r\n  \x1b[32mYou have no Thief Skill Use Points!\x1b[0m\r\n\r\n")
 		elif ( data[0] == 'r' or data[0] == 'R' ): # Run Away
 			if ( random.randint(1, 10) == 4 ): # Hit in the back.
 				hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
@@ -474,6 +524,7 @@ def forest_fight(user):
 				if ( hisAttack > 0 ): # He hit us
 					user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you in the back with it's "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\r\n")
 					user.updateHP(hisAttack)
+					ctrlRan = True
 			else:
 				user.write("\r\n  \x1b[32mYou narrowly escape harm.\x1b[0m\r\n")
 				ctrlRan = True
@@ -483,7 +534,126 @@ def forest_fight(user):
 			user.write("\r\n  \x1b[32mYou are in combat, and they don't make house calls!\x1b[0m\r\n")
 		elif ( data[0] == 'l' or data[0] == 'L' ):
 			user.write("\r\n  \x1b[32mWhat?!  You want to fight two at once?\x1b[0m\r\n")
-		else:
+		elif ( data[0] == 'm' or data[0] == 'M' ): #Magic!
+			if ( user.getSkillUse(2) < 1 ):
+				user.write("\r\n  \x1b[32mYou have no Magical Use Points!\x1b[0m\r\n\r\n")
+			else:
+				user.write("\r\n" + func_normmenu("(N)evermind") + func_normmenu("(P)inch Real Hard (1)"))
+				if ( user.getSkillUse(2) > 3 ):
+					user.write(func_normmenu("(D)isappear (4)"))
+					if ( user.getSkillUse(2) > 7 ):
+						user.write(func_normmenu("(H)eat Wave (8)"))
+						if ( user.getSkillUse(2) > 11 ):
+							user.write(func_normmenu("(L)ight Shield (12)"))
+							if ( user.getSkillUse(2) > 15 ):
+								user.write(func_normmenu("(S)hatter (16)"))
+								if ( user.getSkillUse(2) > 19 ):
+									user.write(func_normmenu("(M)ind Heal (20)"))
+				user.write("\r\n  \x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? [\x1b[1;35mA\x1b[0m\x1b[32m] : \x1b[0m")
+				tinyQuit = False
+				while ( not tinyQuit ):
+					user.connection.settimeout(120)
+					try:
+						miniData = user.connection.recv(2)
+					except Exception, errorcode:
+						print "Connection Timeout (Magical Use)("+str(errorcode)+"): " + str(user.connection.getpeername())
+						user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
+						user.logout()
+						user.connection.close()
+					user.connection.settimeout(None)
+					if not miniData: break
+					elif ( miniData[0] == 'n' or miniData[0] == 'N' ): #Nothing
+						user.write("N\r\n  \x1b[32mSure thing boss.\x1b[0m\r\n")
+						tinyQuit = True
+					elif ( miniData[0] == 'p' or miniData[0] == 'P' ): #Pinch!
+						user.write("P")
+						user.updateSkillUse(2, -1)
+						tinyQuit = True
+						hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
+						myAttack  = ( thisUserHit + random.randint(0, thisUserHit)) + ( thisUserHit / 4 )
+						if ( not thisUnderdog ): # We Hit First
+							if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
+								hisAttack = 0
+						if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+							ctrlDead = True
+							hisAttack = user.getHP() # No insult to injury
+						if ( hisAttack > 0 ): # He hit us
+							user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+							user.updateHP(hisAttack * -1)
+						else: 
+							user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
+						if ( myAttack > 0 and not ctrlDead ): # We hit him!
+							user.write("\r\n  \x1b[32mYou pinch "+thisEnemyName+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+							thisEnemyHP = thisEnemyHP - myAttack
+							if ( thisEnemyHP < 1 ): # We Win!
+								ctrlWin = True
+								user.write("\r\n  \x1b[31m"+enemies[thisUserLevel][thisEnemy][6]+"\x1b[0m\r\n")
+					elif ( (miniData[0] == 'd' or miniData[0] == 'D') and ( user.getSkillUse(2) > 3 ) ): #Disappear
+						user.write("D\r\n  \x1b[32mYou disapper like a ghost!\x1b[0m\r\n")
+						user.updateSkillUse(2, -4)
+						tinyQuit = True
+						ctrlRan = True
+					elif ( (miniData[0] == 'h' or miniData[0] == 'H') and ( user.getSkillUse(2) > 7 ) ): #Heat Wave
+						user.write("H")
+						user.updateSkillUse(2, -8)
+						tinyQuit = True
+						hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
+						myAttack  = ( thisUserHit + random.randint(0, thisUserHit)) + (thisUserHit / 2)
+						if ( not thisUnderdog ): # We Hit First
+							if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
+								hisAttack = 0
+						if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+							ctrlDead = True
+							hisAttack = user.getHP() # No insult to injury
+						if ( hisAttack > 0 ): # He hit us
+							user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+							user.updateHP(hisAttack * -1)
+						else: 
+							user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
+						if ( myAttack > 0 and not ctrlDead ): # We hit him!
+							user.write("\r\n  \x1b[32mYou blast "+thisEnemyName+" with Heat Wave for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+							thisEnemyHP = thisEnemyHP - myAttack
+							if ( thisEnemyHP < 1 ): # We Win!
+								ctrlWin = True
+								user.write("\r\n  \x1b[31m"+enemies[thisUserLevel][thisEnemy][6]+"\x1b[0m\r\n")
+					elif ( (miniData[0] == 'l' or miniData[0] == 'L') and ( user.getSkillUse(2) > 11 ) ): #Light Shield
+						user.write("L\r\n  \x1b[32mYou feel a bit odd.  You dig in a feel better defended\x1b[0m\r\n")
+						user.updateSkillUse(2, -12)
+						thisUserDefense = thisUserDefense * 2
+						tinyQuit = True
+					elif ( (miniData[0] == 's' or miniData[0] == 'S') and ( user.getSkillUse(2) > 15 ) ): #Shatter
+						user.write("S")
+						user.updateSkillUse(2, -16)
+						tinyQuit = True
+						hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
+						myAttack  = ( thisUserHit + random.randint(0, thisUserHit)) + (thisUserHit * 2)
+						if ( not thisUnderdog ): # We Hit First
+							if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
+								hisAttack = 0
+						if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+							ctrlDead = True
+							hisAttack = user.getHP() # No insult to injury
+						if ( hisAttack > 0 ): # He hit us
+							user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+							user.updateHP(hisAttack * -1)
+						else: 
+							user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
+						if ( myAttack > 0 and not ctrlDead ): # We hit him!
+							user.write("\r\n  \x1b[32mYou Shatter "+thisEnemyName+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+							thisEnemyHP = thisEnemyHP - myAttack
+							if ( thisEnemyHP < 1 ): # We Win!
+								ctrlWin = True
+								user.write("\r\n  \x1b[31m"+enemies[thisUserLevel][thisEnemy][6]+"\x1b[0m\r\n")
+					elif ( (miniData[0] == 'm' or miniData[0] == 'M') and ( user.getSkillUse(2) > 19 ) ): #Mind Heal
+						user.write("M\r\n  \x1b[32mYou feel much better!\x1b[0m\r\n")
+						user.updateSkillUse(2, -20)
+						hptoadd = user.getHPMax() - user.getHP()
+						if ( hptoadd > 0 ):
+							user.updateHP(hptoadd)
+						if ( hptoadd < 5 ):
+							user.write("\r\n  \x1b[32mThough, you are likely clinicly retarded.\x1b[0m\r\n")
+						tinyQuit = True
+		else: #Catch non-options
 			skipDisp = True
 
 	if ( ctrlWin ) :
@@ -505,7 +675,7 @@ def forest_fight(user):
 		user.write(func_casebold("  Tragically, you died.  Returning to the mundane world for the day...\n", 1))
 		user.connection.close()
 
-def forest_menu(user, enemyHP, enemyName) : 
+def forest_menu(user, enemyHP, enemyName, special=False) : 
 	""" Forest Fight Menu
 	@ todo Special Skills Section """
 	thismenu  = "\r\n  \x1b[32mYour Hitpoints : \x1b[1m"+str(user.getHP())+"\x1b[0m\r\n"
@@ -513,6 +683,14 @@ def forest_menu(user, enemyHP, enemyName) :
 	thismenu += func_normmenu("(A)ttack")
 	thismenu += func_normmenu("(S)tats")
 	thismenu += func_normmenu("(R)un")
+	if ( special ):
+		thismenu += "\r\n"
+		if ( user.getSkillUse(1) > 0 ):
+			thismenu += func_normmenu("(D)eath Knight Attack ("+str(user.getSkillUse(1))+")")
+		if ( user.getSkillUse(2) > 0 ):
+			thismenu += func_normmenu("(M)ystical Powers ("+str(user.getSkillUse(2))+")")
+		if ( user.getSkillUse(3) > 0 ):
+			thismenu += func_normmenu("(T)heiving Sneak Attack ("+str(user.getSkillUse(3))+")")
 	thismenu += "\r\n  \x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? [\x1b[1;35mA\x1b[0m\x1b[32m] : \x1b[0m"
 	return thismenu
 
@@ -819,6 +997,8 @@ def master_fight(user):
 		user.updateDefense(masterwin[thisUserLevel][2])
 		user.updateStrength(masterwin[thisUserLevel][1])
 		user.updateHPMax(masterwin[thisUserLevel][0])
+		user.updateSkillPoint(user.getClass(), 1)
+		user.updateSkillUse(user.getClass(), 1)
 		hptoheal = user.getHPMax() - user.getHP()
 		if ( hptoheal > 0 ):
 			user.updateHP(hptoheal)

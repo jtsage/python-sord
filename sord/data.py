@@ -570,3 +570,19 @@ killerlose = [
 	'"Ack!  I\'m humiliated in front of all!," explaims `g.',
 	'"Why do I even try?  Why did I get up today?," `g wonders aloud.',
 	'"Haw! Haw!  I told you to run!," laughs `e.']
+
+story = [
+  '"HALLOWEEN" by Seth A. Robinson, \'94','',
+  'Billy was a kid who didn\'t fit in.  He couldn\'t talk and he was lame, poor',
+  'little Billy just wasn\'t the same.','',
+  'He couldn\'t leave the house, because of his face.',
+  'Last time he did, he met a can of mace.','',
+  'But even Billy had his time, and it was Halloween.  It was his favorite day -',
+  'A night to walk the earth unseen.','',
+  'Other children won\'t point, won\'t laugh, won\'t harm.',
+  'Little girls won\'t run away in alarm.','',
+  'Tiny Goblin, Tiny ghost and visions of the dead.',
+  'Little witch with her stick and Jack Pumpkin head.','',
+  'Billy knew he fit right in, he didn\'t have to ask.',
+  'The only difference was, he wasn\'t wearing a mask']
+  
