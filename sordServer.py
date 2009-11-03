@@ -259,7 +259,7 @@ def handleClient(connection):
 			skipDisp = True
 			currentUser.jennielevel = 0
 
-	connection.write(func_casebold("\r\n\r\n   Quitting to the Fields... GoodBye!\r\n", 7))
+	connection.send(func_casebold("\r\n\r\n   Quitting to the Fields... GoodBye!\r\n", 7))
 	currentUser.logout()
 	connection.shutdown(SHUT_RD)
 	connection.close()
