@@ -66,7 +66,6 @@ def handleClient(connection):
 		connection.send("Welcome to SORD\r\n")
 		connection.settimeout(120)
 		func_pauser(connection)
-		print now()
 		if ( not SORDDEBUG ):
 			if ( not SKIPLONGANSI ):
 				func_slowecho(connection, artwork.header())
@@ -272,46 +271,50 @@ def handleClient(connection):
 			currentUser.logout()
 		connection.shutdown(SHUT_RD)
 		connection.close()
-		print 'Thread Disconnected::' + str(thisClientAddress) + " at " + now()
+		print '  *** Thread Disconnected:' + str(thisClientAddress) + " at " + now()
 		connectedHosts -= 1
 		thread.exit()
 		
 	except Exception as e:
 		skipClose = False
 		if ( e[0] == "timed out" ):
-			print "Network Timeout: " + str(thisClientAddress) + " at " + now()
+			print "  *** Network Timeout: " + str(thisClientAddress) + " at " + now()
 			connection.send("\r\n\r\nNetwork Connection has timed out.  120sec of inactivity.\r\n\r\n")
 		elif type(e) is error:
-			print "Remote Closed Host: " + str(thisClientAddress) + " at " + now()
+			print "  *** Remote Closed Host: " + str(thisClientAddress) + " at " + now()
 			skipClose = True
 		else:
-			print "Program Error Encountered("+ str(e) + "): " + str(thisClientAddress) + " at " + now()
+			print "  !!! Program Error Encountered("+ str(e) + "): " + str(thisClientAddress) + " at " + now()
 			try:
 				connection.send("\r\nProgram Error Encountered, Closing Connection.\r\n")
 			except:
-				print " *** No message to client"
-			traceback.print_exc()
+				print "   && No message to client"
+			formatted = traceback.format_exc().splitlines()
+			for formattedline in formatted:
+				print "    ~~~ " + formattedline
 		if ( loggedin ):
 			currentUser.logout()
 		connectedHosts -= 1
 		if ( not skipClose ):
 			connection.shutdown(SHUT_RD)
 			connection.close()
-		print "*** Connected Hosts: " + str(connectedHosts) + " ***"
+		print "  --- Connected Hosts: " + str(connectedHosts)
 		thread.exit()
 	
 def dispatcher():
 	global connectedHosts
+	print "-=-=-=-=-=-= SORD Server Version " + mySord.version() + " =-=-=-=-=-=-"
+	print " === Starting Server"
 	while True:
 		try:
 			connection, address = sockobj.accept()
-			print 'Server connected by', address, 
+			print '  *** Server connected by', address, 
 			print 'at', now()
 			thread.start_new(handleClient, (connection,))
 			connectedHosts += 1
-			print "*** Connected Hosts: " + str(connectedHosts) + " ***"
+			print "  --- Connected Hosts: " + str(connectedHosts)
 		except KeyboardInterrupt:
-			print 'Closing listener and exiting.'
+			print " === Stopping Server"
 			sockobj.close()
 			sys.exit()
 
