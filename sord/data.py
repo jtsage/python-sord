@@ -26,12 +26,12 @@
 
 classes = [ "empty", "Death Knight", "Mystical", "Thief" ]
 
-weapon      = [ "None", "Stick", "Dagger", "Short Sword", "Long Sword", "Huge Axe", "Bone Cruncer", "Twin Swords", "Power Axe", "Able's Sword", "Wan's Weapon", "Spear Of Gold", "Crystal Shard", "Niras's Teeth", "Blood Sword", "Death Sword" ]
+weapon      = [ "None", "Stick", "Dagger", "Short Sword", "Long Sword", "Huge Axe", "Bone Cruncher", "Twin Swords", "Power Axe", "Able's Sword", "Wan's Weapon", "Spear Of Gold", "Crystal Shard", "Niras's Teeth", "Blood Sword", "Death Sword" ]
 weaponprice = [ 0, 200, 1000, 3000, 10000, 30000, 100000, 150000, 200000, 400000, 1000000, 4000000, 10000000, 40000000, 100000000, 400000000 ]
 weaponstr   = [ 0, 5, 10, 20, 30, 40, 60, 80, 120, 180, 250, 350, 500, 800, 1200, 1800 ]
 weaponnstr  = [ 0, 0, 0, 15, 22, 32, 44, 64, 99, 149, 224, 334, 334, 334, 334, 334 ]
 
-armor      = [ "None", "Coat", "Heavy Coat", "Leather Vest", "Bronze Armour", "Iron Armour", "Graphite Armour", "Erdrick's Armour", "Armour of Death", "Able's Armour", "Full Body Armour", "Blood Armour", "Magin Protection", "Belar's Mail", "Golden Armour", "Armour Of Lore" ]
+armor      = [ "None", "Coat", "Heavy Coat", "Leather Vest", "Bronze Armour", "Iron Armour", "Graphite Armour", "Erdrick's Armour", "Armour of Death", "Able's Armour", "Full Body Armour", "Blood Armour", "Magic Protection", "Belar's Mail", "Golden Armour", "Armour Of Lore" ]
 armorprice = [ 0, 200, 1000, 3000, 10000, 30000, 100000, 150000, 200000, 400000, 1000000, 4000000, 10000000, 40000000, 100000000, 400000000 ]
 armordef   = [ 0, 1, 3, 10, 15, 25, 35, 50, 75, 100, 150, 225, 300, 400, 600, 1000 ]
 armorndef  = [ 0, 0, 0, 2, 5, 10, 20, 35, 57, 92, 152, 232, 232, 232, 232, 232 ]

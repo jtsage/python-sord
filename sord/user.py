@@ -49,16 +49,7 @@ class sordUser():
 		self.write("\r\n    \x1b[1m\x1b[32m:\x1b[0m\x1b[32m-\x1b[1m\x1b[32m: P\x1b[0m\x1b[32mress \x1b[1m\x1b[32mA\x1b[0m\x1b[32mny \x1b[1m\x1b[32mK\x1b[0m\x1b[32mey \x1b[1m\x1b[32m:\x1b[0m\x1b[32m-\x1b[1m\x1b[32m:")
 		pauser_quit = False
 		while ( not pauser_quit ):
-			self.connection.settimeout(60)
-			try:
-				data = self.connection.recv(5)
-			except socket.timeout:
-				print "Connection Timeout (User Pauser): " + str(self.connection.getpeername())
-				self.logout()
-				self.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-				self.connection.close()
-
-			self.connection.settimeout(None)
+			data = self.connection.recv(5)
 			if not data: break
 			pauser_quit = True
 			self.connection.send("\r\n")

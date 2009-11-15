@@ -22,18 +22,11 @@ def func_pauser(connection):
 	#data = connection.recv(1024) #clear buffer
 	func_slowecho(connection, func_casebold("\r\n    :-: Press Any Key :-:", 2))
 	pauser_quit = False
-	connection.settimeout(30)
 	while ( not pauser_quit ):
-		try:
-			data = connection.recv(5)
-		except socket.timeout:
-			print "Connection timeout (pauser): " + str(connection.getpeername())
-			connection.send("\r\nIdle Timeout Disconnect.\r\n")
-			connection.close()
+		data = connection.recv(5)
 		if not data: break
 		pauser_quit = True
 		connection.send("\r\n")
-	connection.settimeout(None)
 		
 
 def func_getLine(connection, echo):
@@ -41,16 +34,7 @@ def func_getLine(connection, echo):
 	getterquit = False
 	retval = ""
 	while ( not getterquit ):
-		connection.settimeout(120)
-		try:
-			data = connection.recv(2)
-		except Exception, errorcode:
-			print "Connection Timeout (GetLine)("+str(errorcode)+"): " + str(connection.getpeername())
-			connection.send("\r\nIdle Time Exceeded, Stopping Entry of data.\r\n")
-			getterquit = True
-			retval = ""
-			data = ""
-		connection.settimeout(None)
+		data = connection.recv(2)
 		if not data: break
 		if ( data[0] == "\n" or data[0] == "\r" ):
 			getterquit = True

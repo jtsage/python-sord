@@ -48,15 +48,7 @@ def rdi_logic(user):
 				user.write(rdi_menu_main(user))
 			user.write(rdi_prompt(user))
 		skipDisp = False
-		user.connection.settimeout(120)
-		try:
-			data = user.connection.recv(2)
-		except Exception, errorcode:
-			print "Connection Timeout (Main Menu)("+str(errorcode)+"): " + str(user.connection.getpeername())
-			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-			user.logout()
-			user.connection.close()
-		user.connection.settimeout(None)
+		data = user.connection.recv(2)
 		if not data: break
 		elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
 			user.write('R')
@@ -150,15 +142,7 @@ def rdi_getroom(user):
 	user.write("\r\n  \x1b[32mThe bartender approaches you at the mention of a room.\x1b[0m\r\n")
 	user.write("  \x1b[35m\"You want a room, eh?  That'll be "+str(price)+" gold!\"\x1b[0m\r\n")
 	user.write("  \x1b[32mDo you agree? \x1b[1m: \x1b[0m")
-	user.connection.settimeout(120)
-	try:
-		yesno = user.connection.recv(2)
-	except Exception, errorcode:
-		print "Connection Timeout (Main Menu)("+str(errorcode)+"): " + str(user.connection.getpeername())
-		user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-		user.logout()
-		user.connection.close()
-	user.connection.settimeout(None)
+	yesno = user.connection.recv(2)
 	if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 		if ( user.getGold() < price ):
 			user.write("\r\n  \x1b[35m\"How bout you find yourself a nice stretch of cardboard box ya bum?\x1b[0m\r\n")
@@ -183,15 +167,7 @@ def rdi_converse(user):
 		output += "\x1b[0m\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
 	output += "\r\n  \x1b[32mAdd to the conversation? \x1b[1m: \x1b[0m"
 	user.write(output)
-	user.connection.settimeout(120)
-	try:
-		yesno = user.connection.recv(2)
-	except Exception, errorcode:
-		print "Connection Timeout (Main Menu)("+str(errorcode)+"): " + str(user.connection.getpeername())
-		user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-		user.logout()
-		user.connection.close()
-	user.connection.settimeout(None)
+	yesno = user.connection.recv(2)
 	if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 		user.write(func_casebold("\r\n  What say you? :-: ", 2))
 		ann = func_getLine(user.connection, True)
@@ -217,15 +193,7 @@ def rdi_menu_bard(user):
 		if ( not skipDisp ):
 			user.write(thismenu)
 		skipDisp = False
-		user.connection.settimeout(120)
-		try:
-			data = user.connection.recv(2)
-		except Exception, errorcode:
-			print "Connection Timeout (Main Menu)("+str(errorcode)+"): " + str(user.connection.getpeername())
-			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-			user.logout()
-			user.connection.close()
-		user.connection.settimeout(None)
+		data = user.connection.recv(2)
 		if not data: break
 		if ( data[0] == 'r' or data[0] == 'R' or data[0] == 'q' or data[0] == 'Q' ):
 			user.write('R')
@@ -272,15 +240,7 @@ def rdi_flirt_violet(user):
 	thisScrew = False
 	thisQuit = False
 	while ( not thisQuit ):
-		user.connection.settimeout(120)
-		try:
-			data = user.connection.recv(2)
-		except Exception, errorcode:
-			print "Connection Timeout (Main Menu)("+str(errorcode)+"): " + str(user.connection.getpeername())
-			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-			user.logout()
-			user.connection.close()
-		user.connection.settimeout(None)
+		data = user.connection.recv(2)
 		if not data: break
 		elif ( data[0] == 'w' or data[0] == 'W' ):
 			user.write('W')
@@ -359,15 +319,7 @@ def rdi_bartend(user):
 		if ( not dispSkip ):
 			user.write(rdi_menu_bartend(user))
 		dispSkip = False
-		user.connection.settimeout(120)
-		try:
-			data = user.connection.recv(2)
-		except Exception, errorcode:
-			print "Connection Timeout (Main Menu)("+str(errorcode)+"): " + str(user.connection.getpeername())
-			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-			user.logout()
-			user.connection.close()
-		user.connection.settimeout(None)
+		data = user.connection.recv(2)
 		if not data: break
 		if ( data[0] == 'r' or data[0] == 'R' or data[0] == 'q' or data[0] == 'Q' ):
 			user.write('R')
@@ -391,15 +343,7 @@ def rdi_bartend(user):
 			user.write("\r\n  \x1b[35m"+user.thisFullname+" "+thisTitle+" does sound kinda funny..\x1b[0m")
 			user.write("\r\n  \x1b[35mit would cost ya "+str(thisPrice)+" gold... Deal?\"\x1b[0m")
 			user.write("\r\n  \x1b[32mChange your name? [\x1b[1mN\x1b[22m]\x1b[0m ")
-			user.connection.settimeout(120)
-			try:
-				yesno = user.connection.recv(2)
-			except Exception, errorcode:
-				print "Connection Timeout (Main Menu)("+str(errorcode)+"): " + str(user.connection.getpeername())
-				user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-				user.logout()
-				user.connection.close()
-			user.connection.settimeout(None)
+			yesno = user.connection.recv(2)
 			if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 				user.write('Y')
 				if ( user.getGold() < thisPrice ):
@@ -461,15 +405,7 @@ def rdi_bartend(user):
 					tinyQuit = False
 					while( not tinyQuit ):
 						user.write("  \x1b[32mChoose : \x1b[0m")
-						user.connection.settimeout(120)
-						try:
-							thisType = user.connection.recv(2)
-						except Exception, errorcode:
-							print "Connection Timeout (Main Menu)("+str(errorcode)+"): " + str(user.connection.getpeername())
-							user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-							user.logout()
-							user.connection.close()
-						user.connection.settimeout(None)
+						thisType = user.connection.recv(2)
 						if ( thisType[0] == 'n' or thisType[0] == 'N' or thisType[0] == 'q' or thisType[0] == 'Q' or thisType[0] == 'r' or thisType[0] == 'R' ):
 							user.write('N')
 							tinyQuit = True

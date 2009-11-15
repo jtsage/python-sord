@@ -20,15 +20,7 @@ def module_killer(user):
 		if ( not skipDisp ):
 			user.write(menu_slaughter(user))
 		skipDisp = False
-		user.connection.settimeout(120)
-		try:
-			data = user.connection.recv(2)
-		except Exception, errorcode:
-			print "Connection Timeout (Slaughter Menu)("+str(errorcode)+"): " + str(user.connection.getpeername())
-			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-			user.logout()
-			user.connection.close()
-		user.connection.settimeout(None)
+		data = user.connection.recv(2)
 		if not data: break
 		elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
 			user.write('R')
@@ -110,15 +102,7 @@ def module_forest(user):
 				user.write(user.art.forest())
 			user.write(menu_forest(user))
 		skipDisp = False
-		user.connection.settimeout(120)
-		try:
-			data = user.connection.recv(2)
-		except Exception, errorcode:
-			print "Connection Timeout (Main Menu)("+str(errorcode)+"): " + str(user.connection.getpeername())
-			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-			user.logout()
-			user.connection.close()
-		user.connection.settimeout(None)
+		data = user.connection.recv(2)
 		if not data: break
 		elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
 			user.write('Q')
@@ -202,15 +186,7 @@ def forest_special(user):
 		user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
 		miniQuit = False
 		while ( not miniQuit ):
-			user.connection.settimeout(120)
-			try:
-				data = user.connection.recv(2)
-			except Exception, errorcode:
-				print "Connection Timeout (Forest Special Happening)("+str(errorcode)+"): " + str(user.connection.getpeername())
-				user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-				user.logout()
-				user.connection.close()
-			user.connection.settimeout(None)
+			data = user.connection.recv(2)
 			if ( data[0] == 'h' or data[0] == 'H' ):
 				user.write('H')
 				goldtoadd = user.getLevel() * 500
@@ -253,15 +229,7 @@ def forest_special(user):
 		miniQuit = False
 		while ( not miniQuit ):
 			user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
-			user.connection.settimeout(120)
-			try:
-				data = user.connection.recv(2)
-			except Exception, errorcode:
-				print "Connection Timeout (Forest Special Happening)("+str(errorcode)+"): " + str(user.connection.getpeername())
-				user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-				user.logout()
-				user.connection.close()
-			user.connection.settimeout(None)
+			data = user.connection.recv(2)
 			if ( data[0] == 'l' or data[0] == 'L' ):
 				user.write("L\r\n\r\n  \x1b[32mThe old hag begins following you like a lost puppy.\x1b[0m\r\n")
 			elif ( data[0] == 'k' or data[0] == 'K' ):
@@ -298,15 +266,7 @@ def forest_special(user):
 		user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
 		miniQuit = False
 		while ( not miniQuit ):
-			user.connection.settimeout(120)
-			try:
-				data = user.connection.recv(2)
-			except Exception, errorcode:
-				print "Connection Timeout (Forest Special Happening)("+str(errorcode)+"): " + str(user.connection.getpeername())
-				user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-				user.logout()
-				user.connection.close()
-			user.connection.settimeout(None)
+			data = user.connection.recv(2)
 			if ( data[0] == 'i' or data[0] == 'I' ):
 				user.write('I')
 				miniQuit = True
@@ -323,15 +283,7 @@ def forest_special(user):
 				user.write(func_normmenu("(B)logshares Brutal Belfry"))
 				user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
 				while ( not thisMiniQuit ):
-					user.connection.settimeout(120)
-					try:
-						miniData = user.connection.recv(2)
-					except Exception, errorcode:
-						print "Connection Timeout (Forest Special Happening)("+str(errorcode)+"): " + str(user.connection.getpeername())
-						user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-						user.logout()
-						user.connection.close()
-					user.connection.settimeout(None)
+					miniData = user.connection.recv(2)
 					if ( miniData[0] == 'k' or miniData[0] == 'K' ):
 						user.write('K')
 						thisTower = 1
@@ -431,15 +383,7 @@ def forest_fight(user):
 		if ( not skipDisp ):
 			user.write(forest_menu(user, thisEnemyHP, thisEnemyName, True))
 		skipDisp = False
-		user.connection.settimeout(120)
-		try:
-			data = user.connection.recv(2)
-		except Exception, errorcode:
-			print "Connection Timeout (Forest Fight)("+str(errorcode)+"): " + str(user.connection.getpeername())
-			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-			user.logout()
-			user.connection.close()
-		user.connection.settimeout(None)
+		data = user.connection.recv(2)
 		if not data: break
 		elif ( data[0] == 's' or data[0] == 'S' ):
 			user.write('S')
@@ -552,15 +496,7 @@ def forest_fight(user):
 				user.write("\r\n  \x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? [\x1b[1;35mA\x1b[0m\x1b[32m] : \x1b[0m")
 				tinyQuit = False
 				while ( not tinyQuit ):
-					user.connection.settimeout(120)
-					try:
-						miniData = user.connection.recv(2)
-					except Exception, errorcode:
-						print "Connection Timeout (Magical Use)("+str(errorcode)+"): " + str(user.connection.getpeername())
-						user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-						user.logout()
-						user.connection.close()
-					user.connection.settimeout(None)
+					miniData = user.connection.recv(2)
 					if not miniData: break
 					elif ( miniData[0] == 'n' or miniData[0] == 'N' ): #Nothing
 						user.write("N\r\n  \x1b[32mSure thing boss.\x1b[0m\r\n")
@@ -706,15 +642,7 @@ def forest_lesson_d(user) :
 	user.write("\r\n  \x1b[0m\x1b[32mYour choice, \x1b[1m"+user.thisFullname+"\x1b[22m? (K,F) \x1b[0m\x1b[32m:-: \x1b[0m")
 	miniQuit = False
 	while ( not miniQuit ):
-		user.connection.settimeout(120)
-		try:
-			data = user.connection.recv(2)
-		except Exception, errorcode:
-			print "Connection Timeout (Forest Special Happening)("+str(errorcode)+"): " + str(user.connection.getpeername())
-			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-			user.logout()
-			user.connection.close()
-		user.connection.settimeout(None)
+		data = user.connection.recv(2)
 		if not data: break
 		elif ( data[0] == 'k' or data[0] == 'K' ):
 			user.write('K')
@@ -758,15 +686,7 @@ def forest_lesson_t(user) :
 	user.write("\r\n  \x1b[0m\x1b[32mYour choice, \x1b[1m"+user.thisFullname+"\x1b[22m? (G,S,M) \x1b[0m\x1b[32m:-: \x1b[0m")
 	miniQuit = False
 	while ( not miniQuit ):
-		user.connection.settimeout(120)
-		try:
-			data = user.connection.recv(2)
-		except Exception, errorcode:
-			print "Connection Timeout (Forest Special Happening)("+str(errorcode)+"): " + str(user.connection.getpeername())
-			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-			user.logout()
-			user.connection.close()
-		user.connection.settimeout(None)
+		data = user.connection.recv(2)
 		if not data: break
 		elif ( data[0] == 's' or data[0] == 'S' ):
 			user.write("S\r\n  \x1b[32mAs you spit on him, the thief looks at you closely.  He almost looks proud.\x1b[0m\r\n")
@@ -800,15 +720,7 @@ def forest_lesson_m(user) :
 	miniQuit2 = False
 	
 	while ( not miniQuit1 ):
-		user.connection.settimeout(120)
-		try:
-			data = user.connection.recv(2)
-		except Exception, errorcode:
-			print "Connection Timeout (Forest Special Happening)("+str(errorcode)+"): " + str(user.connection.getpeername())
-			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-			user.logout()
-			user.connection.close()
-		user.connection.settimeout(None)
+		data = user.connection.recv(2)
 		if not data: break
 		elif ( data[0] == 'k' or data[0] == 'K' ):
 			user.write(data[0])
@@ -868,15 +780,7 @@ def module_turgon(user):
 		if ( not skipDisp ):
 			user.write(menu_turgon(user))
 		skipDisp = False
-		user.connection.settimeout(120)
-		try:
-			data = user.connection.recv(2)
-		except Exception, errorcode:
-			print "Connection Timeout (Training Menu)("+str(errorcode)+"): " + str(user.connection.getpeername())
-			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-			user.logout()
-			user.connection.close()
-		user.connection.settimeout(None)
+		data = user.connection.recv(2)
 		if not data: break
 		elif ( data[0] == 'r' or data[0] == 'R' ):
 			user.write('R')
@@ -941,15 +845,7 @@ def master_fight(user):
 		if ( not skipDisp ):
 			user.write(forest_menu(user, thisEnemyHP, thisEnemyName))
 		skipDisp = False
-		user.connection.settimeout(120)
-		try:
-			data = user.connection.recv(2)
-		except Exception, errorcode:
-			print "Connection Timeout (Master Fight)("+str(errorcode)+"): " + str(user.connection.getpeername())
-			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-			user.logout()
-			user.connection.close()
-		user.connection.settimeout(None)
+		data = user.connection.recv(2)
 		if not data: break
 		elif ( data[0] == 's' or data[0] == 'S' ):
 			user.write('S')
@@ -1035,15 +931,7 @@ def killer_fight(user, usertokill):
 		if ( not skipDisp ):
 			user.write(forest_menu(user, usertokill.getHP(), usertokill.thisFullname))
 		skipDisp = False
-		user.connection.settimeout(120)
-		try:
-			data = user.connection.recv(2)
-		except Exception, errorcode:
-			print "Connection Timeout (Player Fight)("+str(errorcode)+"): " + str(user.connection.getpeername())
-			user.connection.send("\r\nIdle Time Exceeded, Closing Connection.\r\n")
-			user.logout()
-			user.connection.close()
-		user.connection.settimeout(None)
+		data = user.connection.recv(2)
 		if not data: break
 		elif ( data[0] == 's' or data[0] == 'S' ):
 			user.write('S')
