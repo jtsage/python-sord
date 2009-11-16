@@ -151,8 +151,8 @@ def rdi_getroom(user):
 			user.write("\r\n  \x1b[32mEnjoy your stay.  At next login, you will automatically leave the inn.\x1b[0m\r\n")
 			thisSQL = "UPDATE "+user.thisSord.sqlPrefix()+"stats SET atinn = 1 WHERE userid = "+str(user.thisUserID)
 			user.db.execute(thisSQL)
-			user.logout()
-			user.connection.close()
+			#Not needed, exception handles. user.logout()
+			raise Exception, "User got a room.  Enjoy." 
 	else:
 		user.write("\r\n  \x1b[35m\"Suit yourself...\"\x1b[0m\r\n")
 

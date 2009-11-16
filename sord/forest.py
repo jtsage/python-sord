@@ -599,7 +599,7 @@ def forest_fight(user):
 		user.pause()
 	if ( ctrlDead ) :
 		user.setDead()
-		user.logout()
+		#exception handles, do it later. user.logout()
 		lamentTop = len(forestdie) - 1
 		lamentThis = forestdie[random.randint(0, lamentTop)]
 		lamentThis = re.sub("`n", "\r\n", lamentThis)
@@ -609,7 +609,7 @@ def forest_fight(user):
 		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+lamentThis+"')"
 		user.db.execute(thisSQL)
 		user.write(func_casebold("  Tragically, you died.  Returning to the mundane world for the day...\n", 1))
-		user.connection.close()
+		raise Exception, "User is DOA.  Bummer." 
 
 def forest_menu(user, enemyHP, enemyName, special=False) : 
 	""" Forest Fight Menu
@@ -1022,7 +1022,7 @@ def killer_fight(user, usertokill):
 		user.updateExperience(delExp * -1)
 		usertokill.updateExperience(addExp)
 		user.setDead()
-		user.logout()
+		#exception handles, do it later. user.logout()
 		lamentTop = len(killerlose) - 1
 		lamentThis = killerlose[random.randint(0, lamentTop)]
 		lamentThis = re.sub("`n", "\r\n", lamentThis)
@@ -1032,5 +1032,5 @@ def killer_fight(user, usertokill):
 		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+lamentThis+"')"
 		user.db.execute(thisSQL)
 		user.write(func_casebold("  Tragically, you died.  Returning to the mundane world for the day...\n", 1))
-		user.connection.close()
+		raise Exception, "User is DOA.  Bummer." 
 

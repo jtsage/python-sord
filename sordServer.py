@@ -89,7 +89,7 @@ def handleClient(connection):
 				func_slowecho(connection, module_list(artwork, mySQLcurs, mySord.sqlPrefix()))
 				func_pauser(connection)
 			elif ( data == "E" or data == "e" ):
-				print 'User Logging In::' + str(thisClientAddress)
+				print '   ** User Logging In::' + str(thisClientAddress)
 				quitter = True
 			elif ( data == 'S' or data == 's' ):
 				func_slowecho(connection, "S\r\n")
@@ -111,7 +111,7 @@ def handleClient(connection):
 			ittr += 1
 			if ( ittr > 3 ):
 				func_slowecho(connection, func_casebold("\r\n\r\nDisconnecting - Too Many Login Attempts\r\n", 1))
-				print 'Too Many Login Attemtps::' + str(thisClientAddress)
+				print '  !!! Too Many Login Attemtps::' + str(thisClientAddress)
 				connection.close()
 				thread.exit()
 			func_slowecho(connection, func_casebold("\r\n\r\nWelcome Warrior!  Enter Your Login Name (OR '\x1b[1m\x1b[31mnew\x1b[32m') :-: ", 2))
@@ -127,7 +127,7 @@ def handleClient(connection):
 					func_slowecho(connection, func_casebold("\r\nIncorrect Password\r\n", 1))
 			else:
 				if ( username == "new" ):
-					print 'New User! ' + str(thisClientAddress)
+					print '   ** New User! ' + str(thisClientAddress)
 					newusername = module_newuser(currentUser)
 					currentUser = sordUser(newusername, mySQLconn, mySQLcurs, connection, artwork)
 					newclass = currentUser.getClass()
@@ -139,7 +139,7 @@ def handleClient(connection):
 				
 		if ( not quitfull ):
 			currentUser.login()
-			print 'User Logged in::' + currentUser.thisFullname + ' ' + str(thisClientAddress)
+			print '   ** User Logged in::' + currentUser.thisFullname + ' ' + str(thisClientAddress)
 
 			if currentUser.isDead() :
 				quitfull = 2
@@ -286,7 +286,7 @@ def handleClient(connection):
 		else:
 			print "  !!! Program Error Encountered("+ str(e) + "): " + str(thisClientAddress) + " at " + now()
 			try:
-				connection.send("\r\nProgram Error Encountered, Closing Connection.\r\n")
+				connection.send("\r\nProgram Error Encountered ( "+str(e)+" ), Closing Connection.\r\n")
 			except:
 				print "   && No message to client"
 			formatted = traceback.format_exc().splitlines()
@@ -314,7 +314,7 @@ def dispatcher():
 			connectedHosts += 1
 			print "  --- Connected Hosts: " + str(connectedHosts)
 		except KeyboardInterrupt:
-			print " === Stopping Server"
+			print "\n === Stopping Server"
 			sockobj.close()
 			sys.exit()
 
