@@ -117,6 +117,10 @@ def module_forest(user):
 		elif ( data[0] == 'x' or data[0] == 'X' ):
 			user.write('X')
 			user.toggleXprt()
+		elif ( data[0] == 's' or data[0] == 'S' ):
+			if ( user.getLevel() == 12 ):
+				user.write('S')
+				dragon_fight(user)
 		elif ( data[0] == 'h' or data[0] == 'H' ):
 			user.write('H')
 			module_heal(user)
@@ -1292,3 +1296,305 @@ def dht_chance(user):
 		else:
 			skipDisp = True
 	
+
+def dragon_fight(user):
+	""" Forest Fight System """
+	user.write(user.art.lair())
+	thisUserDefense = user.getDefense()
+	thisUserHit     = user.getStrength() / 2
+	ctrlDead = False
+	ctrlRan  = False
+	ctrlWin  = False
+	thisEnemyHit    = 2000
+	thisEnemyHP     = 15000
+	thisEnemyName   = "The Red Dragon"
+	thisEnemyWeapon = "Set Later."
+	
+	user.write("\r\n\r\n  \x1b[32m**\x1b[1;37mFIGHT\x1b[0m\x1b[32m**\r\n")
+	user.write("\r\n  \x1b[32mYou have encountered "+thisEnemyName+"!!\x1b[0m\r\n")
+
+	user.write("\r\n  \x1b[32mYour skill allows you to get the first strike.\x1b[0m\r\n")
+
+	skipDisp = False
+	while ( user.getHP() > 0 and thisEnemyHP > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
+		if ( not skipDisp ):
+			user.write(forest_menu(user, thisEnemyHP, thisEnemyName, True))
+		hisType = random.randint(1, 7)
+		if ( hisType == 1 or hisType == 2 ):
+			thisEnemyWeapon = "Huge Fucking Claws"
+			thisEnemyHit = 1900
+		elif ( hisType == 3 or hisType == 4 ):
+			thisEnemyWeapon = "Swishing Tail"
+			thisEnemyHit = 1500
+		elif ( hisType == 5 or hisType == 6 ):
+			thisEnemyWeapon = "Stomping the Ground"
+			thisEnemyHit = 1000
+		else:
+			thisEnemyWeapon = "Flaming Breath"
+			thisEnemyHit = 3000
+		skipDisp = False
+		data = user.connection.recv(2)
+		if not data: break
+		elif ( data[0] == 's' or data[0] == 'S' ):
+			user.write('S')
+			user.write(module_viewstats(user))
+		elif ( data[0] == 'a' or data[0] == 'A' ): # Attack!
+			user.write("A\r\n")
+			hisAttack = ( thisEnemyHit + random.randint(500, thisEnemyHit)) - thisUserDefense
+			myAttack  = ( thisUserHit + random.randint(0, thisUserHit))
+			if ( not thisUnderdog ): # We Hit First
+				if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
+					hisAttack = 0
+			if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+				ctrlDead = True
+				hisAttack = user.getHP() # No insult to injury
+			if ( hisAttack > 0 ): # He hit us
+				user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+				user.updateHP(hisAttack * -1)
+			else: 
+				user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
+			if ( myAttack > 0 and not ctrlDead ): # We hit him!
+				user.write("\r\n  \x1b[32mYou hit "+thisEnemyName+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+				thisEnemyHP = thisEnemyHP - myAttack
+				if ( thisEnemyHP < 1 ): # We Win!
+					ctrlWin = True
+					user.write("\r\n  \x1b[31m"+enemies[thisUserLevel][thisEnemy][6]+"\x1b[0m\r\n")
+		elif ( data[0] == 'd' or data[0] == 'D' ): # Attack!
+			user.write("D\r\n")
+			if ( user.getSkillUse(1) > 0 ):
+				user.updateSkillUse(1, -1)
+				hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
+				myAttack  = ( thisUserHit + (random.randint(2,5) * random.randint((thisUserHit / 2), thisUserHit))) + thisUserHit
+				if ( not thisUnderdog ): # We Hit First
+					if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
+						hisAttack = 0
+				if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+					ctrlDead = True
+					hisAttack = user.getHP() # No insult to injury
+				if ( hisAttack > 0 ): # He hit us
+					user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+					user.updateHP(hisAttack * -1)
+				else: 
+					user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
+				if ( myAttack > 0 and not ctrlDead ): # We hit him!
+					user.write("\r\n  \x1b[1;32mUltra Powerful Move!\x1b[0m\r\n  \x1b[32mYou hit "+thisEnemyName+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+					thisEnemyHP = thisEnemyHP - myAttack
+					if ( thisEnemyHP < 1 ): # We Win!
+						ctrlWin = True
+						user.write("\r\n  \x1b[31m"+enemies[thisUserLevel][thisEnemy][6]+"\x1b[0m\r\n")
+			else:
+				user.write("\r\n  \x1b[32mYou have no Death Knight Skill Use Points!\x1b[0m\r\n\r\n")
+		elif ( data[0] == 't' or data[0] == 'T' ): # Attack!
+			user.write("T\r\n")
+			if ( user.getSkillUse(3) > 0 ):
+				user.updateSkillUse(3, -1)
+				hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - ( thisUserDefense * 2 )
+				myAttack  = ( thisUserHit + (random.randint(1,3) * random.randint((thisUserHit / 2), thisUserHit))) + thisUserHit
+				if ( not thisUnderdog ): # We Hit First
+					if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
+						hisAttack = 0
+				if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+					ctrlDead = True
+					hisAttack = user.getHP() # No insult to injury
+				if ( hisAttack > 0 ): # He hit us
+					user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+					user.updateHP(hisAttack * -1)
+				else: 
+					user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
+				if ( myAttack > 0 and not ctrlDead ): # We hit him!
+					user.write("\r\n  \x1b[1;32mUltra Sneaky Move!\x1b[0m\r\n  \x1b[32mYou hit "+thisEnemyName+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+					thisEnemyHP = thisEnemyHP - myAttack
+					if ( thisEnemyHP < 1 ): # We Win!
+						ctrlWin = True
+						user.write("\r\n  \x1b[31m"+enemies[thisUserLevel][thisEnemy][6]+"\x1b[0m\r\n")
+			else:
+				user.write("\r\n  \x1b[32mYou have no Thief Skill Use Points!\x1b[0m\r\n\r\n")
+		elif ( data[0] == 'r' or data[0] == 'R' ): # Run Away
+			if ( random.randint(1, 10) == 4 ): # Hit in the back.
+				hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
+				if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+					ctrlDead = True
+					hisAttack = user.getHP() # No insult to injury
+				if ( hisAttack > 0 ): # He hit us
+					user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you in the back with it's "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\r\n")
+					user.updateHP(hisAttack)
+					ctrlRan = True
+			else:
+				user.write("\r\n  \x1b[32mYou narrowly escape harm.\x1b[0m\r\n")
+				ctrlRan = True
+		elif ( data[0] == 'q' or data[0] == 'Q' ):
+			user.write("\r\n  \x1b[31mYou are in Combat!  Try Running!\x1b[0m\r\n")
+		elif ( data[0] == 'h' or data[0] == 'H' ):
+			user.write("\r\n  \x1b[32mYou are in combat, and they don't make house calls!\x1b[0m\r\n")
+		elif ( data[0] == 'l' or data[0] == 'L' ):
+			user.write("\r\n  \x1b[32mWhat?!  You want to fight two at once?\x1b[0m\r\n")
+		elif ( data[0] == 'm' or data[0] == 'M' ): #Magic!
+			if ( user.getSkillUse(2) < 1 ):
+				user.write("\r\n  \x1b[32mYou have no Magical Use Points!\x1b[0m\r\n\r\n")
+			else:
+				user.write("\r\n" + func_normmenu("(N)evermind") + func_normmenu("(P)inch Real Hard (1)"))
+				if ( user.getSkillUse(2) > 3 ):
+					user.write(func_normmenu("(D)isappear (4)"))
+					if ( user.getSkillUse(2) > 7 ):
+						user.write(func_normmenu("(H)eat Wave (8)"))
+						if ( user.getSkillUse(2) > 11 ):
+							user.write(func_normmenu("(L)ight Shield (12)"))
+							if ( user.getSkillUse(2) > 15 ):
+								user.write(func_normmenu("(S)hatter (16)"))
+								if ( user.getSkillUse(2) > 19 ):
+									user.write(func_normmenu("(M)ind Heal (20)"))
+				user.write("\r\n  \x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? [\x1b[1;35mA\x1b[0m\x1b[32m] : \x1b[0m")
+				tinyQuit = False
+				while ( not tinyQuit ):
+					miniData = user.connection.recv(2)
+					if not miniData: break
+					elif ( miniData[0] == 'n' or miniData[0] == 'N' ): #Nothing
+						user.write("N\r\n  \x1b[32mSure thing boss.\x1b[0m\r\n")
+						tinyQuit = True
+					elif ( miniData[0] == 'p' or miniData[0] == 'P' ): #Pinch!
+						user.write("P")
+						user.updateSkillUse(2, -1)
+						tinyQuit = True
+						hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
+						myAttack  = ( thisUserHit + random.randint(0, thisUserHit)) + ( thisUserHit / 4 )
+						if ( not thisUnderdog ): # We Hit First
+							if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
+								hisAttack = 0
+						if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+							ctrlDead = True
+							hisAttack = user.getHP() # No insult to injury
+						if ( hisAttack > 0 ): # He hit us
+							user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+							user.updateHP(hisAttack * -1)
+						else: 
+							user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
+						if ( myAttack > 0 and not ctrlDead ): # We hit him!
+							user.write("\r\n  \x1b[32mYou pinch "+thisEnemyName+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+							thisEnemyHP = thisEnemyHP - myAttack
+							if ( thisEnemyHP < 1 ): # We Win!
+								ctrlWin = True
+								user.write("\r\n  \x1b[31m"+enemies[thisUserLevel][thisEnemy][6]+"\x1b[0m\r\n")
+					elif ( (miniData[0] == 'd' or miniData[0] == 'D') and ( user.getSkillUse(2) > 3 ) ): #Disappear
+						user.write("D\r\n  \x1b[32mYou disapper like a ghost!\x1b[0m\r\n")
+						user.updateSkillUse(2, -4)
+						tinyQuit = True
+						ctrlRan = True
+					elif ( (miniData[0] == 'h' or miniData[0] == 'H') and ( user.getSkillUse(2) > 7 ) ): #Heat Wave
+						user.write("H")
+						user.updateSkillUse(2, -8)
+						tinyQuit = True
+						hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
+						myAttack  = ( thisUserHit + random.randint(0, thisUserHit)) + (thisUserHit / 2)
+						if ( not thisUnderdog ): # We Hit First
+							if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
+								hisAttack = 0
+						if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+							ctrlDead = True
+							hisAttack = user.getHP() # No insult to injury
+						if ( hisAttack > 0 ): # He hit us
+							user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+							user.updateHP(hisAttack * -1)
+						else: 
+							user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
+						if ( myAttack > 0 and not ctrlDead ): # We hit him!
+							user.write("\r\n  \x1b[32mYou blast "+thisEnemyName+" with Heat Wave for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+							thisEnemyHP = thisEnemyHP - myAttack
+							if ( thisEnemyHP < 1 ): # We Win!
+								ctrlWin = True
+								user.write("\r\n  \x1b[31m"+enemies[thisUserLevel][thisEnemy][6]+"\x1b[0m\r\n")
+					elif ( (miniData[0] == 'l' or miniData[0] == 'L') and ( user.getSkillUse(2) > 11 ) ): #Light Shield
+						user.write("L\r\n  \x1b[32mYou feel a bit odd.  You dig in a feel better defended\x1b[0m\r\n")
+						user.updateSkillUse(2, -12)
+						thisUserDefense = thisUserDefense * 2
+						tinyQuit = True
+					elif ( (miniData[0] == 's' or miniData[0] == 'S') and ( user.getSkillUse(2) > 15 ) ): #Shatter
+						user.write("S")
+						user.updateSkillUse(2, -16)
+						tinyQuit = True
+						hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
+						myAttack  = ( thisUserHit + random.randint(0, thisUserHit)) + (thisUserHit * 2)
+						if ( not thisUnderdog ): # We Hit First
+							if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
+								hisAttack = 0
+						if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+							ctrlDead = True
+							hisAttack = user.getHP() # No insult to injury
+						if ( hisAttack > 0 ): # He hit us
+							user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+							user.updateHP(hisAttack * -1)
+						else: 
+							user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
+						if ( myAttack > 0 and not ctrlDead ): # We hit him!
+							user.write("\r\n  \x1b[32mYou Shatter "+thisEnemyName+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+							thisEnemyHP = thisEnemyHP - myAttack
+							if ( thisEnemyHP < 1 ): # We Win!
+								ctrlWin = True
+								user.write("\r\n  \x1b[31m"+enemies[thisUserLevel][thisEnemy][6]+"\x1b[0m\r\n")
+					elif ( (miniData[0] == 'm' or miniData[0] == 'M') and ( user.getSkillUse(2) > 19 ) ): #Mind Heal
+						user.write("M\r\n  \x1b[32mYou feel much better!\x1b[0m\r\n")
+						user.updateSkillUse(2, -20)
+						hptoadd = user.getHPMax() - user.getHP()
+						if ( hptoadd > 0 ):
+							user.updateHP(hptoadd)
+						if ( hptoadd < 5 ):
+							user.write("\r\n  \x1b[32mThough, you are likely clinicly retarded.\x1b[0m\r\n")
+						tinyQuit = True
+		else: #Catch non-options
+			skipDisp = True
+
+	if ( ctrlWin ) :
+		user.updateGold(user.getGold() * -1)
+		user.updateBank(user.getBank() * -1)
+		user.updateDefense(user.getDefense() * -1)
+		user.updateStrength(user.getStrength() * -1)
+		user.updateExperience(user.getExperience() * -1)
+		user.updateStrength(10)
+		user.updateDefense(1)
+		user.updateGold(500)
+		user.setLevel(1)
+		user.setDragon(1)
+		user.updateForestFight(user.getForestFight() * -1)
+		user.updateForestFight(user.thisSord.forestFights())
+		user.updatePlayerFight(user.getPlayerFight() * -1)
+		user.updatePlayerFight(user.thisSord.playerFights())
+		user.updateHPMax(user.getHPMax() * -1)
+		user.updateHP(user.getHP() * -1)
+		user.updateHP(20)
+		user.updateHPMax(20)
+		user.updateGems(user.getGems() * -1)
+		user.updateGems(10)
+		lamentThis = "{32}{1}"+user.thisFullName+" {0}{32}Decimated {0}{31}{1}The Red Dragon!!! {0}{32}Rejoice and Be Glad!{0}"
+		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+lamentThis+"')"
+		user.db.execute(thisSQL)
+		user.write(func_casebold("\r\n\r\n  You have defeated the Dragon, and saved the town.  Your stomach\r\n", 2))
+		user.write(func_casebold("  churns at the site of stacks of clean white bones - Bones of small\r\n", 2))
+		user.write(func_casebold("  children.\r\n\r\n", 2))
+		user.write(func_casebold("  THANKS TO YOU, THE HORROR HAS ENDED!\r\n\r\n", 2))
+		user.pause()
+		for myline in endstory[user.getClass()]:
+			user.write("\x1b[32m"+myline+"\x1b[0m\r\n")
+		user.pause()
+		user.write(func_casebold("                  ** YOUR QUEST IS NOT OVER **\r\n\r\n", 2))
+		user.write(func_casebold("  You are a hero.  Bards will sing of your deeds, but that doesn't\r\n", 2))
+		user.write(func_casebold("  mean your life doesn't go on.\r\n", 2))
+		user.write(func_casebold("  YOUR CHARACTER WILL NOW BE RESET.  But you will keep a few things\r\n", 2))
+		user.write(func_casebold("  you have earned.  Like the following.\r\n", 2))
+		user.write(func_casebold("  ALL SPECIAL SKILLS.\r\n  CHARM.\r\n  A FEW OTHER THINGS.\r\n", 2))			
+		user.pause()
+		
+	if ( ctrlDead ) :
+		if ( user.didFairy() == True ):
+			hptoadd = user.getHPMax()
+			user.updateHP(1)
+			user.write(func_casebold("  Miraculously, your fairy saves you from the edge of defeat.  You escape with your life.\r\n", 2))
+			user.setFairy(0)
+		else:
+			user.setDead()
+			#exception handles, do it later. user.logout()
+			lamentThis = "{31}{1}The Red Dragon{0}{32} Decimated "+user.thisFullName+"{0}"
+			thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+lamentThis+"')"
+			user.db.execute(thisSQL)
+			user.write(func_casebold("\r\n\r\n  The Dragon pauses to look at you, then snorts in a Dragon laugh, and\r\n", 1))
+			user.write(func_casebold("  delicately rips your head off, with the finess only a Dragon well\r\n", 1))
+			user.write(func_casebold("  practiced in the art could do.\r\n", 1))
+			raise Exception, "User is DOA.  Bummer." 

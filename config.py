@@ -60,4 +60,4 @@ class sord():
 		return 5
 		
 	def version(self):
-		return "py1.0.0"
+		return "py1.0.1"
