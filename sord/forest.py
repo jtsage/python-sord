@@ -1557,6 +1557,8 @@ def dragon_fight(user):
 		user.updateHPMax(20)
 		user.updateGems(user.getGems() * -1)
 		user.updateGems(10)
+		user.setWeapon(1)
+		user.setArmor(1)
 		lamentThis = "{32}{1}"+user.thisFullname+" {0}{32}Decimated {0}{31}{1}The Red Dragon!!! {0}{32}Rejoice!!!{0}"
 		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+lamentThis+"')"
 		user.db.execute(thisSQL)
@@ -1589,6 +1591,6 @@ def dragon_fight(user):
 			thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+lamentThis+"')"
 			user.db.execute(thisSQL)
 			user.write(func_casebold("\r\n\r\n  The Dragon pauses to look at you, then snorts in a Dragon laugh, and\r\n", 1))
-			user.write(func_casebold("  delicately rips your head off, with the finess only a Dragon well\r\n", 1))
-			user.write(func_casebold("  practiced in the art could do.\r\n", 1))
+			user.write(func_casebold("\x1b[31m  delicately rips your head off, with the finess only a Dragon well\r\n", 1))
+			user.write(func_casebold("\x1b[31m  practiced in the art could do.\r\n", 1))
 			raise Exception, "User is DOA.  Bummer." 
