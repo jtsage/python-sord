@@ -3,98 +3,9 @@ Major Items:
   Player bribe UI
   Dragon fight system
 
-  Forest happenings
-XXX    1.) gems
-XXX    2.) gold
-XXX    3.) old man
-XXX    4.) ugly / pretty stick
-XXX    5.) old hag
-    6.) fairies
-    7.) dark horse tavern
-XXX    8.) lessons
-XXX    9.) merry men
-XXX    10.) rescue maiden
-XXX    11.) flowers
-XXX    12.) hammerstone
-
-VII. The Fairies
-
-   The Fairies are a nice addition to LORD, with a neat ANSI intro.
-
-    A. Blessings
-
-   Ask for a blessing, and ye shall receive.
-
-     i. A Kiss
-
-   A Kiss from Teesha or Nolan heals you.
-
-    ii. Horses
-
-   Horses take you directly to the Dark Cloak Tavern, handy if you want
- to change your Profession without having to wait until you find the
-|tavern at random.  You can also lose your horse in a forest fight: [2]
-
-| "Prepare to die, fool!" X screams.
-| He takes a Death Crystal from his cloak and throws it at you!
-| Your horse moves its huge body to intercept the crystal.
-
-| YOUR HORSE IS VAPORIZED!
-
-| Tears of anger flow down your cheeks.  Your valiant steed must be
-|  avenged.
-| YOU PUMMEL X WITH BLOWS!
-| A few seconds later, your adversary is dead.
-| You bury your horse in a small clearing.  The best friend you ever
-|  had.
-
-   iii. Sad Stories
-
-   Sad stories turn your tear into a gem.
-
-    iv. Fairy Lore
-
-   Fairy Lore gets you an amount of experience depending on your level.
-
-     v. Flowers
-
-   Arranging and Reading flowers work like talking at the Inn.  Just as
- a way to talk to other players.  If this gets too long, you might want
- to manually trim the GARDEN.TXT file, but don't delete it!
-
-    B. Catching a Fairy
-
-   Catching a fairy is what you should try if you have gems, don't need
-|to be healed, already have a horse, or want to kill the Dragon. [1]
-
-     i. If You Miss
-
-   If you miss, you grab a thornberry bush, and go down to 1 hit point.
-
-    ii. If You Catch One
-
-   If you do catch one, it will revive you the next time you die.
- Be careful though!  Fairies will escape from your pocket when you're
- sleeping, so they're only good for the day you catch them.
-   Also, fairies have another -- more secret -- function...  Read on!
-
-
   (*)nn                               
     (B)ribes
            
-
-
-`c`%              Talking To Chance
-`0-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-`2  You seat yourself next to the bartender,
-`2  for some reason you like him.          
-`2 
-`2  (`0C`2)hange Profession
-`2  (`0L`2)earn About Your Enemies
-`2  (`0T`2)alk About Colors
-`2  (`0P`2)ractice The Art Of Color
-`2  (`0R`2)eturn 
-`2
 
 
 

@@ -29,9 +29,13 @@ myHost = ''  #all hosts.
 myPort = 6969
 mySord = sord()
 
-sockobj = socket(AF_INET6, SOCK_STREAM)
-sockobj.bind((myHost, myPort))
-sockobj.listen(5)
+try:
+	sockobj = socket(AF_INET6, SOCK_STREAM)
+	sockobj.bind((myHost, myPort))
+	sockobj.listen(5)
+except:
+	print "Socket In Use!"
+	sys.exit()
 
 
 connectedHosts = 0
@@ -43,7 +47,7 @@ WILL = chr(251)
 ECHO = chr(1)
 LINEMODE = chr(34) # Linemode option
 SORDDEBUG = False
-#SORDDEBUG = True
+SORDDEBUG = True
 SKIPLONGANSI = False
 #SKIPLONGANSI = True
 
@@ -112,8 +116,7 @@ def handleClient(connection):
 			if ( ittr > 3 ):
 				func_slowecho(connection, func_casebold("\r\n\r\nDisconnecting - Too Many Login Attempts\r\n", 1))
 				print '  !!! Too Many Login Attemtps::' + str(thisClientAddress)
-				connection.close()
-				thread.exit()
+				raise Exception, "Too many bad logins!"
 			func_slowecho(connection, func_casebold("\r\n\r\nWelcome Warrior!  Enter Your Login Name (OR '\x1b[1m\x1b[31mnew\x1b[32m') :-: ", 2))
 			username = func_getLine(connection, True)
 			currentUser = sordUser(username, mySQLconn, mySQLcurs, connection, artwork)
@@ -273,6 +276,7 @@ def handleClient(connection):
 		connection.close()
 		print '  *** Thread Disconnected:' + str(thisClientAddress) + " at " + now()
 		connectedHosts -= 1
+		print "  --- Connected Hosts: " + str(connectedHosts)
 		thread.exit()
 		
 	except Exception as e:

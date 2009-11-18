@@ -290,6 +290,7 @@ def rdi_flirt_violet(user):
 			thisExp = user.getLevel() * violet[thisRun][1]
 			user.updateExperience(thisExp)
 			user.setFlirt()
+			user.updateFuck(1)
 			user.write("\r\n  \x1b[1;34m"+violet[thisRun][3]+"\x1b[0m\r\n  \x1b[32mYou gain \x1b[1m"+str(thisExp)+"\x1b[22m experience.\x1b[0m\r\n")
 		else:
 			thisScrew = False

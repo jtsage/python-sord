@@ -100,6 +100,8 @@ def module_forest(user):
 		if ( not skipDisp ):
 			if ( not user.expert ):
 				user.write(user.art.forest())
+				if ( user.didHorse() == True ): 
+					user.write(func_normmenu("(T)ake Horse to Dark Horse Tavern"))
 			user.write(menu_forest(user))
 		skipDisp = False
 		data = user.connection.recv(2)
@@ -139,7 +141,10 @@ def module_forest(user):
 			user.write(func_casebold("\r\n  Your Mystical skills cannot help your here.\r\n", 2))
 		elif ( data[0] == 't' or data[0] == 'T' ):
 			user.write('T')
-			user.write(func_casebold("\r\n  Your Thieving skills cannot help your here.\r\n", 2))
+			if ( user.didHorse() == True ):
+				dht_logic(user)
+			else:
+				user.write(func_casebold("\r\n  Your Thieving skills cannot help your here.\r\n", 2))
 		else:
 			skipDisp = True
 
@@ -149,7 +154,10 @@ def forest_special(user):
 	* 	- fairies forest_fairies()
 	* 	- dark horse tavern  darkhorse_login()  (new file) 
 	* finish the flowers """
-	happening = random.randint(1, 12)
+	if ( user.didHorse() == True ):
+		happening = random.randint(1, 11)
+	else:
+		happening = random.randint(1, 12)
 	if ( happening == 1 ):   # Find Gems GOOD!
 		thisfind = random.randint(1, 4)
 		user.write(user.art.line())
@@ -331,17 +339,64 @@ def forest_special(user):
 			forest_lesson_m(user)
 		else:
 			forest_lesson_t(user)
-	elif ( happening == 11 ): # horse tavern
-		if ( not user.didHorse() ) :
-			pass #darkhorse_logic()
-			user.pause()
-	elif ( happening == 12 ): # fairies
-		pass #forest_fairies(user)
+	elif ( happening == 11 ): # fairies
+		forest_fairies(user)
+		user.pause()
+	elif ( happening == 12 ): # darkhorse
+		dht_logic(user)
 		user.pause()
 	else:
 		pass
 		
 
+def forest_fairies(user):
+	user.write(user.art.fairies())
+	user.pause()
+	user.write("  \x1b[32mYou glance at the fairies, trying to decide what to do.\r\n\r\n")
+	user.write(func_normmenu("(A)sk for a Blessing"))
+	user.write(func_nomrmenu("(T)ry and catch one"))
+	miniQuit = False
+	while ( not miniQuit ):
+		user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
+		miniData = user.connection.recv(2)
+		if ( miniData[0] == 'a' or miniData[0] == 'A' ):
+			user.write('A')
+			miniQuit = True
+			blessingIs = random.randint(1, 4)
+			if ( blessingIs == 4 and user.didHorse() == True ):
+				# Trap for already has a horse!
+				blessingIs = 2
+			if ( blessingIs == 1 ): # A Kiss
+				user.write("\r\n\r\n  \x1b[32mYou recieve a kiss from Teesha and feel better!\x1b[0m\r\n\r\n")
+				hptoheal = user.getHPMax() - user.getHP()
+				if ( hptoheal > 0 ):
+					user.updateHP(hptoheal)
+			elif ( blessingIs == 2 ): # Sad Stories
+				user.write("\r\n\r\n  \x1b[32mThe fairies tell you sad stories.\r\n  \x1b[1mYou're tears turn into gems!\x1b[0m\r\n\r\b")
+				user.updateGems(2)
+			elif ( blessingIs == 3 ): # Fairy lore.
+				user.write("\r\n\r\n  \x1b[32mThe fairies tell you secret fairly lore.\r\n  \x1b[1mYou feel smarter\x1b[0m\r\n\r\b")
+				exptoadd = user.getLevel() * 20
+				user.updateExperience(exptoadd)
+			elif ( blessingIs == 4 ): # The Horse
+				user.write("\r\n\r\n  \x1b[32mThe fairys bless you with a new companion!\r\n  Please remember, horses are for riding, not, er... \x1b[1m*riding*\x1b[0m\r\n\r\n")
+				user.setHorse(1)
+			else:
+				user.write("\r\n\r\n  \x1b[1;37mWTF?\x1b[0m\r\n\r\n")
+		if ( miniData[0] == 't' or miniData[0] == 'T' ):
+			user.write('T')
+			miniQuit = True
+			caughtIt = random.randint(1, 3)
+			if ( caughtIt == 3 ):  # Grabbed One!
+				user.write("\r\n\r\n  \x1b[32mYou managed to grab one!\r\n  You place it in your pocket for later.\x1b[0m\r\n")
+				user.setFairy(1)
+			else:
+				user.write("\r\n\r\n  \x1b[32mYou MISS!  And grab a thornberry bush instead!\x1b[0m\r\n")
+				hptorem = user.getHP() - 1
+				if ( hptorem > 0 ):
+					user.updateHP(hptorem * -1)
+					
+				
 def forest_fight(user):
 	""" Forest Fight System """
 	user.updateForestFight(-1)
@@ -366,15 +421,30 @@ def forest_fight(user):
 	user.write("\r\n  \x1b[32mYou have encountered "+thisEnemyName+"!!\x1b[0m\r\n")
 
 	if ( thisUnderdog ):
-		hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
-		if ( hisAttack > 0 ):
-			if ( hisAttack > user.getHP() ):
-				ctrlDead = True
-				hisAttack = user.getHP()
-			user.write("\r\n  \x1b[32m"+thisEnemyName+" executes a sneak attach for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage!\x1b[0m\r\n")
-			user.updateHP(hisAttack * -1)
+		if ( user.didHorse == True and random.randint(1, 3) == 2 ):
+			user.write("\r\n  \x1b[32m\"Prepare to die, fool!\" "+thisEnemyName+" screams.\r\n")
+			user.write("  He takes a Death Crystal from his cloak and throws it at you.\r\n")
+			user.write("  Your horse moves its huge body to intercept the crystal.\r\n")
+			user.write("\r\n  \x1b[1mYOUR HORSE IS VAPORIZED!\x1b[0;32m\r\n\r\n")
+			user.write("  Tears of anger flow down your cheeks.  Your valiant steed must be\r\n")
+			user.write("  avenged.\r\n")
+			user.write("\r\n  \x1b[1mYOU PUMMEL "+thisEnemyName+" WITH BLOWS!\x1b[0;32m\r\n\r\n")
+			user.write("  A few seconds later, your adversary is dead.\r\n")
+			user.write("  You bury your horse in a small clearing.  The best friend you ever\r\n")
+			user.write("  had.\r\n")
+			thisEnemyHP = 0
+			ctrlWin = True
+			user.setHorse(0)
 		else:
-		 user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely!\x1b[0m\r\n")
+			hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
+			if ( hisAttack > 0 ):
+				if ( hisAttack > user.getHP() ):
+					ctrlDead = True
+					hisAttack = user.getHP()
+				user.write("\r\n  \x1b[32m"+thisEnemyName+" executes a sneak attach for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage!\x1b[0m\r\n")
+				user.updateHP(hisAttack * -1)
+			else:
+				user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely!\x1b[0m\r\n")
 	else:
 		user.write("\r\n  \x1b[32mYour skill allows you to get the first strike.\x1b[0m\r\n")
 
@@ -598,18 +668,24 @@ def forest_fight(user):
 		user.write("\r\n  \x1b[32mYou have recieved \x1b[1m"+str(enemies[thisUserLevel][thisEnemy][4])+"\x1b[22m gold and \x1b[1m"+str(enemies[thisUserLevel][thisEnemy][5])+"\x1b[22m experience\x1b[0m\r\n")
 		user.pause()
 	if ( ctrlDead ) :
-		user.setDead()
-		#exception handles, do it later. user.logout()
-		lamentTop = len(forestdie) - 1
-		lamentThis = forestdie[random.randint(0, lamentTop)]
-		lamentThis = re.sub("`n", "\r\n", lamentThis)
-		lamentThis = re.sub("`g", user.thisFullname, lamentThis)
-		lamentThis = re.sub("`e", thisEnemyName, lamentThis)
-		lamentThis = user.dbc.escape_string(lamentThis)
-		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+lamentThis+"')"
-		user.db.execute(thisSQL)
-		user.write(func_casebold("  Tragically, you died.  Returning to the mundane world for the day...\n", 1))
-		raise Exception, "User is DOA.  Bummer." 
+		if ( user.didFairy() == True ):
+			hptoadd = user.getHPMax()
+			user.updateHP(1)
+			user.write(func_casebold("  Miraculously, your fairy saves you from the edge of defeat.  You escape with your life.\r\n", 2))
+			user.setFairy(0)
+		else:
+			user.setDead()
+			#exception handles, do it later. user.logout()
+			lamentTop = len(forestdie) - 1
+			lamentThis = forestdie[random.randint(0, lamentTop)]
+			lamentThis = re.sub("`n", "\r\n", lamentThis)
+			lamentThis = re.sub("`g", user.thisFullname, lamentThis)
+			lamentThis = re.sub("`e", thisEnemyName, lamentThis)
+			lamentThis = user.dbc.escape_string(lamentThis)
+			thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+lamentThis+"')"
+			user.db.execute(thisSQL)
+			user.write(func_casebold("  Tragically, you died.  Returning to the mundane world for the day...\n", 1))
+			raise Exception, "User is DOA.  Bummer." 
 
 def forest_menu(user, enemyHP, enemyName, special=False) : 
 	""" Forest Fight Menu
@@ -1034,3 +1110,173 @@ def killer_fight(user, usertokill):
 		user.write(func_casebold("  Tragically, you died.  Returning to the mundane world for the day...\n", 1))
 		raise Exception, "User is DOA.  Bummer." 
 
+def dht_main_menu(user):
+	"""Dark Cloak Menu"""
+	thismsg  = "\r\n\r\n\x1b[32m                          Dark Cloak Tavern\r\n"
+	thismsg += user.art.line()
+	thismsg += "  \x1b[32mA blazing fire warms your heart as well as your body in this fragrant.\x1b[0m\r\n"
+	thismsg += "  \x1b[32mroadhouse.  Many a wary traveler has had the good fortune to find this\x1b[0m\r\n"
+	thismsg += "  \x1b[32mcozy hostel, to escape the harsh reality of the dense forest for a few\x1b[0m\r\n"
+	thismsg += "  \x1b[32mmoments.  You notice someone has etched something in the table you are\x1b[0m\r\n"
+	thismsg += "  \x1b[32msitting at.\x1b[0m\r\n\r\n"
+	thismsg += func_menu_2col("(C)onverse With The Patrons", "(D)aily News", 5, 5)
+	thismsg += func_menu_2col("(E)xamine Etchings In Table", "(Y)our Stats", 5, 5)
+	thismsg += func_menu_2col("(T)alk with Bartender", "(R)eturn to Forest", 5, 5)
+	return thismsg
+	
+def dht_prompt(user):
+	""" User Prompt"""
+	ptime = func_maketime(user)
+	thismenu  = "\r\n  \x1b[1;35mThe Dark Cloak Tavern\x1b[0m\x1b[1;30m (? for menu)\x1b[0m\r\n"
+	thismenu += "  \x1b[1;30m(C,D,E,Y,T,R)\x1b[0m\r\n\r\n"
+	thismenu += "  \x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
+	return thismenu
+
+def dht_converse(user):
+	""" Converse with patrons (dht)"""
+	thisSQL = "SELECT data, nombre FROM (SELECT * FROM "+user.thisSord.sqlPrefix()+"dhtpatrons ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id"
+	output  = "\r\n\r\n  \x1b[1;37mConverse with the Patrons\x1b[22;32m....\x1b[0m\r\n"
+	output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+	user.db.execute(thisSQL)
+	for (data, nombre) in user.db.fetchall():
+		output += "    \x1b[32m"+nombre+" \x1b[1;37msays... \x1b[0m\x1b[32m" + func_colorcode(data)
+		output += "\x1b[0m\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+	output += "\r\n  \x1b[32mAdd to the conversation? \x1b[1m: \x1b[0m"
+	user.write(output)
+	yesno = user.connection.recv(2)
+	if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
+		user.write(func_casebold("\r\n  What say you? :-: ", 2))
+		ann = func_getLine(user.connection, True)
+		safeann = user.dbc.escape_string(ann)
+		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"dhtpatrons ( `data`, `nombre` ) VALUES ('"+safeann+"', '"+user.thisFullname+"')"
+		user.db.execute(thisSQL)
+		user.write(func_casebold("\r\n  Wisdom added!\r\n", 2))
+		user.pause()
+
+def dht_logic(user):
+	""" Dark Horse Tavern Logic"""
+	thisQuit = False
+	skipDisp = False
+	while ( not thisQuit ):
+		if ( not skipDisp ):
+			if (  not user.expert ):
+				user.write(dht_main_menu(user))
+			user.write(dht_prompt(user))
+		skipDisp = False
+		data = user.connection.recv(2)
+		if not data: break
+		elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
+			user.write('R')
+			thisQuit = True
+		elif ( data[0] == 'y' or data[0] == 'Y' ):
+			user.write('Y')
+			user.write(module_viewstats(user))
+			user.pause()
+		elif ( data[0] == 'd' or data[0] == 'D' ):
+			user.write('D')
+			user.write(module_dailyhappen(True, user.db, user.thisSord.sqlPrefix()))
+			user.pause()
+		elif ( data[0] == 'c' or data[0] == 'C' ):
+			user.write('C')
+			dht_converse(user)
+		elif ( data[0] == 'e' or data[0] == 'E' ):
+			user.write('E')
+			thisSQL = "SELECT fullname, fuck FROM "+user.thisSord.sqlPrefix()+"users u, "+user.thisSord.sqlPrefix()+"stats s WHERE s.userid = u.userid AND s.fuck > 0 ORDER by s.fuck DESC"
+			user.db.execute(thisSQL)
+			if user.db.rowcount > 0:
+				user.write("\r\n\r\n  \x1b[32mUsers who have gotten lucky:\x1b[0m\r\n")
+				for (nombre, data) in user.db.fetchall():
+					user.write("  \x1b[32m"+nombre+padnumcol(nombre, 25)+"\x1b[1m"+str(data)+"\x1b[0m\r\n")
+				user.write("\r\n")
+			else:
+				user.write("\r\n\r\n  \x1b[32mWhat a sad thing - there are no carvings here after all.\x1b[0m\r\n")
+			user.pause()
+		elif ( data[0] == 't' or data[0] == 'T' ):
+			user.write('T')
+			dht_chance(user)
+		else:
+			skipDisp = True
+			
+def dht_chance_menu(user):
+	""" Chance's Menu"""
+	ptime = func_maketime(user)
+	thismenu = func_normmenu("(C)hange Profession")
+	thismenu += func_normmenu("(L)earn About Your Enemies")
+	thismenu += func_normmenu("(T)alk About Colors")
+	thismenu += func_normmenu("(R)eturn to Tavern")
+	thismenu += "\r\n  \x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
+	return thismenu
+	
+def dht_chance(user):
+	header = "\r\n\r\n  \x1b[32m              Talking To Chance\x1b[0m\r\n"
+	header += "\x1b[32m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\x1b[0m\r\n"
+	header += "  \x1b[32mYou seat yourself next to the bartender,\x1b[0m\r\n"
+	header += "  \x1b[32mfor some reason you like him.          \x1b[0m\r\n\r\n"
+	thisQuit = False
+	skipDisp = False
+	while ( not thisQuit ):
+		if ( not skipDisp ):
+			user.write(header)
+			user.write(dht_chance_menu(user))
+		skipDisp = False
+		data = user.connection.recv(2)
+		if not data: break
+		elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
+			user.write('R')
+			thisQuit = True
+		elif ( data[0] == 't' or data[0] == 'T' ):
+			user.write('T')
+			user.write("\r\n\r\n  \x1b[32mColors are easy my friend!  Just enclose single ANSI codes in braces\r\n  like this {32} - that would turn the text green you can learn\r\n  more at:\r\n    http://en.wikipedia.org/wiki/ANSI_escape_code\x1b[0m\r\n")
+			user.pause()
+		elif ( data[0] == 'l' or data[0] == 'L' ):
+			user.write('L')
+			whoid = module_finduser(user, "\r\n  \x1b[32mGet information on who?")
+			if ( whoid > 0 ):
+				whoName = user.userGetLogin(whoid)
+				whoCost = user.getLevel() * 100
+				user.write("\r\n  \x1b[32mThat will be \x1b[1m"+str(whoCost)+"\x1b[0;32m gold.  Ok? ")
+				yesno = user.connection.recv(2)
+				if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
+					user.write('Y')
+					if ( user.getGold() < whoCost ):
+						user.write("\r\n  \x1b[32mYou don't have enough gold jackass!\x1b[0m\r\n")
+					else:
+						usertoSee = sordUser(whoName, user.dbc, user.db, user.connection, user.art)
+						user.updateGold(whoCost * -1)
+						user.write(module_viewstats(usertoSee))
+						user.pause()
+				else:
+					user.write('N')
+					user.write("\r\n  \x1b[32mOk.  You got it.\x1b[0m\r\n")
+			else: 
+				user.write("\r\n  \x1b[32mOk.  Nevermind.\x1b[0m\r\n")
+		elif ( data[0] == 'c' or data[0] == 'C' ):
+			user.write('C')
+			user.write(func_casebold("\r\n  Pick that which best describes your childhood.\r\n  From an early age, you remember:\r\n\r\n", 2))
+			user.write(func_normmenu("(D)abbling in the mystical forces"))
+			user.write(func_normmenu("(K)illing a lot of woodland creatures"))
+			user.write(func_normmenu("(L)ying, cheating, and stealing from the blind"))
+			thisLooper = False
+			while ( not thisLooper ):
+				user.write(func_casebold("\r\n  Your Choice (D/K/L) :-: ", 2))
+				data = user.connection.recv(2)
+				if not data: break
+				if ( data[0] == 'k' or data[0] == 'K' ):
+					user.write('K')
+					newclassnum = 1
+					thisLooper = True
+					user.write(func_casebold("\r\n  Welcome warrior to the ranks of the Death Knights!\r\n", 2))
+				if ( data[0] == 'd' or data[0] == 'D' ):
+					user.write('D')
+					newclassnum = 2
+					thisLooper = True
+					user.write(func_casebold("\r\n  Feel the force young jedi.!\r\n", 2))
+				if ( data[0] == 'l' or data[0] == 'L' ):
+					user.write('L')
+					newclassnum = 3
+					thisLooper = True
+					user.write(func_casebold("\r\n  You're a real shitheel, you know that?\r\n", 2))
+			user.setClass(newclassnum)
+		else:
+			skipDisp = True
+	

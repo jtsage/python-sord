@@ -201,6 +201,15 @@ class sordUser():
 		else:
 			return False
 			
+	def didFairy(self):
+		thisSQL = "SELECT fairy FROM "+self.thisSord.sqlPrefix()+"stats WHERE userid = "+str(self.thisUserID)
+		self.db.execute(thisSQL)
+		thisReturn = self.db.fetchone()
+		if ( thisReturn[0] == 1 ):
+			return True
+		else:
+			return False
+			
 	def getArmor(self):
 		thisSQL = "SELECT armor FROM "+self.thisSord.sqlPrefix()+"stats WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
@@ -295,6 +304,10 @@ class sordUser():
 		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET horse = "+str(inst)+" WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		
+	def setFairy(self, inst):
+		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET fairy = "+str(inst)+" WHERE userid = "+str(self.thisUserID)
+		self.db.execute(thisSQL)
+		
 	def setFlirt(self):
 		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET flirt = 1 WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
@@ -309,6 +322,10 @@ class sordUser():
 		
 	def setDragon(self):
 		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET dkill = dkill + 1 WHERE userid = "+str(self.thisUserID)
+		self.db.execute(thisSQL)
+		
+	def setClass(self, inst):
+		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET class = "+str(inst)+" WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		
 	def setBard(self):

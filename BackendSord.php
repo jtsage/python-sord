@@ -64,6 +64,7 @@ $sql0 = "UPDATE {$MYSQL_PREFIX}setup SET valueint = ( valueint + 1 ) WHERE `name
 $sqla = "UPDATE {$MYSQL_PREFIX}stats SET flirt = 0 WHERE 1";
 $sqlb = "UPDATE {$MYSQL_PREFIX}stats SET sung = 0 WHERE 1";
 $sqlc = "UPDATE {$MYSQL_PREFIX}stats SET master = 0 WHERE 1";
+$sqlh = "UPDATE {$MYSQL_PREFIX}stats SET hp = hpmax WHERE hp < hpmax";
 
 
 $result = mysql_query($sql1, $db);
@@ -78,6 +79,7 @@ $result = mysql_query($sql9, $db);
 $result = mysql_query($sql0, $db);
 $result = mysql_query($sqla, $db);
 $result = mysql_query($sqlb, $db);
+$result = mysql_query($sqlh, $db);
 
 
 
