@@ -127,7 +127,7 @@ def module_viewstats(user):
 	for skillnum in [1,2,3]:
 		if ( user.getClass() == skillnum or user.getSkillPoint(skillnum) > 0 ):
 			output += "\x1b[32m The "+classes[skillnum]+" Skills: \x1b[1m"
-			if ( user.getSkillUse(skillnum) > 0 ):
+			if ( user.getSkillPoint(skillnum) > 0 ):
 				output +=  str(user.getSkillPoint(skillnum)) + padnumcol(str(user.getSkillPoint(skillnum)), 11)
 			else:
 				output += "NONE     "

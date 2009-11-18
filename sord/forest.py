@@ -1322,13 +1322,13 @@ def dragon_fight(user):
 		hisType = random.randint(1, 7)
 		if ( hisType == 1 or hisType == 2 ):
 			thisEnemyWeapon = "Huge Fucking Claws"
-			thisEnemyHit = 1900
+			thisEnemyHit = 2100
 		elif ( hisType == 3 or hisType == 4 ):
 			thisEnemyWeapon = "Swishing Tail"
-			thisEnemyHit = 1500
+			thisEnemyHit = 1800
 		elif ( hisType == 5 or hisType == 6 ):
 			thisEnemyWeapon = "Stomping the Ground"
-			thisEnemyHit = 1000
+			thisEnemyHit = 1500
 		else:
 			thisEnemyWeapon = "Flaming Breath"
 			thisEnemyHit = 3000
@@ -1342,7 +1342,7 @@ def dragon_fight(user):
 			user.write("A\r\n")
 			hisAttack = ( thisEnemyHit + random.randint(500, thisEnemyHit)) - thisUserDefense
 			myAttack  = ( thisUserHit + random.randint(0, thisUserHit))
-			if ( not thisUnderdog ): # We Hit First
+			if ( True ): # We Hit First
 				if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
 					hisAttack = 0
 			if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
@@ -1358,14 +1358,13 @@ def dragon_fight(user):
 				thisEnemyHP = thisEnemyHP - myAttack
 				if ( thisEnemyHP < 1 ): # We Win!
 					ctrlWin = True
-					user.write("\r\n  \x1b[31m"+enemies[thisUserLevel][thisEnemy][6]+"\x1b[0m\r\n")
 		elif ( data[0] == 'd' or data[0] == 'D' ): # Attack!
 			user.write("D\r\n")
 			if ( user.getSkillUse(1) > 0 ):
 				user.updateSkillUse(1, -1)
 				hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
 				myAttack  = ( thisUserHit + (random.randint(2,5) * random.randint((thisUserHit / 2), thisUserHit))) + thisUserHit
-				if ( not thisUnderdog ): # We Hit First
+				if ( True ): # We Hit First
 					if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
 						hisAttack = 0
 				if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
@@ -1381,7 +1380,6 @@ def dragon_fight(user):
 					thisEnemyHP = thisEnemyHP - myAttack
 					if ( thisEnemyHP < 1 ): # We Win!
 						ctrlWin = True
-						user.write("\r\n  \x1b[31m"+enemies[thisUserLevel][thisEnemy][6]+"\x1b[0m\r\n")
 			else:
 				user.write("\r\n  \x1b[32mYou have no Death Knight Skill Use Points!\x1b[0m\r\n\r\n")
 		elif ( data[0] == 't' or data[0] == 'T' ): # Attack!
@@ -1390,7 +1388,7 @@ def dragon_fight(user):
 				user.updateSkillUse(3, -1)
 				hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - ( thisUserDefense * 2 )
 				myAttack  = ( thisUserHit + (random.randint(1,3) * random.randint((thisUserHit / 2), thisUserHit))) + thisUserHit
-				if ( not thisUnderdog ): # We Hit First
+				if ( True ): # We Hit First
 					if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
 						hisAttack = 0
 				if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
@@ -1406,7 +1404,6 @@ def dragon_fight(user):
 					thisEnemyHP = thisEnemyHP - myAttack
 					if ( thisEnemyHP < 1 ): # We Win!
 						ctrlWin = True
-						user.write("\r\n  \x1b[31m"+enemies[thisUserLevel][thisEnemy][6]+"\x1b[0m\r\n")
 			else:
 				user.write("\r\n  \x1b[32mYou have no Thief Skill Use Points!\x1b[0m\r\n\r\n")
 		elif ( data[0] == 'r' or data[0] == 'R' ): # Run Away
@@ -1457,7 +1454,7 @@ def dragon_fight(user):
 						tinyQuit = True
 						hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
 						myAttack  = ( thisUserHit + random.randint(0, thisUserHit)) + ( thisUserHit / 4 )
-						if ( not thisUnderdog ): # We Hit First
+						if ( True ): # We Hit First
 							if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
 								hisAttack = 0
 						if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
@@ -1473,7 +1470,6 @@ def dragon_fight(user):
 							thisEnemyHP = thisEnemyHP - myAttack
 							if ( thisEnemyHP < 1 ): # We Win!
 								ctrlWin = True
-								user.write("\r\n  \x1b[31m"+enemies[thisUserLevel][thisEnemy][6]+"\x1b[0m\r\n")
 					elif ( (miniData[0] == 'd' or miniData[0] == 'D') and ( user.getSkillUse(2) > 3 ) ): #Disappear
 						user.write("D\r\n  \x1b[32mYou disapper like a ghost!\x1b[0m\r\n")
 						user.updateSkillUse(2, -4)
@@ -1485,7 +1481,7 @@ def dragon_fight(user):
 						tinyQuit = True
 						hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
 						myAttack  = ( thisUserHit + random.randint(0, thisUserHit)) + (thisUserHit / 2)
-						if ( not thisUnderdog ): # We Hit First
+						if ( True ): # We Hit First
 							if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
 								hisAttack = 0
 						if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
@@ -1501,7 +1497,6 @@ def dragon_fight(user):
 							thisEnemyHP = thisEnemyHP - myAttack
 							if ( thisEnemyHP < 1 ): # We Win!
 								ctrlWin = True
-								user.write("\r\n  \x1b[31m"+enemies[thisUserLevel][thisEnemy][6]+"\x1b[0m\r\n")
 					elif ( (miniData[0] == 'l' or miniData[0] == 'L') and ( user.getSkillUse(2) > 11 ) ): #Light Shield
 						user.write("L\r\n  \x1b[32mYou feel a bit odd.  You dig in a feel better defended\x1b[0m\r\n")
 						user.updateSkillUse(2, -12)
@@ -1529,7 +1524,6 @@ def dragon_fight(user):
 							thisEnemyHP = thisEnemyHP - myAttack
 							if ( thisEnemyHP < 1 ): # We Win!
 								ctrlWin = True
-								user.write("\r\n  \x1b[31m"+enemies[thisUserLevel][thisEnemy][6]+"\x1b[0m\r\n")
 					elif ( (miniData[0] == 'm' or miniData[0] == 'M') and ( user.getSkillUse(2) > 19 ) ): #Mind Heal
 						user.write("M\r\n  \x1b[32mYou feel much better!\x1b[0m\r\n")
 						user.updateSkillUse(2, -20)
@@ -1552,7 +1546,7 @@ def dragon_fight(user):
 		user.updateDefense(1)
 		user.updateGold(500)
 		user.setLevel(1)
-		user.setDragon(1)
+		user.setDragon()
 		user.updateForestFight(user.getForestFight() * -1)
 		user.updateForestFight(user.thisSord.forestFights())
 		user.updatePlayerFight(user.getPlayerFight() * -1)
@@ -1563,12 +1557,12 @@ def dragon_fight(user):
 		user.updateHPMax(20)
 		user.updateGems(user.getGems() * -1)
 		user.updateGems(10)
-		lamentThis = "{32}{1}"+user.thisFullName+" {0}{32}Decimated {0}{31}{1}The Red Dragon!!! {0}{32}Rejoice and Be Glad!{0}"
+		lamentThis = "{32}{1}"+user.thisFullname+" {0}{32}Decimated {0}{31}{1}The Red Dragon!!! {0}{32}Rejoice!!!{0}"
 		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+lamentThis+"')"
 		user.db.execute(thisSQL)
 		user.write(func_casebold("\r\n\r\n  You have defeated the Dragon, and saved the town.  Your stomach\r\n", 2))
-		user.write(func_casebold("  churns at the site of stacks of clean white bones - Bones of small\r\n", 2))
-		user.write(func_casebold("  children.\r\n\r\n", 2))
+		user.write(func_casebold("\x1b[32m  churns at the site of stacks of clean white bones - Bones of small\r\n", 2))
+		user.write(func_casebold("\x1b[32m  children.\r\n\r\n", 2))
 		user.write(func_casebold("  THANKS TO YOU, THE HORROR HAS ENDED!\r\n\r\n", 2))
 		user.pause()
 		for myline in endstory[user.getClass()]:
@@ -1576,9 +1570,9 @@ def dragon_fight(user):
 		user.pause()
 		user.write(func_casebold("                  ** YOUR QUEST IS NOT OVER **\r\n\r\n", 2))
 		user.write(func_casebold("  You are a hero.  Bards will sing of your deeds, but that doesn't\r\n", 2))
-		user.write(func_casebold("  mean your life doesn't go on.\r\n", 2))
+		user.write(func_casebold("\x1b[32m  mean your life doesn't go on.\r\n", 2))
 		user.write(func_casebold("  YOUR CHARACTER WILL NOW BE RESET.  But you will keep a few things\r\n", 2))
-		user.write(func_casebold("  you have earned.  Like the following.\r\n", 2))
+		user.write(func_casebold("\x1b[32m  you have earned.  Like the following.\r\n", 2))
 		user.write(func_casebold("  ALL SPECIAL SKILLS.\r\n  CHARM.\r\n  A FEW OTHER THINGS.\r\n", 2))			
 		user.pause()
 		
@@ -1591,7 +1585,7 @@ def dragon_fight(user):
 		else:
 			user.setDead()
 			#exception handles, do it later. user.logout()
-			lamentThis = "{31}{1}The Red Dragon{0}{32} Decimated "+user.thisFullName+"{0}"
+			lamentThis = "{31}{1}The Red Dragon{0}{32} Decimated "+user.thisFullname+"{0}"
 			thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+lamentThis+"')"
 			user.db.execute(thisSQL)
 			user.write(func_casebold("\r\n\r\n  The Dragon pauses to look at you, then snorts in a Dragon laugh, and\r\n", 1))
