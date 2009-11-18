@@ -282,6 +282,8 @@ def module_bank(user):
 	skipDisp = False
 	while ( not thisQuit ):
 		if ( not skipDisp ):
+			if ( not user.expert ):
+				user.write(user.art.bank())
 			user.write(menu_bank(user))
 		skipDisp = False
 		data = user.connection.recv(2)
@@ -520,8 +522,7 @@ def module_arthurs(user):
 			skipDisp = True
 
 def module_flowers(user):
-	""" The forest flowers
-	@todo random sayings for here in the backend """
+	""" The forest flowers """
 	thisSQL = "SELECT data, nombre FROM (SELECT * FROM "+user.thisSord.sqlPrefix()+"flowers ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id"
 	output  = "\r\n\r\n  \x1b[1;37mStudy the forest flowers\x1b[22;32m....\x1b[0m\r\n"
 	output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"

@@ -10,7 +10,7 @@
   * @copyright 2009-2011
   * @license http://sord.jtsage.com/LICENSE Disclaimer's License
   * @version 0.9.9
-  @todo IGM framework, main menu '1' for image."""
+  @todo IGM framework"""
 import thread, threading, time, MySQLdb, sys, traceback
 from socket import *
 from sord.art import *
@@ -309,6 +309,10 @@ def dispatcher():
 	global connectedHosts
 	print "-=-=-=-=-=-= SORD Server Version " + mySord.version() + " =-=-=-=-=-=-"
 	print " === Starting Server"
+	if ( SORDDEBUG ):
+		print " !!! DEBUG MODE ENABLED !!!"
+	if ( SKIPLONGANSI ):
+		print " !!! LONG ANSI DISABLED !!!"
 	while True:
 		try:
 			connection, address = sockobj.accept()

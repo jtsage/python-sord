@@ -4,8 +4,7 @@
  * Contains forest fights, events, player fights, leveling up
  * @package phpsord
  * @subpackage phpsord-ui
- * @author J.T.Sage
- * @todo Player fight subsystem, horses. """
+ * @author J.T.Sage """
 import random, re, time
 from functions import *
 from data import *
@@ -18,6 +17,8 @@ def module_killer(user):
 	skipDisp = False
 	while ( not thisQuit ):
 		if ( not skipDisp ):
+			if ( not user.expert ):
+				user.write(user.art.killer())
 			user.write(menu_slaughter(user))
 		skipDisp = False
 		data = user.connection.recv(2)
@@ -145,15 +146,18 @@ def module_forest(user):
 				dht_logic(user)
 			else:
 				user.write(func_casebold("\r\n  Your Thieving skills cannot help your here.\r\n", 2))
+		elif ( data[0] == 'b' or data[0] == 'B' ):
+			user.write('B')
+			user.write(func_casebold("\r\n  A buzzard swoops down and grabs all your gold on hand.\r\n", 2))
+			if ( user.getGold() > 0 ):
+				goldMove = user.getGold()
+				user.updateBank(goldMove)
+				user.updateGold(goldMove * -1)
 		else:
 			skipDisp = True
 
 def forest_special(user):
-	""" Forest Special Events
-	* @todo Add all elements as needed.
-	* 	- fairies forest_fairies()
-	* 	- dark horse tavern  darkhorse_login()  (new file) 
-	* finish the flowers """
+	""" Forest Special Events """
 	if ( user.didHorse() == True ):
 		happening = random.randint(1, 11)
 	else:
@@ -688,8 +692,7 @@ def forest_fight(user):
 			raise Exception, "User is DOA.  Bummer." 
 
 def forest_menu(user, enemyHP, enemyName, special=False) : 
-	""" Forest Fight Menu
-	@ todo Special Skills Section """
+	""" Forest Fight Menu """
 	thismenu  = "\r\n  \x1b[32mYour Hitpoints : \x1b[1m"+str(user.getHP())+"\x1b[0m\r\n"
 	thismenu += "  \x1b[32m"+enemyName+"'s Hitpoints : \x1b[1m"+str(enemyHP)+"\x1b[0m\r\n\r\n"
 	thismenu += func_normmenu("(A)ttack")
@@ -848,12 +851,13 @@ def forest_lesson_m(user) :
 				user.write("\r\n  \x1b[32mBetter luck next time!\x1b[0m\r\n")
 
 def module_turgon(user):
-	""" Visit the master 
-	@todo Hall of honor """
+	""" Visit the master """
 	thisQuit = False
 	skipDisp = False
 	while ( not thisQuit ):
 		if ( not skipDisp ):
+			if ( not user.expert ):
+				user.write(user.art.turgon())
 			user.write(menu_turgon(user))
 		skipDisp = False
 		data = user.connection.recv(2)
@@ -881,7 +885,15 @@ def module_turgon(user):
 			user.pause()
 		elif ( data[0] == 'v' or data[0] == 'V' ):
 			user.write('V')
-			user.write("\r\n  Not Yet Implemented, sorry.\r\n")
+			thisSQL = "SELECT fullname, dkill FROM "+user.thisSord.sqlPrefix()+"users u, "+user.thisSord.sqlPrefix()+"stats s WHERE s.userid = u.userid AND s.dkill > 0 ORDER by s.dkill DESC"
+			user.db.execute(thisSQL)
+			if user.db.rowcount > 0:
+				user.write("\r\n\r\n  \x1b[32mUsers who have slain the dragon:\x1b[0m\r\n")
+				for (nombre, data) in user.db.fetchall():
+					user.write("  \x1b[32m"+nombre+padnumcol(nombre, 25)+"\x1b[1m"+str(data)+"\x1b[0m\r\n")
+				user.write("\r\n")
+			else:
+				user.write("\r\n\r\n  \x1b[32mWhat a sad thing - there are no heroes in this realm.\x1b[0m\r\n")
 			user.pause()
 		elif ( data[0] == 'y' or data[0] == 'Y' ):
 			user.write('Y')

@@ -304,13 +304,15 @@ def rdi_flirt_violet(user):
 
 def rdi_menu_flirt(user):
 	thismenu = "\r\n"
-	for saying in flirts[user.getSex()]:
-		thismenu += func_normmenu(saying[1])
+	if (user.getSex() == 1):
+		thismenu = user.art.violet()
+	else:
+		for saying in flirts[user.getSex()]:
+			thismenu += func_normmenu(saying[1])
 	return thismenu
 
 def rdi_bartend(user):
-	""" Bartender Logic
-	@todo Bribe System """
+	""" Bartender Logic """
 	thisQuit = False
 	dispSkip = False
 	if ( user.getLevel() < 2 ):
