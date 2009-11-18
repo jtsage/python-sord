@@ -9,6 +9,7 @@ from functions import *
 from data import *
 from modules import *
 from messaging import *
+from user import sordUser
 
 def rdi_menu_main(user):
 	""" Main Menu """
@@ -149,8 +150,7 @@ def rdi_getroom(user):
 		else:
 			user.updateGold(price * -1)
 			user.write("\r\n  \x1b[32mEnjoy your stay.  At next login, you will automatically leave the inn.\x1b[0m\r\n")
-			thisSQL = "UPDATE "+user.thisSord.sqlPrefix()+"stats SET atinn = 1 WHERE userid = "+str(user.thisUserID)
-			user.db.execute(thisSQL)
+			user.setInn(1)
 			#Not needed, exception handles. user.logout()
 			raise Exception, "User got a room.  Enjoy." 
 	else:
@@ -430,6 +430,33 @@ def rdi_bartend(user):
 							user.write("\r\n  \x1b[32mYou feel as if your vitality is greater\r\n")
 							tinyQuit = True
 					user.write("\r\n  \x1b[32mPleasure doing business with you\x1b[0m\r\n")
+		elif ( data[0] == 'b' or data[0] == 'B' ):
+			user.write('B')
+			user.write("\r\n  \x1b[32mBribe me to kick someone out of thier room, eh?\x1b[0m\r\n")
+			kickID = module_finduser(user, "\r\n  \x1b[32mWho will it be?")
+			if ( kickID > 0 ):
+				kickName = user.userGetLogin(kickID)
+				kickCost = user.getLevel() * 5000
+				usertoKick = sordUser(kickName, user.dbc, user.db, user.connection, user.art)
+				if ( usertoKick.didInn() == True ):
+					user.write("\r\n  \x1b[32mThat will be \x1b[1m"+str(kickCost)+"\x1b[0;32m gold.  Ok? ")
+					yesno = user.connection.recv(2)
+					if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
+						user.write('Y')
+						if ( user.getGold() < kickCost ):
+							user.write("\r\n  \x1b[32mYou don't have enough gold jackass!\x1b[0m\r\n")
+						else:
+							user.updateGold(kickCost * -1)
+							if ( usertoKick.getLevel() + 2 < user.getLevel() ):
+								user.write("\r\n  \x1b[32mI don't like bullies.  Thanks for the nice tip\x1b[0m\r\n")
+							else:
+								usertoKick.setInn(0)
+								user.write("\r\n  \x1b[32mBooted to the killing fields.\x1b[0m\r\n")
+				else:
+					user.write("\r\n  \x1b[32mThey aren't staying here...\x1b[0m\r\n")
+			else:
+				user.write("\r\n  \x1b[32mRight then, forget I ever mentioned this.\x1b[0m\r\n")
+			user.pause()
 		else:
 			dispSkip = True
 
@@ -443,7 +470,7 @@ def rdi_menu_bartend(user):
 	thismenu += "  \x1b[35mwhat do ya want to talk about?\"\x1b[0m\r\n\r\n"
 	thismenu += func_normmenu("(V)iolet")
 	thismenu += func_normmenu("(G)ems")
-	#thismenu += func_normmenu("(B)ribe")
+	thismenu += func_normmenu("(B)ribe")
 	thismenu += func_normmenu("(C)hange your name")
 	thismenu += func_normmenu("(R)eturn to Bar")
 	thismenu += "\r\n  \x1b[35m\"Well?\" \x1b[32mThe bartender inquires. \x1b[1;30m(V,G,B,C,R) (? for menu)\x1b[0m\r\n"

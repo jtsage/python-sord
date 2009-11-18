@@ -283,14 +283,14 @@ def handleClient(connection):
 		skipClose = False
 		if ( e[0] == "timed out" ):
 			print "  *** Network Timeout: " + str(thisClientAddress) + " at " + now()
-			connection.send("\r\n\r\nNetwork Connection has timed out.  120sec of inactivity.\r\n\r\n")
+			connection.send("\r\n\r\n\x1b[0mNetwork Connection has timed out.  120sec of inactivity.\r\n\r\n")
 		elif type(e) is error:
 			print "  *** Remote Closed Host: " + str(thisClientAddress) + " at " + now()
 			skipClose = True
 		else:
 			print "  !!! Program Error Encountered("+ str(e) + "): " + str(thisClientAddress) + " at " + now()
 			try:
-				connection.send("\r\nProgram Error Encountered ( "+str(e)+" ), Closing Connection.\r\n")
+				connection.send("\r\n\x1b[0mProgram Error Encountered ( "+str(e)+" ), Closing Connection.\r\n")
 			except:
 				print "   && No message to client"
 			formatted = traceback.format_exc().splitlines()
