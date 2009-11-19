@@ -71,7 +71,7 @@ def func_casebold(text, boldcolor):
 	* @return string Colored text."""
 	bclrstr = "\x1b[1m\x1b[3" + str(boldcolor) + "m"
 	nclrstr = "\x1b[0m\x1b[3" + str(boldcolor) + "m"
-	return re.sub("([A-Z:<>])", bclrstr + r"\1" + nclrstr, text) + "\x1b[0m"
+	return re.sub("([A-Z:*<>])", bclrstr + r"\1" + nclrstr, text) + "\x1b[0m"
 
 def func_colorcode(text):
 	""" Process user entered color codes.

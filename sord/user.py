@@ -121,9 +121,9 @@ class sordUser():
 		self.db.execute(thisSQL)
 		self.logontime = time.time()
 		
-	def setDead(self):
+	def setDead(self, inst=0):
 		"""Set a user as dead"""
-		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"users SET alive = 0 WHERE userid = "+str(self.thisUserID)
+		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"users SET alive = "+str(inst)+" WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		
 	def isDead(self):
@@ -282,6 +282,12 @@ class sordUser():
 		thisReturn = self.db.fetchone()
 		return int(thisReturn[0])
 		
+	def getFuck(self):
+		thisSQL = "SELECT fuck FROM "+self.thisSord.sqlPrefix()+"stats WHERE userid = "+str(self.thisUserID)
+		self.db.execute(thisSQL)
+		thisReturn = self.db.fetchone()
+		return int(thisReturn[0])
+		
 	def getDragon(self):
 		thisSQL = "SELECT dkill FROM "+self.thisSord.sqlPrefix()+"stats WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
@@ -312,28 +318,32 @@ class sordUser():
 		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET atinn = "+str(inst)+" WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		
-	def setFlirt(self):
-		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET flirt = 1 WHERE userid = "+str(self.thisUserID)
+	def setFlirt(self, inst=1):
+		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET flirt = "+str(inst)+" WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		
-	def setMaster(self):
-		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET master = 1 WHERE userid = "+str(self.thisUserID)
+	def setMaster(self, inst=1):
+		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET master = "+str(inst)+" WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		
-	def setKiller(self):
-		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET pkill = pkill + 1 WHERE userid = "+str(self.thisUserID)
+	def setKiller(self, inst=1):
+		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET pkill = pkill + "+str(inst)+" WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		
-	def setDragon(self):
-		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET dkill = dkill + 1 WHERE userid = "+str(self.thisUserID)
+	def setDragon(self, inst=1):
+		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET dkill = dkill + "+str(inst)+" WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		
 	def setClass(self, inst):
 		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET class = "+str(inst)+" WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		
-	def setBard(self):
-		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET sung = 1 WHERE userid = "+str(self.thisUserID)
+	def setBard(self, inst=1):
+		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET sung = "+str(inst)+" WHERE userid = "+str(self.thisUserID)
+		self.db.execute(thisSQL)
+		
+	def setSex(self, inst):
+		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET sex = "+str(inst)+" WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		
 	def setArmor(self, inst):
@@ -362,6 +372,10 @@ class sordUser():
 
 	def updateStrength(self, inst):
 		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET str = (str + "+str(inst)+") WHERE userid = "+str(self.thisUserID)
+		self.db.execute(thisSQL)
+		
+	def updateFuck(self, inst):
+		thisSQL = "UPDATE "+self.thisSord.sqlPrefix()+"stats SET fuck = (fuck + "+str(inst)+") WHERE userid = "+str(self.thisUserID)
 		self.db.execute(thisSQL)
 		
 	def updateExperience(self, inst):
