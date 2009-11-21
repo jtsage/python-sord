@@ -693,7 +693,7 @@ def forest_fight(user):
 			thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+lamentThis+"')"
 			user.db.execute(thisSQL)
 			user.write(func_casebold("  Tragically, you died.  Returning to the mundane world for the day...\n", 1))
-			raise Exception, "User is DOA.  Bummer." 
+			raise Exception('normal', "User is DOA.  Bummer.")
 
 def forest_menu(user, enemyHP, enemyName, special=False) : 
 	""" Forest Fight Menu """
@@ -1124,7 +1124,7 @@ def killer_fight(user, usertokill):
 		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+lamentThis+"')"
 		user.db.execute(thisSQL)
 		user.write(func_casebold("  Tragically, you died.  Returning to the mundane world for the day...\n", 1))
-		raise Exception, "User is DOA.  Bummer." 
+		raise Exception('normal', "User is DOA.  Bummer.")
 
 def dht_main_menu(user):
 	"""Dark Cloak Menu"""
@@ -1593,4 +1593,4 @@ def dragon_fight(user):
 			user.write(func_casebold("\r\n\r\n  The Dragon pauses to look at you, then snorts in a Dragon laugh, and\r\n", 1))
 			user.write(func_casebold("\x1b[31m  delicately rips your head off, with the finess only a Dragon well\r\n", 1))
 			user.write(func_casebold("\x1b[31m  practiced in the art could do.\r\n", 1))
-			raise Exception, "User is DOA.  Bummer." 
+			raise Exception('normal', "User is DOA.  Bummer.")

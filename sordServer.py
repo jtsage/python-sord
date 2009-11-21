@@ -295,6 +295,8 @@ def handleClient(connection):
 		if ( e[0] == "timed out" ):
 			print "  *** Network Timeout: " + str(thisClientAddress) + " at " + now()
 			connection.send("\r\n\r\n\x1b[0mNetwork Connection has timed out.  120sec of inactivity.\r\n\r\n")
+		elif ( e[0] == "normal" ):
+			print "  *** Normal Exit ("+e[1]+"): " + str(thisClientAddress) + " at " + now()
 		elif type(e) is error:
 			print "  *** Remote Closed Host: " + str(thisClientAddress) + " at " + now()
 			skipClose = True

@@ -152,7 +152,7 @@ def rdi_getroom(user):
 			user.write("\r\n  \x1b[32mEnjoy your stay.  At next login, you will automatically leave the inn.\x1b[0m\r\n")
 			user.setInn(1)
 			#Not needed, exception handles. user.logout()
-			raise Exception, "User got a room.  Enjoy." 
+			raise Exception('normal', "User got a room.  Enjoy.")
 	else:
 		user.write("\r\n  \x1b[35m\"Suit yourself...\"\x1b[0m\r\n")
 
