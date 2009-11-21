@@ -29,10 +29,12 @@ def func_pauser(connection):
 		connection.send("\r\n")
 		
 
-def func_getLine(connection, echo):
+def func_getLine(connection, echo, prompt=""):
 	""" Get line from user"""
 	getterquit = False
 	retval = ""
+	if ( not prompt == "" ):
+		connection.send("  "+prompt)
 	while ( not getterquit ):
 		data = connection.recv(2)
 		if not data: break

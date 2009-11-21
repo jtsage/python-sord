@@ -22,6 +22,7 @@ from sord.messaging import *
 from sord.rdi import *
 from sord.forest import *
 from sord.data import *
+from sord.usereditor import *
 
 from socket import *
 from config import sord
@@ -262,6 +263,16 @@ def handleClient(connection):
 					currentUser.jennielevel = 4
 				else:
 					currentUser.jennielevel = 0
+			elif ( data[0] == "!" ):
+				if (currentUser.thisUserID == 1):
+					print " !!! ENTERING USER EDITOR !!!"
+					editor_main_logic(currentUser)
+					print " !!! EXITING USER EDITOR !!!"
+				else:
+					skipDisp = True
+			elif ( data[0] == "@" ):
+				currentUser.toggleQuick()
+				currentUser.write('@')
 			else:
 				skipDisp = True
 				currentUser.jennielevel = 0

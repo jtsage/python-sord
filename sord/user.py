@@ -17,6 +17,7 @@ class sordUser():
 	#Passed at init now. dbc = MySQLdb.connect(host=str(thisSord.sqlServer()), db=str(thisSord.sqlDatabase()), user=str(thisSord.sqlUser()), passwd=str(thisSord.sqlPass()))
 	#Passed at init now. db = dbc.cursor()
 	expert = False
+	quick = False
 	
 	def __init__(self, loginname, dbc, db, connection, art):
 		""" Find and set the userID in the object """
@@ -40,9 +41,16 @@ class sordUser():
 			self.thisPassword = ""
 			self.thisFullname = "unregistered"
 
+	def toggleQuick(self):
+		if ( self.quick ):
+			self.quick = False
+		else:
+			self.quick = True
+		
 	def write(self, data):
 		for thisData in list(data):
-			time.sleep(0.001)
+			if ( not self.quick ):
+				time.sleep(0.001)
 			self.connection.send(thisData)
 
 	def pause(self):
