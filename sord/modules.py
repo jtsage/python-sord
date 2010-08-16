@@ -20,7 +20,7 @@ def module_newuser(user):
 	thisLooper = False
 	while ( not thisLooper ):
 		user.write(func_casebold("\r\nPlease Choose a Username (12 characters MAX) :-: ", 2))
-		newname = func_getLine(user.connection, True)
+		newname = func_getLine(user.ntcon, True)
 		newname = newname[:12]
 		if ( user.userLoginExist(newname) ):
 			user.write(func_casebold("\r\nName In Use!\r\n", 1))
@@ -29,7 +29,7 @@ def module_newuser(user):
 	thisLooper = False
 	while ( not thisLooper ):
 		user.write(func_casebold("\r\nAnd, how will you be addressed? (a Handle) (40 characters MAX) :-: ", 2))
-		newfname = func_getLine(user.connection, True)
+		newfname = func_getLine(user.ntcon, True)
 		newfname = newfname[:40]
 		if ( newfname == "" ):
 			user.write(func_casebold("\r\nHEY! No Anonymous Players!\r\n", 1))
@@ -38,7 +38,7 @@ def module_newuser(user):
 	thisLooper = False
 	while ( not thisLooper ):
 		user.write(func_casebold("\r\nPick a Password (12 characters MAX) :-: ", 2))
-		newpass = func_getLine(user.connection, True)
+		newpass = func_getLine(user.ntcon, True)
 		newpass = newpass[:12]
 		if ( newpass == "" ):
 			user.write(func_casebold("\r\nPassword MUST Not Be Empty\r\n", 1))
@@ -47,7 +47,7 @@ def module_newuser(user):
 	thisLooper = False
 	while ( not thisLooper ):
 		user.write(func_casebold("\r\nYour Sex (M/F) :-: ", 2))
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		if ( data[0] == 'm' or data[0] == 'M' ):
 			user.write('M')
@@ -58,7 +58,7 @@ def module_newuser(user):
 			user.write('F')
 			newsexnum = 2
 			thisLooper = True
-			user.write(func_casebold("Gee sweetheart, hope you don't break a nail...\n", 2))
+			user.write(func_casebold("\r\nGee sweetheart, hope you don't break a nail...\r\n", 2))
 	user.write(func_casebold("\r\nPick that which best describes your childhood.\r\nFrom an early age, you remember:\r\n\r\n", 2))
 	user.write(func_normmenu("(D)abbling in the mystical forces"))
 	user.write(func_normmenu("(K)illing a lot of woodland creatures"))
@@ -66,7 +66,7 @@ def module_newuser(user):
 	thisLooper = False
 	while ( not thisLooper ):
 		user.write(func_casebold("\r\nYour Choice (D/K/L) :-: ", 2))
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		if ( data[0] == 'k' or data[0] == 'K' ):
 			user.write('K')
@@ -83,18 +83,18 @@ def module_newuser(user):
 			newclassnum = 3
 			thisLooper = True
 			user.write(func_casebold("\r\nYou're a real shitheel, you know that?\n", 2))
-	thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"users (`username`, `password`, `fullname`) VALUES ('"+newname+"', '"+newpass+"', '"+newfname+"')"
-	user.db.execute(thisSQL)
-	thisUserID = user.dbc.insert_id()
-	thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"stats (`userid`, `sex`, `class`) VALUES ("+str(thisUserID)+", "+str(newsexnum)+", "+str(newclassnum)+")"
-	user.db.execute(thisSQL)
+	user.dbcon.execute("INSERT INTO users (`username`, `password`, `fullname`) VALUES ( ?, ?, ?)", (newname, newpass, newfname))
+	user.dbcon.commit()
+	thisUserID = user.userLoginExist(newname)
+	user.dbcon.execute("INSERT INTO stats (`userid`, `sex`, `cls`) VALUES ( ?, ?, ? )", (thisUserID, newsexnum, newclassnum))
+	user.dbcon.commit()
 	return newname
 	
 
 def module_finduser(user, prompter):
 	"""Find a user"""
 	user.write(prompter + " \x1b[1;32m:\x1b[0;32m-\x1b[1;32m:\x1b[0m ")
-	name = func_getLine(user.connection, True)
+	name = func_getLine(user.ntcon, True)
 	returnID = user.userExist(name)
 	if ( returnID > 0 ) :
 		if ( returnID == user.thisUserID ):
@@ -102,7 +102,7 @@ def module_finduser(user, prompter):
 			return 0
 		else:
 			user.write("\r\n  \x1b[32mDid you mean \x1b[1m" + user.userGetName(returnID) +"\x1b[0m \x1b[1;30m(Y/N)\x1b[0m\x1b[32m ?\x1b[0m ")
-			yesno = user.connection.recv(2)
+			yesno = user.ntcon.recv(2)
 			if ( yesno[0] == "Y" or yesno[0] == "y" ):
 				return returnID
 			else:
@@ -117,15 +117,15 @@ def module_viewstats(user):
 	* @return string Formatted output for display"""
 	output  = "\r\n\r\n\x1b[1m\x1b[37m"+user.thisFullname+"\x1b[0m\x1b[32m's Stats...\r\n"
 	output += user.art.line()
-	output += "\x1b[32m Experience    : \x1b[1m"+str(user.getExperience())+"\x1b[0m\r\n"
-	output += "\x1b[32m Level         : \x1b[1m"+str(user.getLevel())+"\x1b[0m" + padnumcol(str(user.getLevel()), 20) + "\x1b[32mHitPoints          : \x1b[1m"+str(user.getHP())+" \x1b[22mof\x1b[1m "+str(user.getHPMax())+"\x1b[0m\r\n"
-	output += "\x1b[32m Forest Fights : \x1b[1m"+str(user.getForestFight())+"\x1b[0m" + padnumcol(str(user.getForestFight()), 20) + "\x1b[32mPlayer Fights Left : \x1b[1m"+str(user.getPlayerFight())+"\x1b[0m\r\n"
-	output += "\x1b[32m Gold In Hand  : \x1b[1m"+str(user.getGold())+"\x1b[0m" + padnumcol(str(user.getGold()), 20) + "\x1b[32mGold In Bank       : \x1b[1m"+str(user.getBank())+"\x1b[0m\r\n"
-	output += "\x1b[32m Weapon        : \x1b[1m"+weapon[user.getWeapon()]+"\x1b[0m" + padnumcol(weapon[user.getWeapon()], 20) + "\x1b[32mAttack Strength    : \x1b[1m"+str(user.getStrength())+"\x1b[0m\r\n"
-	output += "\x1b[32m Armor         : \x1b[1m"+armor[user.getArmor()]+"\x1b[0m" + padnumcol(armor[user.getArmor()], 20) + "\x1b[32mDefensive Strength : \x1b[1m"+str(user.getDefense())+"\x1b[0m\r\n"
-	output += "\x1b[32m Charm         : \x1b[1m"+str(user.getCharm())+"\x1b[0m" + padnumcol(str(user.getCharm()), 20) + "\x1b[32mGems               : \x1b[1m"+str(user.getGems())+"\x1b[0m\r\n\r\n"
+	output += "\x1b[32m Experience    : \x1b[1m"+str(user.exp)+"\x1b[0m\r\n"
+	output += "\x1b[32m Level         : \x1b[1m"+str(user.level)+"\x1b[0m" + padnumcol(str(user.level), 20) + "\x1b[32mHitPoints          : \x1b[1m"+str(user.hp)+" \x1b[22mof\x1b[1m "+str(user.hpmax)+"\x1b[0m\r\n"
+	output += "\x1b[32m Forest Fights : \x1b[1m"+str(user.ffight)+"\x1b[0m" + padnumcol(str(user.ffight), 20) + "\x1b[32mPlayer Fights Left : \x1b[1m"+str(user.pfight)+"\x1b[0m\r\n"
+	output += "\x1b[32m Gold In Hand  : \x1b[1m"+str(user.gold)+"\x1b[0m" + padnumcol(str(user.gold), 20) + "\x1b[32mGold In Bank       : \x1b[1m"+str(user.bank)+"\x1b[0m\r\n"
+	output += "\x1b[32m Weapon        : \x1b[1m"+weapon[user.weapon]+"\x1b[0m" + padnumcol(weapon[user.weapon], 20) + "\x1b[32mAttack Strength    : \x1b[1m"+str(user.str)+"\x1b[0m\r\n"
+	output += "\x1b[32m Armor         : \x1b[1m"+armor[user.armor]+"\x1b[0m" + padnumcol(armor[user.armor], 20) + "\x1b[32mDefensive Strength : \x1b[1m"+str(user.defence)+"\x1b[0m\r\n"
+	output += "\x1b[32m Charm         : \x1b[1m"+str(user.charm)+"\x1b[0m" + padnumcol(str(user.charm), 20) + "\x1b[32mGems               : \x1b[1m"+str(user.gems)+"\x1b[0m\r\n\r\n"
 	for skillnum in [1,2,3]:
-		if ( user.getClass() == skillnum or user.getSkillPoint(skillnum) > 0 ):
+		if ( user.cls == skillnum or user.getSkillPoint(skillnum) > 0 ):
 			output += "\x1b[32m The "+classes[skillnum]+" Skills: \x1b[1m"
 			if ( user.getSkillPoint(skillnum) > 0 ):
 				output +=  str(user.getSkillPoint(skillnum)) + padnumcol(str(user.getSkillPoint(skillnum)), 11)
@@ -133,14 +133,14 @@ def module_viewstats(user):
 				output += "NONE     "
 			output += padnumcol(classes[skillnum], 12)
 			output += "\x1b[0m\x1b[32mUses Today: (\x1b[1m"+str(user.getSkillUse(skillnum))+"\x1b[22m)\x1b[0m\r\n"
-	output += "\r\n \x1b[1;32mYou are currently interested in \x1b[37mThe "+classes[user.getClass()]+" \x1b[32mskills.\r\n\r\n";
+	output += "\r\n \x1b[1;32mYou are currently interested in \x1b[37mThe "+classes[user.cls]+" \x1b[32mskills.\r\n\r\n";
 	return output
 
-def module_dailyhappen(noprmpt, db, prefix):
+def module_dailyhappen(noprmpt, db, prefix=''):
 	""" View Daily Happenings
 	* @param bool $noprmpt Do not prompt for additions.
 	* @return string Formatted output for display """
-	thisSQL = "SELECT data FROM (SELECT * FROM "+prefix+"daily ORDER BY id DESC LIMIT 10) AS tbl ORDER BY tbl.id"
+	thisSQL = "SELECT data FROM (SELECT * FROM daily ORDER BY id DESC LIMIT 10) AS tbl ORDER BY tbl.id"
 	db.execute(thisSQL)
 	output  = "\r\n\r\n\x1b[1;37mRecent Happenings\033[22;32m....\x1b[0m\r\n"
 	output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
@@ -151,22 +151,22 @@ def module_dailyhappen(noprmpt, db, prefix):
 		output +=  "\n\x1b[32m(\x1b[1;35mC\x1b[22;32m)ontinue  \x1b[32m(\x1b[1;35mT\x1b[22;32m)odays happenings again  \x1b[1;32m[\x1b[35mC\x1b[32m] \x1b[22m:-: "
 	return output
 
-def module_who(art, db, prefix):
+def module_who(art, db, prefix=''):
 	""" Who's Online
 	* @return string Formatted output for display"""
-	thisSQL = "SELECT o.userid, fullname, DATE_FORMAT(whence, '%H:%i') as whence FROM "+prefix+"users u, "+prefix+"online o WHERE o.userid = u.userid ORDER BY whence ASC"
+	thisSQL = "SELECT o.userid, fullname, whence FROM users u, online o WHERE o.userid = u.userid ORDER BY whence ASC"
 	db.execute(thisSQL)
 	output  = "\r\n\r\n\x1b[1;37m                     Warriors In The Realm Now\x1b[22;32m\x1b[0m\r\n"
 	output += art.line()
 	for line in db.fetchall():
 		output += "  \x1b[1;32m" + line[1] + padnumcol(line[1], 28)
-		output += "\x1b[0m\x1b[32mArrived At                    \x1b[1;37m" + line[2] + "\x1b[0m\r\n"
+		output += "\x1b[0m\x1b[32mArrived At             \x1b[1;37m" + str(line[2]) + "\x1b[0m\r\n"
 	return output + "\r\n"
 
-def module_list(art, db, prefix):
+def module_list(art, db, prefix=''):
 	""" Player List
 	* @return string Formatted output for display """
-	thisSQL = "SELECT u.userid, fullname, exp, level, class, spclm, spcld, spclt, sex, alive FROM "+prefix+"users u, "+prefix+"stats s WHERE u.userid = s.userid ORDER BY exp DESC"
+	thisSQL = "SELECT users.userid, fullname, exp, level, cls, spclm, spcld, spclt, sex, alive FROM users, stats WHERE users.userid = stats.userid ORDER BY exp DESC"
 	db.execute(thisSQL)
 	output = "\r\n\r\n\x1b[32m    Name                    Experience    Level    Mastered    Status\x1b[0m\r\n";
 	output += art.line()
@@ -226,51 +226,50 @@ def module_heal(user):
 		if ( not skipDisp ):
 			user.write(menu_heal(user))
 		skipDisp = False
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
 			user.write('R')
 			thisQuit = True
 		elif ( data[0] == 'h' or data[0] == 'H' ):
 			user.write('H')
-			hptoheal = user.getHPMax() - user.getHP()
+			hptoheal = user.hpmax - user.hp
 			if ( hptoheal < 1 ):
 				user.write(func_casebold("\r\n  You do NOT need healing!\r\n", 2))
 			else:
-				perhpgold = user.getLevel() * 5
-				usergold = user.getGold()
-				if ( usergold < perhpgold ):
+				perhpgold = user.level * 5
+				if ( user.gold < perhpgold ):
 					user.write(func_casebold("\r\n  You are too poor to heal anything!\r\n)", 2))
 				else:
 					fullcosttoheal = hptoheal * perhpgold
-					canaffordtoheal =  ( usergold - ( usergold % perhpgold ) ) / perhpgold
+					canaffordtoheal =  ( user.gold - ( user.gold % perhpgold ) ) / perhpgold
 					if ( canaffordtoheal >= hptoheal ):
 						canaffordtoheal = hptoheal
-					user.updateGold((canaffordtoheal * perhpgold) * -1)
-					user.updateHP(canaffordtoheal)
+					user.gold -= (canaffordtoheal * perhpgold)
+					user.hp += canaffordtoheal
 					user.write("\r\n  \x1b[32m\x1b[1m"+str(canaffordtoheal)+" \x1b[22mHitPoints are healed and you feel much better!\x1b[0m\r\n")
  					user.pause()
 		elif ( data[0] == 'c' or data[0] == 'C' ):
 			user.write('C')
-			hptoheal = user.getHPMax() - user.getHP()
+			hptoheal = user.hpmax - user.hp
 			if ( hptoheal < 1 ):
 				user.write(func_casebold("\r\n  You do NOT need healing!\r\n", 2))
 			else:
 				user.write("\r\n  \x1b[32mHow much to heal warror? \x1b[1m: \x1b[0m")
 				try:
-					number = int(func_getLine(user.connection, True))
+					number = int(func_getLine(user.ntcon, True))
 				except ValueError:
 					number = 0
 				if ( number > hptoheal ):
 					number = hptoheal
 				if ( number > 0 ):
-					perhpgold = user.getLevel() * 5
+					perhpgold = user.level * 5
 					costforaction = perhpgold * number
-					if ( costforaction > user.getGold() ):
+					if ( costforaction > user.gold ):
 						user.write(func_casebold("\r\n  You do not have enough gold for that!\r\n", 1))
 					else:
-						user.updateGold(costforaction * -1)
-						user.updateHP(number)
+						user.gold -= costforaction
+						user.hp += number
 						user.write("\r\n  \x1b[32m\x1b[1m"+str(number)+" \x1b[22mHitPoints are healed and you feel much better!\x1b[0m\r\n")
 						user.pause()
 		else:
@@ -286,7 +285,7 @@ def module_bank(user):
 				user.write(user.art.bank())
 			user.write(menu_bank(user))
 		skipDisp = False
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
 			user.write('Q')
@@ -295,17 +294,17 @@ def module_bank(user):
 			user.write('D')
 			user.write("\r\n  \x1b[32mDeposit how much? \x1b[1;30m(1 for all) \x1b[1;32m:\x1b[0m ")
 			try:
-				number = int(func_getLine(user.connection, True))
+				number = int(func_getLine(user.ntcon, True))
 			except ValueError:
 				number = 0
-			if ( number > user.getGold() ):
+			if ( number > user.gold ):
 				user.write(func_casebold("\r\n  You don't have that much gold!\r\n", 1))
 				user.pause()
 			elif ( number > 0 ):
 				if ( number == 1 ):
-					number = user.getGold()
-				user.updateBank(number)
-				user.updateGold(number * -1)
+					number = user.gold
+				user.bank += number
+				user.gold -= number
 				user.write(func_casebold("\r\n  Gold deposited\r\n", 2))
 				user.pause()
 			else:
@@ -314,17 +313,17 @@ def module_bank(user):
 			user.write('W')
 			user.write("\r\n  \x1b[32mWithdraw how much? \x1b[1;30m(1 for all) \x1b[1;32m:\x1b[0m ")
 			try:
-				number = int(func_getLine(user.connection, True))
+				number = int(func_getLine(user.ntcon, True))
 			except ValueError:
 				number = 0
-			if ( number > user.getBank() ):
+			if ( number > user.bank ):
 				user.write(func_casebold("\r\n  You don't have that much gold in the bank!\r\n", 1))
 				user.pause()
 			elif ( number > 0 ):
 				if ( number == 1 ):
-					number = user.getBank()
-				user.updateGold(number)
-				user.updateBank(number * -1)
+					number = user.bank
+				user.gold += number
+				user.bank -= number
 				user.write(func_casebold("\r\n  Gold widthdrawn\r\n", 2))
 				user.pause()
 			else:
@@ -335,16 +334,16 @@ def module_bank(user):
 			if ( touser > 0 ):
 				user.write("\r\n  \x1b[32mTransfer how much? \x1b[1;32m:\x1b[0m ")
 				try:
-					number = int(func_getLine(user.connection, True))
+					number = int(func_getLine(user.ntcon, True))
 				except ValueError:
 					number = 0
-				if ( number > user.getGold() ):
+				if ( number > user.gold ):
 					user.write(func_casebold("\r\n  You don't have that much gold!\r\n", 1))
 					user.pause()
 				elif ( number > 0 ):
-					thisSQL = "UPDATE "+user.thisSord.sqlPrefix()+"stats SET gold = (gold + "+str(number)+") WHERE userid = "+str(touser)
-					user.db.execute(thisSQL)
-					user.updateGold(number * -1)
+					user.dbcon.execute("UPDATE stats SET gold = (gold + ?) WHERE userid = ?", (number, touser))
+					user.dbcon.commit()
+					user.gold -= number
 					user.write(func_casebold("\r\n  Gold transfered\r\n", 2))
 					user.pause()
 				else:
@@ -365,37 +364,37 @@ def module_abduls(user):
 				user.write(user.art.abdul())
 			user.write(menu_abdul(user))
 		skipDisp = False
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		elif ( data[0] == 'b' or data[0] == 'B' ):
 			user.write('B')
 			user.write(user.art.armbuy())
 			user.write("\r\n\r\n\x1b[32mYour choice? \x1b[1m:\x1b[22m-\x1b[1m:\x1b[0m ")
 			try:
-				number = int(func_getLine(user.connection, True))
+				number = int(func_getLine(user.ntcon, True))
 			except ValueError:
 				number = 0
 			if ( number > 0 and number < 16 ):
-				if ( user.getArmor() > 0 ):
+				if ( user.armor > 0 ):
 					user.write(func_casebold("\r\nYou cannot hold 2 sets of Armor!\r\n", 1))
 					user.pause()
 				else:
-					if ( user.getGold() < armorprice[number] ):
+					if ( user.gold < armorprice[number] ):
 						user.write(func_casebold("\r\nYou do NOT have enough Gold!\n", 1))
 						user.pause()
 					else:
-						if ( user.getDefense() < armorndef[number] ):
+						if ( user.defence < armorndef[number] ):
 							user.write(func_casebold("\r\nYou are NOT strong enough for that!\r\n", 1))
 							user.pause()
 						else:
 							user.write(func_casebold("\r\nI'll sell you my Best "+armor[number]+" for "+str(armorprice[number])+" gold.  OK? ", 2)) 
-							yesno = user.connection.recv(2)
+							yesno = user.ntcon.recv(2)
 							if not yesno: break
 							if ( yesno[0] == "Y" or yesno[0] == "y" ):
 								user.write('Y')
-								user.setArmor(number)
-								user.updateGold(armorprice[number] * -1)
-								user.updateDefense(armordef[number])
+								user.armor = number
+								user.gold -= armorprice[number]
+								user.defence += armordef[number]
 								user.write(func_casebold("\r\nPleasure doing business with you!\r\n", 2))
 								user.pause()
 							else:
@@ -404,18 +403,17 @@ def module_abduls(user):
 		elif ( data[0] == 's' or data[0] == 'S' ):
 			user.write('S')
 			sellpercent = 50 + random.randint(1, 10)
-			sellarmor = user.getArmor()
+			sellarmor = user.armor
 			if ( sellarmor > 0 ):
 				sellprice = ((sellpercent * armorprice[sellarmor]) // 100 )
 				user.write(func_casebold("\r\nHmm...  I'll buy that "+armor[sellarmor]+" for "+str(sellprice)+" gold.  OK? ", 2))
-				yesno = user.connection.recv(2)
+				yesno = user.ntcon.recv(2)
 				if not yesno: break
 				if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 					user.write('Y')
-					user.setArmor(0)
-					user.updateGold(sellprice)
-					unstrength = (60 * armordef[sellarmor]) // 100
-					user.updateDefense(unstrength * -1)
+					user.armor = 0
+					user.gold += sellprice
+					user.defence -= ((60 * armordef[sellarmor]) // 100)
 					user.write(func_casebold("\r\nPleasure doing business with you!\r\n", 2))
 					user.pause()
 				else:
@@ -448,37 +446,37 @@ def module_arthurs(user):
 				user.write(user.art.arthur())
 			user.write(menu_arthur(user))
 		skipDisp = False
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		elif ( data[0] == 'b' or data[0] == 'B' ):
 			user.write('B')
 			user.write(user.art.wepbuy())
 			user.write("\r\n\r\n\x1b[32mYour choice? \x1b[1m:\x1b[22m-\x1b[1m:\x1b[0m ")
 			try:
-				number = int(func_getLine(user.connection, True))
+				number = int(func_getLine(user.ntcon, True))
 			except ValueError:
 				number = 0
 			if ( number > 0 and number < 16 ):
-				if ( user.getWeapon() > 0 ):
+				if ( user.weapon > 0 ):
 					user.write(func_casebold("\r\nYou cannot hold 2 Weapons!\r\n", 1))
 					user.pause()
 				else:
-					if ( user.getGold() < weaponprice[number] ):
+					if ( user.gold < weaponprice[number] ):
 						user.write(func_casebold("\r\nYou do NOT have enough Gold!\n", 1))
 						user.pause
 					else:
-						if ( user.getStrength() < weaponnstr[number] ):
+						if ( user.str < weaponnstr[number] ):
 							user.write(func_casebold("\r\nYou are NOT strong enough for that!\r\n", 1))
 							user.pause()
 						else:
 							user.write(func_casebold("\r\nI'll sell you my Favorite "+weapon[number]+" for "+str(weaponprice[number])+" gold.  OK? ", 2)) 
-							yesno = user.connection.recv(2)
+							yesno = user.ntcon.recv(2)
 							if not yesno: break
 							if ( yesno[0] == "Y" or yesno[0] == "y" ):
 								user.write('Y')
-								user.setWeapon(number)
-								user.updateGold(weaponprice[number] * -1)
-								user.updateStrength(weaponstr[number])
+								user.weapon = number
+								user.gold -= weaponprice[number]
+								user.str += weaponstr[number]
 								user.write(func_casebold("\r\nPleasure doing business with you!\r\n", 2))
 								user.pause()
 							else:
@@ -487,18 +485,17 @@ def module_arthurs(user):
 		elif ( data[0] == 's' or data[0] == 'S' ):
 			user.write('S')
 			sellpercent = 50 + random.randint(1, 10)
-			sellweapon = user.getWeapon()
+			sellweapon = user.weapon
 			if ( sellweapon > 0 ):
 				sellprice = ((sellpercent * weaponprice[sellweapon]) // 100 )
 				user.write(func_casebold("\r\nHmm...  I'll buy that "+weapon[sellweapon]+" for "+str(sellprice)+" gold.  OK? ", 2))
-				yesno = user.connection.recv(2)
+				yesno = user.ntcon.recv(2)
 				if not yesno: break
 				if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 					user.write('Y')
-					user.setWeapon(0)
-					user.updateGold(sellprice)
-					unstrength = (60 * weaponstr[sellweapon]) // 100
-					user.updateStrength(unstrength * -1)
+					user.weapon = 0
+					user.gold += sellprice
+					user.str -= ((60 * weaponstr[sellweapon]) // 100)
 					user.write(func_casebold("\r\nPleasure doing business with you!\r\n", 2))
 					user.pause()
 				else:
@@ -523,22 +520,22 @@ def module_arthurs(user):
 
 def module_flowers(user):
 	""" The forest flowers """
-	thisSQL = "SELECT data, nombre FROM (SELECT * FROM "+user.thisSord.sqlPrefix()+"flowers ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id"
 	output  = "\r\n\r\n  \x1b[1;37mStudy the forest flowers\x1b[22;32m....\x1b[0m\r\n"
 	output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
-	user.db.execute(thisSQL)
-	for (data, nombre) in user.db.fetchall():
+	db = user.dbcon.cursor()
+	db.execute("SELECT data, nombre FROM (SELECT * FROM flowers ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id")
+	for (data, nombre) in db.fetchall():
 		output += "    \x1b[32m"+nombre+" \x1b[1;37msays... \x1b[0m\x1b[32m" + func_colorcode(data)
 		output += "\x1b[0m\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
 	output += "\r\n  \x1b[32mAdd to the conversation? (Y/N) \x1b[1m: \x1b[0m"
+	db.close()
 	user.write(output)
-	yesno = user.connection.recv(2)
+	yesno = user.ntcon.recv(2)
 	if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 		user.write(func_casebold("Y\r\n  What!? What do you want? :-: ", 2))
-		ann = func_getLine(user.connection, True)
-		safeann = user.dbc.escape_string(ann)
-		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"flowers ( `data`, `nombre` ) VALUES ('"+safeann+"', '"+user.thisFullname+"')"
-		user.db.execute(thisSQL)
+		ann = func_getLine(user.ntcon, True)
+		user.dbcon.execute("INSERT INTO flowers ( `data`, `nombre` ) VALUES ( ?, ? )", (safeann, user.thisFullname))
+		user.dbcon.commit()
 		user.write(func_casebold("\r\n  Idiocy added!\r\n", 2))
 		user.pause()
 	else:
@@ -546,11 +543,11 @@ def module_flowers(user):
 
 def module_dirt(user):
 	""" The slaughter dirt """
-	thisSQL = "SELECT data, nombre FROM (SELECT * FROM "+user.thisSord.sqlPrefix()+"dirt ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id"
 	output  = "\r\n\r\n  \x1b[1;37mExamine the dirt\x1b[22;32m....\x1b[0m\r\n"
 	output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
-	user.db.execute(thisSQL)
-	for (data, nombre) in user.db.fetchall():
+	db = user.dbcon.cursor()
+	db.execute("SELECT data, nombre FROM (SELECT * FROM dirt ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id")
+	for (data, nombre) in db.fetchall():
 		output += "    \x1b[32m"+nombre+" \x1b[1;37msays... \x1b[0m\x1b[32m" + func_colorcode(data)
 		output += "\x1b[0m\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
 	user.write(output)

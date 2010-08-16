@@ -21,7 +21,7 @@ def module_killer(user):
 				user.write(user.art.killer())
 			user.write(menu_slaughter(user))
 		skipDisp = False
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
 			user.write('R')
@@ -33,7 +33,7 @@ def module_killer(user):
 			user.write('W')
 			if ( user.getKiller() > 0 ):
 				user.write(func_casebold("\r\n  Carve what in the soft dirt? :-: ", 2))
-				ann = func_getLine(user.connection, True)
+				ann = func_getLine(user.ntcon, True)
 				safeann = user.dbc.escape_string(ann)
 				thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"dirt ( `data`, `nombre` ) VALUES ('"+safeann+"', '"+user.thisFullname+"')"
 				user.db.execute(thisSQL)
@@ -50,7 +50,7 @@ def module_killer(user):
 			tokillID = module_finduser(user, "\r\n  \x1b[32mKill Who ?")
 			if ( tokillID > 0 ):
 				tokillName = user.userGetLogin(tokillID)
-				usertoKill = sordUser(tokillName, user.dbc, user.db, user.connection, user.art)
+				usertoKill = sordUser(tokillName, user.dbc, user.db, user.ntcon, user.art)
 				if ( usertoKill.isDead() ):
 					user.write("\r\n  \x1b[31mAlready dead your holiness...\x1b[0m\r\n")
 					user.pause()
@@ -105,7 +105,7 @@ def module_forest(user):
 					user.write(func_normmenu("(T)ake Horse to Dark Horse Tavern"))
 			user.write(menu_forest(user))
 		skipDisp = False
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
 			user.write('Q')
@@ -202,7 +202,7 @@ def forest_special(user):
 		user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
 		miniQuit = False
 		while ( not miniQuit ):
-			data = user.connection.recv(2)
+			data = user.ntcon.recv(2)
 			if ( data[0] == 'h' or data[0] == 'H' ):
 				user.write('H')
 				goldtoadd = user.getLevel() * 500
@@ -245,7 +245,7 @@ def forest_special(user):
 		miniQuit = False
 		while ( not miniQuit ):
 			user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
-			data = user.connection.recv(2)
+			data = user.ntcon.recv(2)
 			if ( data[0] == 'l' or data[0] == 'L' ):
 				user.write("L\r\n\r\n  \x1b[32mThe old hag begins following you like a lost puppy.\x1b[0m\r\n")
 			elif ( data[0] == 'k' or data[0] == 'K' ):
@@ -282,7 +282,7 @@ def forest_special(user):
 		user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
 		miniQuit = False
 		while ( not miniQuit ):
-			data = user.connection.recv(2)
+			data = user.ntcon.recv(2)
 			if ( data[0] == 'i' or data[0] == 'I' ):
 				user.write('I')
 				miniQuit = True
@@ -299,7 +299,7 @@ def forest_special(user):
 				user.write(func_normmenu("(B)logshares Brutal Belfry"))
 				user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
 				while ( not thisMiniQuit ):
-					miniData = user.connection.recv(2)
+					miniData = user.ntcon.recv(2)
 					if ( miniData[0] == 'k' or miniData[0] == 'K' ):
 						user.write('K')
 						thisTower = 1
@@ -366,7 +366,7 @@ def forest_fairies(user):
 	miniQuit = False
 	while ( not miniQuit ):
 		user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
-		miniData = user.connection.recv(2)
+		miniData = user.ntcon.recv(2)
 		if ( miniData[0] == 'a' or miniData[0] == 'A' ):
 			user.write('A')
 			miniQuit = True
@@ -461,7 +461,7 @@ def forest_fight(user):
 		if ( not skipDisp ):
 			user.write(forest_menu(user, thisEnemyHP, thisEnemyName, True))
 		skipDisp = False
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		elif ( data[0] == 's' or data[0] == 'S' ):
 			user.write('S')
@@ -574,7 +574,7 @@ def forest_fight(user):
 				user.write("\r\n  \x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? [\x1b[1;35mA\x1b[0m\x1b[32m] : \x1b[0m")
 				tinyQuit = False
 				while ( not tinyQuit ):
-					miniData = user.connection.recv(2)
+					miniData = user.ntcon.recv(2)
 					if not miniData: break
 					elif ( miniData[0] == 'n' or miniData[0] == 'N' ): #Nothing
 						user.write("N\r\n  \x1b[32mSure thing boss.\x1b[0m\r\n")
@@ -725,7 +725,7 @@ def forest_lesson_d(user) :
 	user.write("\r\n  \x1b[0m\x1b[32mYour choice, \x1b[1m"+user.thisFullname+"\x1b[22m? (K,F) \x1b[0m\x1b[32m:-: \x1b[0m")
 	miniQuit = False
 	while ( not miniQuit ):
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		elif ( data[0] == 'k' or data[0] == 'K' ):
 			user.write('K')
@@ -769,7 +769,7 @@ def forest_lesson_t(user) :
 	user.write("\r\n  \x1b[0m\x1b[32mYour choice, \x1b[1m"+user.thisFullname+"\x1b[22m? (G,S,M) \x1b[0m\x1b[32m:-: \x1b[0m")
 	miniQuit = False
 	while ( not miniQuit ):
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		elif ( data[0] == 's' or data[0] == 'S' ):
 			user.write("S\r\n  \x1b[32mAs you spit on him, the thief looks at you closely.  He almost looks proud.\x1b[0m\r\n")
@@ -803,7 +803,7 @@ def forest_lesson_m(user) :
 	miniQuit2 = False
 	
 	while ( not miniQuit1 ):
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		elif ( data[0] == 'k' or data[0] == 'K' ):
 			user.write(data[0])
@@ -830,7 +830,7 @@ def forest_lesson_m(user) :
 			while ( magicGuess < 7 ):
 				user.write("\r\n  \x1b[0m\x1b[32mYour guess, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
 				try: 
-					thisGuess = int(func_getLine(user.connection, True))
+					thisGuess = int(func_getLine(user.ntcon, True))
 				except ValueError:
 					thisGuess = 1
 				if ( thisGuess == magicNumber ):
@@ -864,7 +864,7 @@ def module_turgon(user):
 				user.write(user.art.turgon())
 			user.write(menu_turgon(user))
 		skipDisp = False
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		elif ( data[0] == 'r' or data[0] == 'R' ):
 			user.write('R')
@@ -937,7 +937,7 @@ def master_fight(user):
 		if ( not skipDisp ):
 			user.write(forest_menu(user, thisEnemyHP, thisEnemyName))
 		skipDisp = False
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		elif ( data[0] == 's' or data[0] == 'S' ):
 			user.write('S')
@@ -1023,7 +1023,7 @@ def killer_fight(user, usertokill):
 		if ( not skipDisp ):
 			user.write(forest_menu(user, usertokill.getHP(), usertokill.thisFullname))
 		skipDisp = False
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		elif ( data[0] == 's' or data[0] == 'S' ):
 			user.write('S')
@@ -1159,10 +1159,10 @@ def dht_converse(user):
 		output += "\x1b[0m\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
 	output += "\r\n  \x1b[32mAdd to the conversation? \x1b[1m: \x1b[0m"
 	user.write(output)
-	yesno = user.connection.recv(2)
+	yesno = user.ntcon.recv(2)
 	if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 		user.write(func_casebold("\r\n  What say you? :-: ", 2))
-		ann = func_getLine(user.connection, True)
+		ann = func_getLine(user.ntcon, True)
 		safeann = user.dbc.escape_string(ann)
 		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"dhtpatrons ( `data`, `nombre` ) VALUES ('"+safeann+"', '"+user.thisFullname+"')"
 		user.db.execute(thisSQL)
@@ -1179,7 +1179,7 @@ def dht_logic(user):
 				user.write(dht_main_menu(user))
 			user.write(dht_prompt(user))
 		skipDisp = False
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
 			user.write('R')
@@ -1235,7 +1235,7 @@ def dht_chance(user):
 			user.write(header)
 			user.write(dht_chance_menu(user))
 		skipDisp = False
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
 			user.write('R')
@@ -1251,13 +1251,13 @@ def dht_chance(user):
 				whoName = user.userGetLogin(whoid)
 				whoCost = user.getLevel() * 100
 				user.write("\r\n  \x1b[32mThat will be \x1b[1m"+str(whoCost)+"\x1b[0;32m gold.  Ok? ")
-				yesno = user.connection.recv(2)
+				yesno = user.ntcon.recv(2)
 				if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 					user.write('Y')
 					if ( user.getGold() < whoCost ):
 						user.write("\r\n  \x1b[32mYou don't have enough gold jackass!\x1b[0m\r\n")
 					else:
-						usertoSee = sordUser(whoName, user.dbc, user.db, user.connection, user.art)
+						usertoSee = sordUser(whoName, user.dbc, user.db, user.ntcon, user.art)
 						user.updateGold(whoCost * -1)
 						user.write(module_viewstats(usertoSee))
 						user.pause()
@@ -1275,7 +1275,7 @@ def dht_chance(user):
 			thisLooper = False
 			while ( not thisLooper ):
 				user.write(func_casebold("\r\n  Your Choice (D/K/L) :-: ", 2))
-				data = user.connection.recv(2)
+				data = user.ntcon.recv(2)
 				if not data: break
 				if ( data[0] == 'k' or data[0] == 'K' ):
 					user.write('K')
@@ -1333,7 +1333,7 @@ def dragon_fight(user):
 			thisEnemyWeapon = "Flaming Breath"
 			thisEnemyHit = 3000
 		skipDisp = False
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		elif ( data[0] == 's' or data[0] == 'S' ):
 			user.write('S')
@@ -1443,7 +1443,7 @@ def dragon_fight(user):
 				user.write("\r\n  \x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? [\x1b[1;35mA\x1b[0m\x1b[32m] : \x1b[0m")
 				tinyQuit = False
 				while ( not tinyQuit ):
-					miniData = user.connection.recv(2)
+					miniData = user.ntcon.recv(2)
 					if not miniData: break
 					elif ( miniData[0] == 'n' or miniData[0] == 'N' ): #Nothing
 						user.write("N\r\n  \x1b[32mSure thing boss.\x1b[0m\r\n")

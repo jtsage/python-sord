@@ -52,10 +52,11 @@ class art():
 	def info(self, user):
 		""" Game System Information Banner"""
 		rundays = 0
-		thisSQL = "SELECT valueint FROM "+user.thisSord.sqlPrefix()+"setup WHERE `name` = 'gdays'"
-		user.db.execute(thisSQL)
-		for valueint in user.db.fetchall():
-			rundays = valueint[0]
+		db = user.dbcon.cursor()
+		db.execute("SELECT value FROM sord WHERE name = 'gdays'")
+		for value in db.fetchone():
+			rundays = value
+		db.close()
 		thismsg  = "\r\n"+ESC+"32m                           Saga Of The Red Dragon"+ESC+"0m\r\n"
 		thismsg += ESC+"32m                           "+user.thisSord.host()+"\r\n\r\n"+ESC+"0m\r\n"
 		thismsg += ESC+"32m                    Compiled June 25, 2009: Version "+ESC+"1;37m"+user.thisSord.version()+ESC+"0m\r\n"
@@ -69,7 +70,7 @@ class art():
 		thismsg += ESC+"32m                   The current game day is "+ESC+"1m"+str(user.thisSord.dayLength())+ESC+"22m real hours long.\r\n"+ESC+"0m\r\n"
 		thismsg += "\r\n"+ESC+"32m  The peasants say this about you : \r\n    "
 		try: 
-			thismsg += charmsay[user.getSex()][user.getCharm()]
+			thismsg += charmsay[user.sex][user.charm]
 		except IndexError:
 			thismsg += "nothing at all."
 		thismsg += "\x1b[0m\r\n"
@@ -78,10 +79,10 @@ class art():
 	def banner(self, sordGame, sqlCurs):
 		""" Game System Information Banner"""
 		rundays = 0
-		thisSQL = "SELECT valueint FROM "+sordGame.sqlPrefix()+"setup WHERE `name` = 'gdays'"
+		thisSQL = "SELECT value FROM sord WHERE name = 'gdays'"
 		sqlCurs.execute(thisSQL)
-		for valueint in sqlCurs.fetchall():
-			rundays = valueint[0]
+		for value in sqlCurs.fetchall():
+			rundays = value[0]
 		thismsg  = "\r\n"+ESC+"32m                           Saga Of The Red Dragon"+ESC+"0m\r\n"
 		thismsg += ESC+"32m                           "+sordGame.host()+"\r\n\r\n"+ESC+"0m\r\n"
 		thismsg += ESC+"32m                    Compiled June 25, 2009: Version "+ESC+"1;37m"+sordGame.version()+ESC+"0m\r\n"

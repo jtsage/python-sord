@@ -23,20 +23,14 @@
 
 class sord():
 
-	def sqlServer(self):
-		return "localhost"
+	def sqlitefile(self):
+		return "sord.db"
 		
-	def sqlDatabase(self):
-		return "sord"
+	def gameadmin(self):
+		return "jtsage"
 		
-	def sqlUser(self):
-		return "sord"
-		
-	def sqlPass(self):
-		return "dr0s"
-		
-	def sqlPrefix(self):
-		return "gameone_"
+	def gameadminpass(self):
+		return "legend"
 		
 	def host(self):
 		return "sord.jtsage.com"
@@ -60,4 +54,4 @@ class sord():
 		return 5
 		
 	def version(self):
-		return "py1.0.1"
+		return "py1.1+sqlite"

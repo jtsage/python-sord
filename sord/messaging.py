@@ -32,7 +32,7 @@ def msg_sendmail(user):
 		return False
 	else:
 		user.write("\r\n  \x1b[32mYour message \x1b[1m:\x1b[0m ")
-		msg = func_getLine(user.connection, True)
+		msg = func_getLine(user.ntcon, True)
 		safemsg = user.dbc.escape_string(msg)
 		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"mail (`to`, `from`, `message`) VALUES ('"+str(toid)+"', '"+str(user.thisUserID)+"', '"+safemsg+"')"
 		user.db.execute(thisSQL)
@@ -42,7 +42,7 @@ def msg_sendmail(user):
 def msg_announce(user):
 	""" Make announcment """
 	user.write(func_casebold("\r\n  Your announcment? :-: ", 2))
-	ann = func_getLine(user.connection, True)
+	ann = func_getLine(user.ntcon, True)
 	safeann = user.dbc.escape_string(ann)
 	thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+safeann+"')"
 	user.db.execute(thisSQL)

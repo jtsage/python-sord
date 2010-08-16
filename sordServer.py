@@ -11,11 +11,15 @@
   * @license http://sord.jtsage.com/LICENSE Disclaimer's License
   * @version 0.9.9
   @todo IGM framework"""
-import thread, threading, time, MySQLdb, sys, traceback
+import thread, threading, time, sys, traceback, random
+#import MySQLdb
+import sqlite3
+from os.path import isfile
+from os import unlink
 from socket import *
 from sord.art import *
 from sord.functions import *
-from sord.user import *
+from sord.user2 import *
 from sord.modules import *
 from sord.menus import *
 from sord.messaging import *
@@ -27,8 +31,9 @@ from sord.usereditor import *
 from socket import *
 from config import sord
 myHost = ''  #all hosts.
-myPort = 6969
+myPort = 6969 + random.randint(1, 8)
 mySord = sord()
+print myPort
 
 try:
 	sockobj = socket(AF_INET6, SOCK_STREAM)
@@ -48,9 +53,76 @@ WILL = chr(251)
 ECHO = chr(1)
 LINEMODE = chr(34) # Linemode option
 SORDDEBUG = False
-#SORDDEBUG = True
+SORDDEBUG = True
 SKIPLONGANSI = False
-#SKIPLONGANSI = True
+SKIPLONGANSI = True
+
+def testdb():
+	if ( isfile("./" + mySord.sqlitefile()) ):
+		sqc = sqlite3.connect("./" + mySord.sqlitefile())
+		sqr = sqc.cursor()
+		for row in sqr.execute("select value from sord where name=?", ('version',)):
+			version, = row
+			if ( version > 0 ):
+				print " =+= SQLite Database is up to date"
+			else:
+				print " =+= SQLite Database is out of date, updating..."
+				updatedb()
+		sqc.close()
+	else:
+		createdb()
+		
+def updatedb():
+	unlink("./" + mySord.sqlitefile())
+	createdb()
+		
+def createdb():
+	print " =+= Creating New Database - First Run!"
+	sqc = sqlite3.connect("./" + mySord.sqlitefile())
+	
+	statstable = [ # (name, default value)
+		('cls' , 1) , ('sex', 1), ('flirt', 0), ('sung', 0), ('master', 0),
+		('atinn', 0), ('horse', 0), ('fairy', 0), ('ffight', 20), ('pfight', 3),
+		('gems', 0), ('gold', 500), ('bank', 0), ('level', 1), ('charm', 0),
+		('spclm', 0), ('spclt', 0), ('spcld', 0), ('used', 0),
+		('uset', 0), ('usem', 0), ('str', 10), ('defence', 1), ('exp', 1),
+		('hp', 20), ('hpmax', 20), ('weapon', 1), ('armor', 1), ('pkill', 0),
+		('dkill', 0), ('fuck', 0) ]
+	statssql = "create table stats ( userid INTEGER"
+	for stat in statstable:
+		name, defu = stat
+		statssql = statssql + ", " + name + " INTEGER DEFAULT " + str(defu)
+	statssql = statssql + " )"
+	with sqc:
+		sqc.execute("create table sord ( name TEXT, value integer)")
+		sqc.execute("insert into sord values (?,?)", ('version', '1'))
+		sqc.execute("insert into sord values (?,?)", ('gdays', '1'))
+		
+		sqc.execute("create table daily ( id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT )")
+		sqc.execute("insert into daily (data) values (?)", ('{31}Welcome to {1}{37}S{0}{32}.O.R.D', ))
+		sqc.execute("insert into daily (data) values (?)", ('{31}Despair covers the land - more bloody remains have been found today.',))
+		
+		sqc.execute("create table dhtpatrons (id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT, nombre TEXT)")
+		sqc.execute("insert into dhtpatrons (data, nombre) values (?, ?)", ('{34}Welcome to the {31}Dark Horse Tavern', 'Chance'))
+		
+		sqc.execute("create table dirt (id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT, nombre TEXT)")
+		sqc.execute("insert into dirt (data, nombre) values (?, ?)", ('{32}Mighty quiet around here...', 'Jack the Ripper'))
+		
+		sqc.execute("create table flowers ( id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT, nombre TEXT )")
+		sqc.execute("insert into flowers (data, nombre) values (?, ?)", ('{34}Does this kimono make me look {31}fat?', 'Fairy #1'))
+		sqc.execute("insert into flowers (data, nombre) values (?, ?)", ('{36}No, just {1}ugly', 'Fairy #2'))
+		
+		sqc.execute("create table mail ( id INTEGER PRIMARY KEY AUTOINCREMENT, 'from' INTEGER, 'to' integer, message text, sent text)")
+		sqc.execute("create table online ( userid integer, whence text )")
+		
+		sqc.execute("create table patrons ( id INTEGER PRIMARY KEY, data text, nombre TEXT)" )
+		sqc.execute("insert into patrons (data, nombre) values (?, ?)", ('{34}Welcome to the {31}Red Dragon {34}Inn', 'The Bartender'))
+		
+		sqc.execute(statssql)
+		sqc.execute("create table users ( userid INTEGER PRIMARY KEY, username TEXT, password TEXT, fullname TEXT, last TEXT, alive INTEGER DEFAULT 1 )")
+		sqc.execute("insert into users ( userid, username, password, fullname ) values (?, ?, ?, ?)", (1, mySord.gameadmin(), mySord.gameadminpass(), mySord.admin()))
+		sqc.execute("insert into stats ( userid ) values (?)", (1,))
+
 
 def now():			  #Server Time
 	return time.ctime(time.time())
@@ -59,8 +131,10 @@ def handleClient(connection):
 	global connectedHosts
 	try:
 		loggedin = False
-		mySQLconn = MySQLdb.connect(host=str(mySord.sqlServer()), db=str(mySord.sqlDatabase()), user=str(mySord.sqlUser()), passwd=str(mySord.sqlPass()))
-		mySQLcurs = mySQLconn.cursor()
+		sqc = sqlite3.connect("./" + mySord.sqlitefile())
+		sqr = sqc.cursor()
+		#mySQLconn = MySQLdb.connect(host=str(mySord.sqlServer()), db=str(mySord.sqlDatabase()), user=str(mySord.sqlUser()), passwd=str(mySord.sqlPass()))
+		#mySQLcurs = mySQLconn.cursor()
 		time.sleep(1)
 		thisClientAddress = connection.getpeername()
 		connection.send(IAC + DO + LINEMODE) # drop to character mode.
@@ -83,7 +157,7 @@ def handleClient(connection):
 		skipDisp = False
 		while ( not quitter ):
 			if ( not skipDisp ):
-				func_slowecho(connection, artwork.banner(mySord,mySQLcurs))
+				func_slowecho(connection, artwork.banner(mySord,sqr))
 			skipDisp = False
 			data = connection.recv(1)
 			if not data: break
@@ -91,7 +165,7 @@ def handleClient(connection):
 				quitter = True
 				quitfull = True
 			elif ( data == "L" or data == "l" ):
-				func_slowecho(connection, module_list(artwork, mySQLcurs, mySord.sqlPrefix()))
+				func_slowecho(connection, module_list(artwork, sqr, mySord.sqlPrefix()))
 				func_pauser(connection)
 			elif ( data == "E" or data == "e" ):
 				print '   ** User Logging In::' + str(thisClientAddress)
@@ -107,7 +181,7 @@ def handleClient(connection):
 		ittr = 0
 		if ( SORDDEBUG ):
 			loggedin = True
-			currentUser = sordUser('jtsage', mySQLconn, mySQLcurs, connection, artwork)
+			currentUser = sorduser('jtsage', sqc, connection, artwork)
 	
 		while ( not loggedin and not quitfull ):
 			username = ""
@@ -120,7 +194,7 @@ def handleClient(connection):
 				raise Exception, "Too many bad logins!"
 			func_slowecho(connection, func_casebold("\r\n\r\nWelcome Warrior!  Enter Your Login Name (OR '\x1b[1m\x1b[31mnew\x1b[32m') :-: ", 2))
 			username = func_getLine(connection, True)
-			currentUser = sordUser(username, mySQLconn, mySQLcurs, connection, artwork)
+			currentUser = sorduser(username, sqc, connection, artwork)
 			if ( currentUser.thisUserID > 0 ):
 				func_slowecho(connection, func_casebold("\r\nPassword :-: ",2));  
 				password = func_getLine(connection, False)
@@ -133,8 +207,8 @@ def handleClient(connection):
 				if ( username == "new" ):
 					print '   ** New User! ' + str(thisClientAddress)
 					newusername = module_newuser(currentUser)
-					currentUser = sordUser(newusername, mySQLconn, mySQLcurs, connection, artwork)
-					newclass = currentUser.getClass()
+					currentUser = sorduser(newusername, sqc, connection, artwork)
+					newclass = currentUser.cls
 					currentUser.updateSkillUse(newclass, 1)
 					currentUser.updateSkillPoint(newclass, 1)
 					loggedin = True
@@ -145,15 +219,15 @@ def handleClient(connection):
 			currentUser.login()
 			print '   ** User Logged in::' + currentUser.thisFullname + ' ' + str(thisClientAddress)
 
-			if currentUser.isDead() :
+			if not currentUser.alive :
 				quitfull = 2
 				currentUser.write(func_casebold("\r\nI'm Afraid You Are DEAD Right Now.  Sorry\r\n", 1))
 		
 		if ( not quitfull ):
 			if ( not SORDDEBUG ):
-				currentUser.write(module_dailyhappen(True, mySQLcurs, mySord.sqlPrefix()))
+				currentUser.write(module_dailyhappen(True, sqr, mySord.sqlPrefix()))
 				currentUser.pause()
-				currentUser.write( module_who(artwork, mySQLcurs, mySord.sqlPrefix()))
+				currentUser.write( module_who(artwork, sqr, mySord.sqlPrefix()))
 				currentUser.pause()
 				currentUser.write(module_viewstats(currentUser))
 				currentUser.pause()
@@ -182,7 +256,7 @@ def handleClient(connection):
 			elif ( data[0] == "d" or data[0] == "D" ):
 				connection.send('D')
 				currentUser.jennielevel = 0
-				currentUser.write(module_dailyhappen(True, mySQLcurs, mySord.sqlPrefix()))
+				currentUser.write(module_dailyhappen(True, sqr, mySord.sqlPrefix()))
 				currentUser.pause()
 			elif ( data[0] == "?" ):
 				connection.send('?')
@@ -192,12 +266,12 @@ def handleClient(connection):
 			elif ( data[0] == "p" or data[0] == "P" ):
 				connection.send('P')
 				currentUser.jennielevel = 0
-				currentUser.write(module_who(artwork, mySQLcurs, mySord.sqlPrefix()))
+				currentUser.write(module_who(artwork, sqr, mySord.sqlPrefix()))
 				currentUser.pause()
 			elif ( data[0] == "l" or data[0] == "L" ):
 				connection.send('L')
 				currentUser.jennielevel = 0
-				currentUser.write(module_list(artwork, mySQLcurs, mySord.sqlPrefix()))
+				currentUser.write(module_list(artwork, sqr, mySord.sqlPrefix()))
 				currentUser.pause()
 			elif ( data[0] == "a" or data[0] == "A" ):
 				connection.send('A')
@@ -285,6 +359,7 @@ def handleClient(connection):
 			currentUser.logout()
 		connection.shutdown(SHUT_RD)
 		connection.close()
+		sqc.close()
 		print '  *** Thread Disconnected:' + str(thisClientAddress) + " at " + now()
 		connectedHosts -= 1
 		print "  --- Connected Hosts: " + str(connectedHosts)
@@ -336,7 +411,10 @@ def dispatcher():
 			print "  --- Connected Hosts: " + str(connectedHosts)
 		except KeyboardInterrupt:
 			print "\n === Stopping Server"
+			sockobj.shutdown(2)
 			sockobj.close()
 			sys.exit()
+			
 
+testdb()
 dispatcher()  #MAIN PROGRAM LOOP

@@ -26,7 +26,7 @@ def menu_turgon(user):
 	#thismenu += "  \x1b[32m(\x1b[1;37mV\x1b[0m\x1b[32m)\x1b[1;37misit The Hall Of Honor\x1b[0m\r\n"
 	#thismenu += func_normmenu("(R)eturn to Town")
 	try:
-		thismenu = "\r\n  \x1b[32mYour master is \x1b[1;37m"+masters[user.getLevel()][0]+"\x1b[0m\x1b[32m.\x1b[0m\r\n\r\n"
+		thismenu = "\r\n  \x1b[32mYour master is \x1b[1;37m"+masters[user.level][0]+"\x1b[0m\x1b[32m.\x1b[0m\r\n\r\n"
 	except IndexError:
 		thismenu = "\r\n  \x1b[32mYou have no master.  You are as smart as you can possibly get.\x1b[0m\r\n\r\n"
 	thismenu += "\x1b[1;35m  Turgon's Warrior Training \x1b[1;30m(Q,A,V,R) (? for menu)\x1b[0m\r\n\r\n"
@@ -44,8 +44,8 @@ def menu_bank(user):
 	#thismenu += func_normmenu("(W)ithdraw Gold")
 	#thismenu += func_normmenu("(T)ransfer Gold")
 	#thismenu += func_normmenu("(R)eturn to Town")
-	thismenu = "\r\n\r\n\x1b[32m  Gold In Hand: \x1b[1m" + str(user.getGold())
-	thismenu += "\x1b[0m\x1b[32m Gold In Bank: \x1b[1m" + str(user.getBank()) + "\r\n"
+	thismenu = "\r\n\r\n\x1b[32m  Gold In Hand: \x1b[1m" + str(user.gold)
+	thismenu += "\x1b[0m\x1b[32m Gold In Bank: \x1b[1m" + str(user.bank) + "\r\n"
 	thismenu += "\x1b[1;35m  The Bank \x1b[1;30m(W,D,R,T,Q) (? for menu)\x1b[0m\r\n\r\n"
 	thismenu += "  \x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
 	return thismenu
@@ -54,9 +54,9 @@ def menu_forest(user):
 	""" Forest fight menu (pre-battle)
 	* @return string Fully formatted menu """
 	ptime = func_maketime(user)
-	thismenu = "\r\n  \x1b[32mHitPoints: (\x1b[1m" + str(user.getHP()) + "\x1b[22m of \x1b[1m" + str(user.getHPMax())
-	thismenu += "\x1b[22m)  Fights: \x1b[1m" + str(user.getForestFight()) + "\x1b[22m  Gold: \x1b[1m" + str(user.getGold())
-	thismenu += "\x1b[22m  Gems: \x1b[1m" + str(user.getGems()) + "\x1b[0m\r\n"
+	thismenu = "\r\n  \x1b[32mHitPoints: (\x1b[1m" + str(user.hp) + "\x1b[22m of \x1b[1m" + str(user.hpmax)
+	thismenu += "\x1b[22m)  Fights: \x1b[1m" + str(user.ffight) + "\x1b[22m  Gold: \x1b[1m" + str(user.gold)
+	thismenu += "\x1b[22m  Gems: \x1b[1m" + str(user.gems) + "\x1b[0m\r\n"
 	thismenu += "  \x1b[1;35mThe Forest  \x1b[1;30m(L,H,R,Q) (? for menu)\x1b[0m\r\n\r\n"
 	thismenu += "  \x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
 	return thismenu
@@ -83,9 +83,9 @@ def menu_heal(user):
 	thismenu += func_normmenu("(H)eal all possible")
 	thismenu += func_normmenu("(C)ertain amount healed")
 	thismenu += func_normmenu("(R)eturn")
-	thismenu += "\r\n\x1b[32m  HitPoints: \x1b[1m" + str(user.getHP()) + "\x1b[22m of \x1b[1m" + str(user.getHPMax()) + "\x1b[0m"
-	thismenu += "\x1b[32m  Gold In Hand: \x1b[1m" + str(user.getGold())
-	thismenu += "\x1b[22m.\r\n  It costs \x1b[1m" + str(user.getLevel() * 5) + "\x1b[22m gold to heal 1 HitPoint\x1b[0m\r\n"
+	thismenu += "\r\n\x1b[32m  HitPoints: \x1b[1m" + str(user.hp) + "\x1b[22m of \x1b[1m" + str(user.hpmax) + "\x1b[0m"
+	thismenu += "\x1b[32m  Gold In Hand: \x1b[1m" + str(user.gold)
+	thismenu += "\x1b[22m.\r\n  It costs \x1b[1m" + str(user.level * 5) + "\x1b[22m gold to heal 1 HitPoint\x1b[0m\r\n"
 	thismenu += "\x1b[1;35m  The Healers Hut \x1b[1;30m(H,C,R) (? for menu)\x1b[0m\r\n\r\n"
 	thismenu += "  \x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
 	return thismenu
@@ -122,7 +122,7 @@ def menu_abdul(user):
 	"""Abdul's Armor
 	* @return string Fully formatted menu"""
 	ptime = func_maketime(user)
-	thismenu  = "\r\n  \x1b[32mCurrent armour: \x1b[1m"+armor[user.getArmor()]+"\x1b[0m\r\n"
+	thismenu  = "\r\n  \x1b[32mCurrent armour: \x1b[1m"+armor[user.armor]+"\x1b[0m\r\n"
 	thismenu += "  \x1b[1;35mAbduls Armour \x1b[1;30m(B,S,Y,R) (? for menu)\r\n\r\n"
 	thismenu += "  \x1b[0m\x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
 	return thismenu
@@ -131,7 +131,7 @@ def menu_arthur(user):
 	"""King Arthur's Weapons
 	* @return string Fully formatted menu """
 	ptime = func_maketime(user)
-	thismenu  = "\r\n  \x1b[32mCurrent weapon: \x1b[1m"+weapon[user.getWeapon()]+"\x1b[0m\r\n"
+	thismenu  = "\r\n  \x1b[32mCurrent weapon: \x1b[1m"+weapon[user.weapon]+"\x1b[0m\r\n"
 	thismenu += "  \x1b[1;35mKing Arthur's Weapons \x1b[1;30m(B,S,Y,R) (? for menu)\r\n\r\n"
 	thismenu += "  \x1b[0m\x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
 	return thismenu

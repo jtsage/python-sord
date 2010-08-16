@@ -49,7 +49,7 @@ def rdi_logic(user):
 				user.write(rdi_menu_main(user))
 			user.write(rdi_prompt(user))
 		skipDisp = False
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
 			user.write('R')
@@ -93,7 +93,7 @@ def rdi_logic(user):
 				user.jennielevel = 0
 				user.jennieused = True
 				user.write("\r\n  \x1b[32mJennie, eh?  Describe Her :\x1b[0m ")
-				desc = func_getLine(user.connection, True)
+				desc = func_getLine(user.ntcon, True)
 				if ( desc == "babe" or desc == "BABE" ):
 					user.write("\r\n  \x1b[32mI agree!\x1b[0m\r\n")
 					user.updateForestFight(1)
@@ -143,7 +143,7 @@ def rdi_getroom(user):
 	user.write("\r\n  \x1b[32mThe bartender approaches you at the mention of a room.\x1b[0m\r\n")
 	user.write("  \x1b[35m\"You want a room, eh?  That'll be "+str(price)+" gold!\"\x1b[0m\r\n")
 	user.write("  \x1b[32mDo you agree? \x1b[1m: \x1b[0m")
-	yesno = user.connection.recv(2)
+	yesno = user.ntcon.recv(2)
 	if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 		if ( user.getGold() < price ):
 			user.write("\r\n  \x1b[35m\"How bout you find yourself a nice stretch of cardboard box ya bum?\x1b[0m\r\n")
@@ -167,10 +167,10 @@ def rdi_converse(user):
 		output += "\x1b[0m\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
 	output += "\r\n  \x1b[32mAdd to the conversation? \x1b[1m: \x1b[0m"
 	user.write(output)
-	yesno = user.connection.recv(2)
+	yesno = user.ntcon.recv(2)
 	if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 		user.write(func_casebold("\r\n  What say you? :-: ", 2))
-		ann = func_getLine(user.connection, True)
+		ann = func_getLine(user.ntcon, True)
 		safeann = user.dbc.escape_string(ann)
 		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"patrons ( `data`, `nombre` ) VALUES ('"+safeann+"', '"+user.thisFullname+"')"
 		user.db.execute(thisSQL)
@@ -193,7 +193,7 @@ def rdi_menu_bard(user):
 		if ( not skipDisp ):
 			user.write(thismenu)
 		skipDisp = False
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		if ( data[0] == 'r' or data[0] == 'R' or data[0] == 'q' or data[0] == 'Q' ):
 			user.write('R')
@@ -240,7 +240,7 @@ def rdi_flirt_violet(user):
 	thisScrew = False
 	thisQuit = False
 	while ( not thisQuit ):
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		elif ( data[0] == 'w' or data[0] == 'W' ):
 			user.write('W')
@@ -322,7 +322,7 @@ def rdi_bartend(user):
 		if ( not dispSkip ):
 			user.write(rdi_menu_bartend(user))
 		dispSkip = False
-		data = user.connection.recv(2)
+		data = user.ntcon.recv(2)
 		if not data: break
 		if ( data[0] == 'r' or data[0] == 'R' or data[0] == 'q' or data[0] == 'Q' ):
 			user.write('R')
@@ -346,7 +346,7 @@ def rdi_bartend(user):
 			user.write("\r\n  \x1b[35m"+user.thisFullname+" "+thisTitle+" does sound kinda funny..\x1b[0m")
 			user.write("\r\n  \x1b[35mit would cost ya "+str(thisPrice)+" gold... Deal?\"\x1b[0m")
 			user.write("\r\n  \x1b[32mChange your name? [\x1b[1mN\x1b[22m]\x1b[0m ")
-			yesno = user.connection.recv(2)
+			yesno = user.ntcon.recv(2)
 			if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 				user.write('Y')
 				if ( user.getGold() < thisPrice ):
@@ -354,7 +354,7 @@ def rdi_bartend(user):
 				else:
 					thisGoodName = False;
 					user.write("\r\n  \x1b[32mWhat'll it be? \x1b[1m: \x1b[0m")
-					ann = func_getLine(user.connection, True)
+					ann = func_getLine(user.ntcon, True)
 					if ( ann == "" ):
 						thisGoodName = False
 					elif ( ann.rfind('barak') >= 0 ):
@@ -393,7 +393,7 @@ def rdi_bartend(user):
 			user.write("\r\n  \x1b[35m\"You have \x1b[1;37mGems\x1b[0m\x1b[35m, eh?  I'll give ya a pint of magic elixer for two.\"\x1b[0m\r\n")
 			user.write("  \x1b[32mBuy how many elixers? : ")
 			try:
-				number = int(func_getLine(user.connection, True))
+				number = int(func_getLine(user.ntcon, True))
 			except ValueError:
 				number = 0
 			if ( number > 0 ):
@@ -408,7 +408,7 @@ def rdi_bartend(user):
 					tinyQuit = False
 					while( not tinyQuit ):
 						user.write("  \x1b[32mChoose : \x1b[0m")
-						thisType = user.connection.recv(2)
+						thisType = user.ntcon.recv(2)
 						if ( thisType[0] == 'n' or thisType[0] == 'N' or thisType[0] == 'q' or thisType[0] == 'Q' or thisType[0] == 'r' or thisType[0] == 'R' ):
 							user.write('N')
 							tinyQuit = True
@@ -439,10 +439,10 @@ def rdi_bartend(user):
 			if ( kickID > 0 ):
 				kickName = user.userGetLogin(kickID)
 				kickCost = user.getLevel() * 5000
-				usertoKick = sordUser(kickName, user.dbc, user.db, user.connection, user.art)
+				usertoKick = sordUser(kickName, user.dbc, user.db, user.ntcon, user.art)
 				if ( usertoKick.didInn() == True ):
 					user.write("\r\n  \x1b[32mThat will be \x1b[1m"+str(kickCost)+"\x1b[0;32m gold.  Ok? ")
-					yesno = user.connection.recv(2)
+					yesno = user.ntcon.recv(2)
 					if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 						user.write('Y')
 						if ( user.getGold() < kickCost ):

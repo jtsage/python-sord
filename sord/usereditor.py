@@ -60,13 +60,13 @@ def editor_skill_logic(user):
 		if ( not skipDisp ):
 			user.write(editor_skill_menu(user))
 		skipDisp = False
-		choice = user.connection.recv(2)
+		choice = user.ntcon.recv(2)
 		if not choice: break
 		elif ( choice[0] == 'r' or choice[0] == 'R' or choice[0] == 'q' or choice[0] == 'Q' ):
 			thisQuit = True
 		elif ( choice[0] == '1' ):
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Skill Points :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Skill Points :-:", 2)))
 				if ( thisIn >= 0 ):
 					hptoadd = thisIn - user.getSkillPoint(1)
 					user.updateSkillPoint(1,hptoadd)
@@ -78,7 +78,7 @@ def editor_skill_logic(user):
 				user.pause()
 		elif ( choice[0] == '2' ):
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Skill Points :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Skill Points :-:", 2)))
 				if ( thisIn >= 0 ):
 					hptoadd = thisIn - user.getSkillPoint(2)
 					user.updateSkillPoint(2,hptoadd)
@@ -90,7 +90,7 @@ def editor_skill_logic(user):
 				user.pause()
 		elif ( choice[0] == '3' ):
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Skill Points :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Skill Points :-:", 2)))
 				if ( thisIn >= 0 ):
 					hptoadd = thisIn - user.getSkillPoint(3)
 					user.updateSkillPoint(3,hptoadd)
@@ -102,7 +102,7 @@ def editor_skill_logic(user):
 				user.pause()
 		elif ( choice[0] == 'a' or choice[0] == 'A' ):
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Uses Today :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Uses Today :-:", 2)))
 				if ( thisIn >= 0 ):
 					hptoadd = thisIn - user.getSkillUse(1)
 					user.updateSkillUse(1,hptoadd)
@@ -114,7 +114,7 @@ def editor_skill_logic(user):
 				user.pause()
 		elif ( choice[0] == 'b' or choice[0] == 'B' ):
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Uses Today :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Uses Today :-:", 2)))
 				if ( thisIn >= 0 ):
 					hptoadd = thisIn - user.getSkillUse(2)
 					user.updateSkillUse(2,hptoadd)
@@ -126,7 +126,7 @@ def editor_skill_logic(user):
 				user.pause()
 		elif ( choice[0] == 'c' or choice[0] == 'C' ):
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Uses Today :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Uses Today :-:", 2)))
 				if ( thisIn >= 0 ):
 					hptoadd = thisIn - user.getSkillUse(3)
 					user.updateSkillUse(3,hptoadd)
@@ -147,12 +147,12 @@ def editor_main_logic(userpass):
 		if ( not skipDisp ):
 			user.write(editor_main_menu(user))
 		skipDisp = False
-		choice = user.connection.recv(2)
+		choice = user.ntcon.recv(2)
 		if not choice: break
 		elif ( choice[0] == 'q' or choice[0] == 'Q' ): # Quit
 			thisQuit = True
 		elif ( choice[0] == '1' ): # Full Name
-			thisIn = func_getLine(user.connection, True, func_casebold("New Full Name :-:", 2))
+			thisIn = func_getLine(user.ntcon, True, func_casebold("New Full Name :-:", 2))
 			if not thisIn: break
 			else:
 				thisSQL = "UPDATE "+user.thisSord.sqlPrefix()+"users SET fullname = '"+str(thisIn)+"' WHERE userid = "+str(user.thisUserID)
@@ -160,7 +160,7 @@ def editor_main_logic(userpass):
 				user.thisFullname = thisIn
 		elif ( choice[0] == '2' ): # Level
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Level :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Level :-:", 2)))
 				if ( thisIn > 0 and thisIn < 13 ):
 					user.setLevel(thisIn)
 				else:
@@ -170,7 +170,7 @@ def editor_main_logic(userpass):
 				user.write(func_casebold("\r\nNot a valid level", 1))
 				user.pause()
 		elif ( choice[0] == '3' ): # Login Name
-			thisIn = func_getLine(user.connection, True, func_casebold("New Login Name :-:", 2))
+			thisIn = func_getLine(user.ntcon, True, func_casebold("New Login Name :-:", 2))
 			if not thisIn: break
 			else:
 				thisSQL = "UPDATE "+user.thisSord.sqlPrefix()+"users SET username = '"+str(thisIn)+"' WHERE userid = "+str(user.thisUserID)
@@ -178,7 +178,7 @@ def editor_main_logic(userpass):
 				user.thisUserName = thisIn
 		elif ( choice[0] == '4' ): # HP
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Hit Points :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Hit Points :-:", 2)))
 				if ( thisIn >= 0 ):
 					hptoadd = thisIn - user.getHP()
 					user.updateHP(hptoadd)
@@ -190,7 +190,7 @@ def editor_main_logic(userpass):
 				user.pause()
 		elif ( choice[0] == '5' ): # Experience
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Experience Points :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Experience Points :-:", 2)))
 				if ( thisIn >= 0 ):
 					hptoadd = thisIn - user.getExperience()
 					user.updateExperience(hptoadd)
@@ -202,7 +202,7 @@ def editor_main_logic(userpass):
 				user.pause()
 		elif ( choice[0] == '6' ): # Max HP
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Max Hit Points :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Max Hit Points :-:", 2)))
 				if ( thisIn > 0 ):
 					hptoadd = thisIn - user.getHPMax()
 					user.updateHPMax(hptoadd)
@@ -214,7 +214,7 @@ def editor_main_logic(userpass):
 				user.pause()
 		elif ( choice[0] == '8' or choice[0] == '7' ): # Weapon
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Weapon Number :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Weapon Number :-:", 2)))
 				if ( thisIn >= 0 and thisIn < 16 ):
 					user.setWeapon(thisIn)
 				else:
@@ -225,7 +225,7 @@ def editor_main_logic(userpass):
 				user.pause()
 		elif ( choice[0] == '0' or choice[0] == '9' ): # Armor
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Armor Number :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Armor Number :-:", 2)))
 				if ( thisIn >= 0 and thisIn < 16 ):
 					user.setArmor(thisIn)
 				else:
@@ -241,7 +241,7 @@ def editor_main_logic(userpass):
 				user.setMaster()
 		elif ( choice[0] == 'b' or choice[0] == 'B' ): # Forest Fights
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Forest Fights :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Forest Fights :-:", 2)))
 				if ( thisIn >= 0 ):
 					hptoadd = thisIn - user.getForestFight()
 					user.updateForestFight(hptoadd)
@@ -253,7 +253,7 @@ def editor_main_logic(userpass):
 				user.pause()
 		elif ( choice[0] == 'c' or choice[0] == 'C' ): # Player Fights
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Player Fights :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Player Fights :-:", 2)))
 				if ( thisIn >= 0 ):
 					hptoadd = thisIn - user.getPlayerFight()
 					user.updatePlayerFight(hptoadd)
@@ -270,7 +270,7 @@ def editor_main_logic(userpass):
 				user.setSex(1)
 		elif ( choice[0] == 'e' or choice[0] == 'E' ): # Defense
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Defence :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Defence :-:", 2)))
 				if ( thisIn >= 0 ):
 					hptoadd = thisIn - user.getDefense()
 					user.updateDefense(hptoadd)
@@ -282,7 +282,7 @@ def editor_main_logic(userpass):
 				user.pause()
 		elif ( choice[0] == 'f' or choice[0] == 'F' ): # Gems
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Gems :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Gems :-:", 2)))
 				if ( thisIn >= 0 ):
 					hptoadd = thisIn - user.getGems()
 					user.updateGems(hptoadd)
@@ -294,7 +294,7 @@ def editor_main_logic(userpass):
 				user.pause()
 		elif ( choice[0] == 'g' or choice[0] == 'G' ): # Strength
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Strength :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Strength :-:", 2)))
 				if ( thisIn >= 0 ):
 					hptoadd = thisIn - user.getStrength()
 					user.updateStrength(hptoadd)
@@ -306,7 +306,7 @@ def editor_main_logic(userpass):
 				user.pause()
 		elif ( choice[0] == 'h' or choice[0] == 'H' ): # Charm
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Charm :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Charm :-:", 2)))
 				if ( thisIn >= 0 ):
 					hptoadd = thisIn - user.getCharm()
 					user.updateCharm(hptoadd)
@@ -328,7 +328,7 @@ def editor_main_logic(userpass):
 				user.setBard()
 		elif ( choice[0] == 'k' or choice[0] == 'K' ): # Class
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Class Number :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Class Number :-:", 2)))
 				if ( thisIn > 0 and thisIn < 4 ):
 					user.setClass(thisIn)
 				else:
@@ -339,7 +339,7 @@ def editor_main_logic(userpass):
 				user.pause()
 		elif ( choice[0] == 'l' or choice[0] == 'L' ): # Dragon
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Dragon Kills :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Dragon Kills :-:", 2)))
 				if ( thisIn >= 0 ):
 					hptoadd = thisIn - user.getDragon()
 					user.setDragon(hptoadd)
@@ -351,7 +351,7 @@ def editor_main_logic(userpass):
 				user.pause()
 		elif ( choice[0] == 'm' or choice[0] == 'M' ): # Gold
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Gold in Hand :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Gold in Hand :-:", 2)))
 				if ( thisIn >= 0 ):
 					hptoadd = thisIn - user.getGold()
 					user.updateGold(hptoadd)
@@ -363,7 +363,7 @@ def editor_main_logic(userpass):
 				user.pause()
 		elif ( choice[0] == 'n' or choice[0] == 'N' ): # Player Kills
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Player Kills :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Player Kills :-:", 2)))
 				if ( thisIn >= 0 ):
 					hptoadd = thisIn - user.getKiller()
 					user.setKiller(hptoadd)
@@ -375,7 +375,7 @@ def editor_main_logic(userpass):
 				user.pause()
 		elif ( choice[0] == 'o' or choice[0] == 'O' ): # Bank
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Gold in Bank :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Gold in Bank :-:", 2)))
 				if ( thisIn >= 0 ):
 					hptoadd = thisIn - user.getBank()
 					user.updateBank(hptoadd)
@@ -407,7 +407,7 @@ def editor_main_logic(userpass):
 				user.setDead()
 		elif ( choice[0] == 'u' or choice[0] == 'U' ): # Fucks
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("New Times Laid :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("New Times Laid :-:", 2)))
 				if ( thisIn >= 0 ):
 					hptoadd = thisIn - user.getFuck()
 					user.updateFuck(hptoadd)
@@ -424,9 +424,9 @@ def editor_main_logic(userpass):
 					user.write(func_casebold("\r\nLast Record Reached", 1))
 					user.pause()
 				else:
-					user = sordUser(newLogin, user.dbc, user.db, user.connection, user.art)
+					user = sordUser(newLogin, user.dbc, user.db, user.ntcon, user.art)
 			except ValueError:
-				user = sordUser(newLogin, user.dbc, user.db, user.connection, user.art)
+				user = sordUser(newLogin, user.dbc, user.db, user.ntcon, user.art)
 		elif ( choice[0] == '[' ): # Prev
 			newLogin = user.userGetLogin(user.thisUserID - 1)
 			try:
@@ -434,12 +434,12 @@ def editor_main_logic(userpass):
 					user.write(func_casebold("\r\nFirst Record Reached", 1))
 					user.pause()
 				else:
-					user = sordUser(newLogin,  user.dbc, user.db, user.connection, user.art)
+					user = sordUser(newLogin,  user.dbc, user.db, user.ntcon, user.art)
 			except ValueError:
-				user = sordUser(newLogin,  user.dbc, user.db, user.connection, user.art)
+				user = sordUser(newLogin,  user.dbc, user.db, user.ntcon, user.art)
 		elif ( choice[0] == '#' ): # By Rec Num
 			try:
-				thisIn = int(func_getLine(user.connection, True, func_casebold("Jump to User Number :-:", 2)))
+				thisIn = int(func_getLine(user.ntcon, True, func_casebold("Jump to User Number :-:", 2)))
 				if ( thisIn >= 0 ):
 					newLogin = user.userGetLogin(thisIn)
 					try:
@@ -447,9 +447,9 @@ def editor_main_logic(userpass):
 							user.write(func_casebold("\r\nNon-valid Record", 1))
 							user.pause()
 						else:
-							user = sordUser(newLogin,  user.dbc, user.db, user.connection, user.art)
+							user = sordUser(newLogin,  user.dbc, user.db, user.ntcon, user.art)
 					except ValueError:
-						user = sordUser(newLogin,  user.dbc, user.db, user.connection, user.art)
+						user = sordUser(newLogin,  user.dbc, user.db, user.ntcon, user.art)
 				else:
 					user.write(func_casebold("\r\nMust be positive", 1))
 					user.pause()
