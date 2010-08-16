@@ -39,6 +39,7 @@ class sord():
 		return "JTSage"
 		
 	def dayLength(self):
+		""" Supported options - 24 = 1 day @ midnight.  12, 8, 6 hrs.  24*n for multi-day """
 		return 24
 		
 	def bankInterest(self):

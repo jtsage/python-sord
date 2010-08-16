@@ -9,13 +9,16 @@
   * @author J.T.Sage
   * @copyright 2009-2011
   * @license http://sord.jtsage.com/LICENSE Disclaimer's License
-  * @version 0.9.9
+  * @version 1.1
+  * Aug 16, 2010 - magic number: 5526
+  
   @todo IGM framework"""
 import thread, threading, time, sys, traceback, random
 #import MySQLdb
 import sqlite3
 from os.path import isfile
 from os import unlink
+from shutil import copy
 from socket import *
 from sord.art import *
 from sord.functions import *
@@ -33,7 +36,6 @@ from config import sord
 myHost = ''  #all hosts.
 myPort = 6969 + random.randint(1, 8)
 mySord = sord()
-print myPort
 
 try:
 	sockobj = socket(AF_INET6, SOCK_STREAM)
@@ -66,13 +68,14 @@ def testdb():
 			if ( version > 0 ):
 				print " =+= SQLite Database is up to date"
 			else:
-				print " =+= SQLite Database is out of date, updating..."
+				print " =+= SQLite Database is out of date (corrupt), rebuilding..."
 				updatedb()
 		sqc.close()
 	else:
 		createdb()
 		
 def updatedb():
+	copy("./" + mySord.sqlitefile(), "./" + mySord.sqlitefile()+".bak")
 	unlink("./" + mySord.sqlitefile())
 	createdb()
 		
@@ -96,7 +99,8 @@ def createdb():
 	with sqc:
 		sqc.execute("create table sord ( name TEXT, value integer)")
 		sqc.execute("insert into sord values (?,?)", ('version', '1'))
-		sqc.execute("insert into sord values (?,?)", ('gdays', '1'))
+		sqc.execute("insert into sord values (?,?)", ('gdays', '0'))
+		sqc.execute("insert into sord values (?,?)", ('lastday', '201000101'))
 		
 		sqc.execute("create table daily ( id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT )")
 		sqc.execute("insert into daily (data) values (?)", ('{31}Welcome to {1}{37}S{0}{32}.O.R.D', ))
@@ -133,8 +137,19 @@ def handleClient(connection):
 		loggedin = False
 		sqc = sqlite3.connect("./" + mySord.sqlitefile())
 		sqr = sqc.cursor()
-		#mySQLconn = MySQLdb.connect(host=str(mySord.sqlServer()), db=str(mySord.sqlDatabase()), user=str(mySord.sqlUser()), passwd=str(mySord.sqlPass()))
-		#mySQLcurs = mySQLconn.cursor()
+
+		randdaily = [ 
+			'More children are missing today.',
+			'A small girl was missing today.',
+			'The town is in grief.  Several children didnt come home today.',
+			'Dragon sighting reported today by a drunken old man.',
+			'Despair covers the land - more bloody remains have been found today.',
+			'A group of children did not return from a nature walk today.',
+			'The land is in chaos today.  Will the abductions ever stop?',
+			'Dragon scales have been found in the forest today..Old or new?',
+			'Several farmers report missing cattle today.',
+			'A Child was found today!  But scared deaf and dumb.']
+
 		time.sleep(1)
 		thisClientAddress = connection.getpeername()
 		connection.send(IAC + DO + LINEMODE) # drop to character mode.
@@ -144,6 +159,56 @@ def handleClient(connection):
 	
 		connection.send("Welcome to SORD\r\n")
 		connection.settimeout(120)
+		
+		""" Daily Update routine """
+		checklast = 0
+		timestr = '%Y%j00'
+		if ( mySord.dayLength() > 24 ) :
+			days = mySord.dayLength() // 24
+			checklast = time.strftime('%Y%j00', time.localtime(time.mktime(time.localtime()) - (days*24*60*60)))
+		elif ( mySord.dayLength() == 6 ) :
+			if ( int(time.strftime('%H', time.localtime())) < 6 ): end = '00' 
+			elif ( int(time.strftime('%H', time.localtime())) < 12 ): end = '06' 
+			elif ( int(time.strftime('%H', time.localtime())) < 18 ): end = '12' 
+			else: end = '18' 
+			timestr = '%Y%j' + end
+			checklast = time.strftime('%Y%j'+end, time.localtime())
+		elif ( mySord.dayLength() == 8 ) :
+			if ( int(time.strftime('%H', time.localtime())) < 8 ): end = '00' 
+			elif ( int(time.strftime('%H', time.localtime())) < 16 ): end = '08' 
+			else: end = '16' 
+			timestr = '%Y%j' + end
+			checklast = time.strftime('%Y%j'+end, time.localtime())
+		elif ( mySord.dayLength() == 12 ) :
+			if ( int(time.strftime('%H', time.localtime())) < 12 ): end = '00' 
+			else: end = '12' 
+			timestr = '%Y%j' + end
+			checklast = time.strftime('%Y%j'+end, time.localtime())
+		else:
+			checklast = time.strftime('%Y%j00', time.localtime())
+			
+		for row in sqr.execute("select value from sord where name=?", ('lastday',)):
+			lday, = row
+			if ( int(lday) < int(checklast) ):
+				connection.send("Updateing... to NEW DAY... ")
+				print ' --- DAY ROLLOVER HAPPENED AT', now()
+				rsaying = randdaily[random.randint(0, 9)]
+				laster = time.strftime('%Y%j', time.localtime(time.mktime(time.localtime()) - (mySord.deleteInactive()*24*60*60)))
+				sqc.execute("UPDATE stats set ffight = ? WHERE 1", (mySord.forestFights(), ))
+				sqc.execute("UPDATE stats set pfight = ? WHERE 1", (mySord.playerFights(), ))
+				sqc.execute("UPDATE stats set usem = spclm WHERE 1")
+				sqc.execute("UPDATE stats set used = (spcld / 5 ) + 1 WHERE spcld > 0")
+				sqc.execute("UPDATE stats set uset = (spclt / 5 ) + 1 WHERE spclt > 0")
+				sqc.execute("INSERT INTO daily ( 'data' ) VALUES ( ? )", ( "{31}"+rsaying, ))
+				sqc.execute("UPDATE stats set bank = bank + ( bank * ("+str(mySord.bankInterest())+"/100) ) WHERE bank > 0")
+				sqc.execute("DELETE from users WHERE last < ?", (laster,))
+				sqc.execute("UPDATE stats set flirt = 0, sung = 0, master = 0, alive = 1 WHERE 1")
+				sqc.execute("UPDATE stats set hp = hpmax WHERE hp < hpmax")
+				sqc.execute("UPDATE sord set value = value + 1 WHERE 'name' = 'gdays'")
+				sqc.execute("UPDATE sord set value = ? WHERE name = 'lastday'", (time.strftime(timestr, time.localtime()),))
+				sqc.commit()
+				connection.send(" DONE!\r\n")
+				
 		func_pauser(connection)
 		if ( not SORDDEBUG ):
 			if ( not SKIPLONGANSI ):
@@ -396,7 +461,7 @@ def handleClient(connection):
 def dispatcher():
 	global connectedHosts
 	print "-=-=-=-=-=-= SORD Server Version " + mySord.version() + " =-=-=-=-=-=-"
-	print " === Starting Server"
+	print " === Starting Server (Port:"+str(myPort)+")"
 	if ( SORDDEBUG ):
 		print " !!! DEBUG MODE ENABLED !!!"
 	if ( SKIPLONGANSI ):

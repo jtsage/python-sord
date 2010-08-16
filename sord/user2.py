@@ -135,7 +135,7 @@ class sorduser(object):
 			
 	def login(self):
 		""" Process user login """
-		self.dbcon.execute("UPDATE users SET last = ? WHERE userid = ?", (time.ctime(time.time()),self.thisUserID))
+		self.dbcon.execute("UPDATE users SET last = ? WHERE userid = ?", (time.strftime('%Y%j', time.localtime()),self.thisUserID))
 		self.dbcon.execute("INSERT INTO online ( userid, whence ) VALUES ( ?, ? )", (self.thisUserID, time.ctime(time.time())))
 		self.dbcon.execute("UPDATE stats SET atinn = 0 WHERE userid = ?", (self.thisUserID,))
 		self.logontime = time.time()

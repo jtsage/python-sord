@@ -437,7 +437,7 @@ def rdi_bartend(user):
 			if ( kickID > 0 ):
 				kickName = user.userGetLogin(kickID)
 				kickCost = user.getlevel * 5000
-				usertoKick = sorduser(kickName, user.dbc, user.ntcon, user.art)
+				usertoKick = sorduser(kickName, user.dbcon, user.ntcon, user.art)
 				if ( usertoKick.atinn == True ):
 					user.write("\r\n  \x1b[32mThat will be \x1b[1m"+str(kickCost)+"\x1b[0;32m gold.  Ok? ")
 					yesno = user.ntcon.recv(2)

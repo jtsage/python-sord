@@ -9,7 +9,7 @@ import random, re, time
 from functions import *
 from data import *
 from modules import *
-from user import sordUser
+from user2 import sorduser
 
 def module_killer(user):
 	""" Forest Fight - Non-Combat """
@@ -31,12 +31,11 @@ def module_killer(user):
 			module_dirt(user)
 		elif ( data[0] == 'w' or data[0] == 'W' ):
 			user.write('W')
-			if ( user.getKiller() > 0 ):
+			if ( user.pkill > 0 ):
 				user.write(func_casebold("\r\n  Carve what in the soft dirt? :-: ", 2))
 				ann = func_getLine(user.ntcon, True)
-				safeann = user.dbc.escape_string(ann)
-				thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"dirt ( `data`, `nombre` ) VALUES ('"+safeann+"', '"+user.thisFullname+"')"
-				user.db.execute(thisSQL)
+				user.dbcon.execute("INSERT INTO dirt ( `data`, `nombre` ) VALUES ( ?, ? )", (ann, user.thisFullname))
+				user.dbcon.commit()
 				user.write(func_casebold("\r\n  Carving Added!\r\n", 2))
 				user.pause()
 			else:
@@ -50,8 +49,8 @@ def module_killer(user):
 			tokillID = module_finduser(user, "\r\n  \x1b[32mKill Who ?")
 			if ( tokillID > 0 ):
 				tokillName = user.userGetLogin(tokillID)
-				usertoKill = sordUser(tokillName, user.dbc, user.db, user.ntcon, user.art)
-				if ( usertoKill.isDead() ):
+				usertoKill = sorduser(tokillName, user.dbcon, user.ntcon, user.art)
+				if ( not usertoKill.alive ):
 					user.write("\r\n  \x1b[31mAlready dead your holiness...\x1b[0m\r\n")
 					user.pause()
 				elif ( usertoKill.isOnline() ):
@@ -67,11 +66,11 @@ def module_killer(user):
 def killer_list(user):
 	""" Player List
 	* @return string Formatted output for display """
-	thisSQL = "SELECT u.userid, fullname, exp, level, class, sex, alive FROM "+user.thisSord.sqlPrefix()+"users u, "+user.thisSord.sqlPrefix()+"stats s WHERE u.userid = s.userid AND s.atinn = 0 AND u.userid <> "+str(user.thisUserID)+" AND u.userid NOT IN ( SELECT userid FROM "+user.thisSord.sqlPrefix()+"online ) ORDER BY exp DESC"
-	user.db.execute(thisSQL)
+	db = user.dbcon.cursor()
+	db.excute("SELECT u.userid, fullname, exp, level, class, sex, alive FROM users u, stats s WHERE u.userid = s.userid AND s.atinn = 0 AND u.userid <> ? AND u.userid NOT IN ( SELECT userid FROM online ) ORDER BY exp DESC", (user.thisUserID,))
 	output = "\r\n\r\n\x1b[32m    Name                    Experience    Level     Status\x1b[0m\r\n";
 	output += user.art.line()
-	for line in user.db.fetchall():
+	for line in db.fetchall():
 		if ( line[5] == 2 ):
 			lineSex = "\x1b[1;35mF\x1b[0m "
 		else:
@@ -91,6 +90,7 @@ def killer_list(user):
 
 		output += lineSex + lineClass + "\x1b[32m" + line[1] + padnumcol(str(line[1]), 23) + padright(str(line[2]), 11)
 		output += padright(str(line[3]), 6) + "        " + lineStatus + "\r\n"
+	db.close()
 	return output + "\r\n"
 
 def module_forest(user):
@@ -101,7 +101,7 @@ def module_forest(user):
 		if ( not skipDisp ):
 			if ( not user.expert ):
 				user.write(user.art.forest())
-				if ( user.didHorse() == True ): 
+				if ( user.horse == True ): 
 					user.write(func_normmenu("(T)ake Horse to Dark Horse Tavern"))
 			user.write(menu_forest(user))
 		skipDisp = False
@@ -128,7 +128,7 @@ def module_forest(user):
 			module_viewstats(user)
 		elif ( data[0] == 'l' or data[0] == 'l' ):
 			user.write("L\r\n")
-			if ( user.getForestFight() > 0 ):
+			if ( user.ffight > 0 ):
 				if ( random.randint(1, 8) == 3 ):
 					forest_special(user)
 				else:
@@ -146,23 +146,22 @@ def module_forest(user):
 			user.write(func_casebold("\r\n  Your Mystical skills cannot help your here.\r\n", 2))
 		elif ( data[0] == 't' or data[0] == 'T' ):
 			user.write('T')
-			if ( user.didHorse() == True ):
+			if ( user.horse() == True ):
 				dht_logic(user)
 			else:
 				user.write(func_casebold("\r\n  Your Thieving skills cannot help your here.\r\n", 2))
 		elif ( data[0] == 'b' or data[0] == 'B' ):
 			user.write('B')
 			user.write(func_casebold("\r\n  A buzzard swoops down and grabs all your gold on hand.\r\n", 2))
-			if ( user.getGold() > 0 ):
-				goldMove = user.getGold()
-				user.updateBank(goldMove)
-				user.updateGold(goldMove * -1)
+			if ( user.gold > 0 ):
+				user.bank += user.gold
+				user.gold = 0
 		else:
 			skipDisp = True
 
 def forest_special(user):
 	""" Forest Special Events """
-	if ( user.didHorse() == True ):
+	if ( user.horse == True ):
 		happening = random.randint(1, 11)
 	else:
 		happening = random.randint(1, 12)
@@ -172,28 +171,26 @@ def forest_special(user):
 		user.write("  \x1b[32mFortune Smiles Upon You.  You find \x1b[1;37m"+str(thisfind)+"\x1b[0m\x1b[32m gems!\x1b[0m\r\n")
 		user.write(user.art.line())
 		user.pause()
-		user.updateGems(thisfind)
+		user.gems += thisfind
 	elif ( happening == 2 ): # Find Gold  GOOD!
-		thisfind = random.randint(1, 4) * 200 * user.getLevel()
+		thisfind = random.randint(1, 4) * 200 * user.level
 		user.write(user.art.line())
 		user.write("  \x1b[32mFortune Smiles Upon You.  You find a sack full of \x1b[1;37m"+str(thisfind)+"\x1b[0m\x1b[32m gold!\x1b[0m\r\n")
 		user.write(user.art.line())
 		user.pause()
-		user.updateGold(thisfind)
+		user.gold += thisfind
 	elif ( happening == 3 ): # Hammerstone (attack str++)  GOOD!
 		user.write(user.art.line())
 		user.write("  \x1b[32mYou find a hammer stone.  You quickly hit it as hard as possible.\r\n\r\n  \x1b[1mYour attack strength is raised by 1!\x1b[0m\r\n")
 		user.write(user.art.line())
 		user.pause()
-		user.updateStrength(1)
+		user.str += 1
 	elif ( happening == 4 ): # Merry Men (hp = hpmax)
 		user.write(user.art.line())
 		user.write("  \x1b[32mYou stumble across a group of merry men.\r\n  They offer you ale you can't resist.\r\n  \x1b[1mYou feel refreshed!\x1b[0m\r\n")
 		user.write(user.art.line())
 		user.pause()
-		hptoadd = user.getHPMax() - user.getHP()
-		if ( hptoadd > 0 ):
-			user.updateHP(hptoadd)
+		user.hp = user.hpmax
 	elif ( happening == 5 ): # Old Man (gold + (lvl * 500) && charm +1 on help) (costs 1 fight) GOOD!
 		user.write(user.art.line())
 		user.write("  \x1b[32mYou come upon an old man wandering around.\r\n  He asks you for help back to town.\x1b[0m\r\n\r\n")
@@ -205,11 +202,11 @@ def forest_special(user):
 			data = user.ntcon.recv(2)
 			if ( data[0] == 'h' or data[0] == 'H' ):
 				user.write('H')
-				goldtoadd = user.getLevel() * 500
+				goldtoadd = user.level * 500
 				user.write("\r\n\r\n  \x1b[32mYou help the old gentleman home.\r\n  \x1b[1mHe gives you "+str(goldtoadd)+" gold and 1 charm!.\x1b[0m\r\n")
-				user.updateGold(goldtoadd)
-				user.updateCharm(1)
-				user.updateForestFight(-1)
+				user.gold += goldtoadd
+				user.charm += 1
+				user.ffight -= 1
 				miniQuit = True
 			elif ( data[0] == 'i' or data[0] == 'I' ):
 				user.write('I')
@@ -229,11 +226,11 @@ def forest_special(user):
 		user.write("stick!\r\n  Your charm is ")
 		if ( sticktype == 2 ):
 			user.write("lowered")
-			if ( user.getCharm() > 0 ):
-				user.updateCharm(-1)
+			if ( user.charm > 0 ):
+				user.charm -= 1
 		else:
 			user.write("raised")
-			user.updateCharm(1)
+			user.charm += 1
 		user.write(" by 1!!\x1b[0m\r\n")
 		user.pause()
 	elif ( happening == 7 ): # Old Hag GOOD!
@@ -253,17 +250,15 @@ def forest_special(user):
 				miniQuit = True
 			elif ( data[0] == 'g' or data[0] == 'G' ):
 				user.write('G')
-				if ( user.getGems() > 0 ):
+				if ( user.gems > 0 ):
 					user.write("\r\n\r\n  \x1b[1;32m\"Thank you\"\x1b[0;32m she cackles.\r\n  \x1b[1mYou feel refreshed and renewed\x1b[0m\r\n")
-					user.updateHPMax(1)
-					hptoadd = user.getHPMax() - user.getHP()
-					user.updateHP(hptoadd)
-					user.updateGems(-1)
+					user.hpmax += 1
+					user.hp = user.hpmax
+					user.gems -= 1
 					miniQuit = True
 				else:
 					user.write("\r\n\r\n  \x1b[1;32m\"You don't have any gems you stinky cow-pox pustule!\"\[33[0;32m she yells.\r\n  \x1b[1mCome to think of it, you feel rather like a cow-pie.\x1b[0m\r\n")
-					hptoremove = user.getHP() - 1
-					user.updateHP(hptoremove * -1)
+					user.hp = 1
 					miniQuit = True
 			else: 
 				pass
@@ -288,7 +283,7 @@ def forest_special(user):
 				miniQuit = True
 			elif ( data[0] == 's' or data[0] == 'S' ):
 				user.write('S')
-				user.updateForestFight(-1)
+				user.ffight -= 1
 				thisMiniQuit = False
 				thisTower = 0
 				user.write("\r\n\r\n  \x1b[32mWhere do you wish to seek the maiden?\x1b[0m\r\n")
@@ -327,14 +322,13 @@ def forest_special(user):
 				if ( thisTower == random.randint(1, 5) ): # Correct Choice
 					user.write("\r\n  \x1b[32mYou have choosen \x1b[1mwisely.\x1b[0m\r\n")
 					user.write("  \x1b[32mElora gasps in suprise, saunters over, and thanks you 'properly'\r\n  \x1b[1mYou feel smarter, more gem laden, and -erm- 'satisfied'\x1b[0m\r\n")
-					user.updateGems(5)
-					user.updateGold(user.getLevel() * 500)
+					user.gems += 5
+					user.gold += (user.level * 500)
 				else: # WRONG
 					if ( random.randint(1, 2) == 1 ): # REALLY, REALLY WRONG
 						user.write("\r\n  \x1b[32mYou have choosen \x1b[1mpoorly.  really poorly.\x1b[0m\r\n\r\n")
 						user.write("  \x1b[32mYou hear a strange groan and out pops Ken the Magnificent,\r\n  the disfigured midget (er, 'little person').\r\n  Sadly, 'little person' doesn't refer to all of him.\r\n\r\n  \x1b[1mYou feel terrible, both physically and mentally\x1b[0m\r\n")
-						thistakeHP = user.getHP() - 1
-						user.updateHP(thistakeHP * -1)
+						user.hp = 1
 					else: # NOT SO BAD
 						user.write("\r\n  \x1b[32mYou have choosen \x1b[1mpoorly.\x1b[0m\r\n")
 						user.write("  \x1b[32mYou run like hell before anything bad happens.\x1b[0m\r\n")
@@ -371,24 +365,21 @@ def forest_fairies(user):
 			user.write('A')
 			miniQuit = True
 			blessingIs = random.randint(1, 4)
-			if ( blessingIs == 4 and user.didHorse() == True ):
+			if ( blessingIs == 4 and user.horse == True ):
 				# Trap for already has a horse!
 				blessingIs = 2
 			if ( blessingIs == 1 ): # A Kiss
 				user.write("\r\n\r\n  \x1b[32mYou recieve a kiss from Teesha and feel better!\x1b[0m\r\n\r\n")
-				hptoheal = user.getHPMax() - user.getHP()
-				if ( hptoheal > 0 ):
-					user.updateHP(hptoheal)
+				user.hp = user.hpmax
 			elif ( blessingIs == 2 ): # Sad Stories
 				user.write("\r\n\r\n  \x1b[32mThe fairies tell you sad stories.\r\n  \x1b[1mYou're tears turn into gems!\x1b[0m\r\n\r\b")
-				user.updateGems(2)
+				user.gems += 2
 			elif ( blessingIs == 3 ): # Fairy lore.
 				user.write("\r\n\r\n  \x1b[32mThe fairies tell you secret fairly lore.\r\n  \x1b[1mYou feel smarter\x1b[0m\r\n\r\b")
-				exptoadd = user.getLevel() * 20
-				user.updateExperience(exptoadd)
+				user.exp += ( user.level * 20 )
 			elif ( blessingIs == 4 ): # The Horse
 				user.write("\r\n\r\n  \x1b[32mThe fairys bless you with a new companion!\r\n  Please remember, horses are for riding, not, er... \x1b[1m*riding*\x1b[0m\r\n\r\n")
-				user.setHorse(1)
+				user.horse = 1
 			else:
 				user.write("\r\n\r\n  \x1b[1;37mWTF?\x1b[0m\r\n\r\n")
 		if ( miniData[0] == 't' or miniData[0] == 'T' ):
@@ -397,26 +388,23 @@ def forest_fairies(user):
 			caughtIt = random.randint(1, 3)
 			if ( caughtIt == 3 ):  # Grabbed One!
 				user.write("\r\n\r\n  \x1b[32mYou managed to grab one!\r\n  You place it in your pocket for later.\x1b[0m\r\n")
-				user.setFairy(1)
+				user.fairy = 1
 			else:
 				user.write("\r\n\r\n  \x1b[32mYou MISS!  And grab a thornberry bush instead!\x1b[0m\r\n")
-				hptorem = user.getHP() - 1
-				if ( hptorem > 0 ):
-					user.updateHP(hptorem * -1)
-					
-				
+				user.hp = 1
+
 def forest_fight(user):
 	""" Forest Fight System """
-	user.updateForestFight(-1)
-	thisUserLevel = user.getLevel()
+	user.ffight -= 1
+	thisUserLevel = user.level
 	thisTopEnemy  = len(enemies[thisUserLevel]) - 1
 	thisEnemy     = random.randint(0, thisTopEnemy)
 	if ( random.randint(1, 10) == 8 ):
 		thisUnderdog = True
 	else:
 		thisUnderdog = False
-	thisUserDefense = user.getDefense()
-	thisUserHit     = user.getStrength() / 2
+	thisUserDefense = user.defence
+	thisUserHit     = user.str / 2
 	ctrlDead = False
 	ctrlRan  = False
 	ctrlWin  = False
@@ -429,7 +417,7 @@ def forest_fight(user):
 	user.write("\r\n  \x1b[32mYou have encountered "+thisEnemyName+"!!\x1b[0m\r\n")
 
 	if ( thisUnderdog ):
-		if ( user.didHorse == True and random.randint(1, 3) == 2 ):
+		if ( user.horse == True and random.randint(1, 3) == 2 ):
 			user.write("\r\n  \x1b[32m\"Prepare to die, fool!\" "+thisEnemyName+" screams.\r\n")
 			user.write("  He takes a Death Crystal from his cloak and throws it at you.\r\n")
 			user.write("  Your horse moves its huge body to intercept the crystal.\r\n")
@@ -442,22 +430,22 @@ def forest_fight(user):
 			user.write("  had.\r\n")
 			thisEnemyHP = 0
 			ctrlWin = True
-			user.setHorse(0)
+			user.horse = 0
 		else:
 			hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
 			if ( hisAttack > 0 ):
-				if ( hisAttack > user.getHP() ):
+				if ( hisAttack > user.hp ):
 					ctrlDead = True
-					hisAttack = user.getHP()
+					hisAttack = user.hp
 				user.write("\r\n  \x1b[32m"+thisEnemyName+" executes a sneak attach for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage!\x1b[0m\r\n")
-				user.updateHP(hisAttack * -1)
+				user.hp -= hisAttack
 			else:
 				user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely!\x1b[0m\r\n")
 	else:
 		user.write("\r\n  \x1b[32mYour skill allows you to get the first strike.\x1b[0m\r\n")
 
 	skipDisp = False
-	while ( user.getHP() > 0 and thisEnemyHP > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
+	while ( user.hp > 0 and thisEnemyHP > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
 		if ( not skipDisp ):
 			user.write(forest_menu(user, thisEnemyHP, thisEnemyName, True))
 		skipDisp = False
@@ -473,12 +461,12 @@ def forest_fight(user):
 			if ( not thisUnderdog ): # We Hit First
 				if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
 					hisAttack = 0
-			if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+			if ( hisAttack >= user.hp ): # We are dead.  Bummer.
 				ctrlDead = True
-				hisAttack = user.getHP() # No insult to injury
+				hisAttack = user.hp # No insult to injury
 			if ( hisAttack > 0 ): # He hit us
 				user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
-				user.updateHP(hisAttack * -1)
+				user.hp -= hisAttack
 			else: 
 				user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
 			if ( myAttack > 0 and not ctrlDead ): # We hit him!
@@ -496,12 +484,12 @@ def forest_fight(user):
 				if ( not thisUnderdog ): # We Hit First
 					if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
 						hisAttack = 0
-				if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+				if ( hisAttack >= user.hp ): # We are dead.  Bummer.
 					ctrlDead = True
-					hisAttack = user.getHP() # No insult to injury
+					hisAttack = user.hp # No insult to injury
 				if ( hisAttack > 0 ): # He hit us
 					user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
-					user.updateHP(hisAttack * -1)
+					user.hp -= hisAttack
 				else: 
 					user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
 				if ( myAttack > 0 and not ctrlDead ): # We hit him!
@@ -521,12 +509,12 @@ def forest_fight(user):
 				if ( not thisUnderdog ): # We Hit First
 					if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
 						hisAttack = 0
-				if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+				if ( hisAttack >= user.hp ): # We are dead.  Bummer.
 					ctrlDead = True
-					hisAttack = user.getHP() # No insult to injury
+					hisAttack = user.hp # No insult to injury
 				if ( hisAttack > 0 ): # He hit us
 					user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
-					user.updateHP(hisAttack * -1)
+					user.hp -= hisAttack
 				else: 
 					user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
 				if ( myAttack > 0 and not ctrlDead ): # We hit him!
@@ -540,12 +528,12 @@ def forest_fight(user):
 		elif ( data[0] == 'r' or data[0] == 'R' ): # Run Away
 			if ( random.randint(1, 10) == 4 ): # Hit in the back.
 				hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
-				if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+				if ( hisAttack >= user.hp ): # We are dead.  Bummer.
 					ctrlDead = True
-					hisAttack = user.getHP() # No insult to injury
+					hisAttack = user.hp # No insult to injury
 				if ( hisAttack > 0 ): # He hit us
 					user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you in the back with it's "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\r\n")
-					user.updateHP(hisAttack)
+					user.hp -= hisAttack
 					ctrlRan = True
 			else:
 				user.write("\r\n  \x1b[32mYou narrowly escape harm.\x1b[0m\r\n")
@@ -588,12 +576,12 @@ def forest_fight(user):
 						if ( not thisUnderdog ): # We Hit First
 							if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
 								hisAttack = 0
-						if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+						if ( hisAttack >= user.hp ): # We are dead.  Bummer.
 							ctrlDead = True
-							hisAttack = user.getHP() # No insult to injury
+							hisAttack = user.hp # No insult to injury
 						if ( hisAttack > 0 ): # He hit us
 							user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
-							user.updateHP(hisAttack * -1)
+							user.hp -= hisAttack
 						else: 
 							user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
 						if ( myAttack > 0 and not ctrlDead ): # We hit him!
@@ -616,12 +604,12 @@ def forest_fight(user):
 						if ( not thisUnderdog ): # We Hit First
 							if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
 								hisAttack = 0
-						if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+						if ( hisAttack >= user.hp ): # We are dead.  Bummer.
 							ctrlDead = True
-							hisAttack = user.getHP() # No insult to injury
+							hisAttack = user.hp # No insult to injury
 						if ( hisAttack > 0 ): # He hit us
 							user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
-							user.updateHP(hisAttack * -1)
+							user.hp -= hisAttack
 						else: 
 							user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
 						if ( myAttack > 0 and not ctrlDead ): # We hit him!
@@ -644,12 +632,12 @@ def forest_fight(user):
 						if ( not thisUnderdog ): # We Hit First
 							if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
 								hisAttack = 0
-						if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+						if ( hisAttack >= user.hp ): # We are dead.  Bummer.
 							ctrlDead = True
-							hisAttack = user.getHP() # No insult to injury
+							hisAttack = user.hp # No insult to injury
 						if ( hisAttack > 0 ): # He hit us
 							user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
-							user.updateHP(hisAttack * -1)
+							user.hp -= hisAttack
 						else: 
 							user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
 						if ( myAttack > 0 and not ctrlDead ): # We hit him!
@@ -661,9 +649,8 @@ def forest_fight(user):
 					elif ( (miniData[0] == 'm' or miniData[0] == 'M') and ( user.getSkillUse(2) > 19 ) ): #Mind Heal
 						user.write("M\r\n  \x1b[32mYou feel much better!\x1b[0m\r\n")
 						user.updateSkillUse(2, -20)
-						hptoadd = user.getHPMax() - user.getHP()
-						if ( hptoadd > 0 ):
-							user.updateHP(hptoadd)
+						hptoadd = user.hpmax - user.hp
+						user.hp = user.hpmax
 						if ( hptoadd < 5 ):
 							user.write("\r\n  \x1b[32mThough, you are likely clinicly retarded.\x1b[0m\r\n")
 						tinyQuit = True
@@ -676,28 +663,26 @@ def forest_fight(user):
 		user.write("\r\n  \x1b[32mYou have recieved \x1b[1m"+str(enemies[thisUserLevel][thisEnemy][4])+"\x1b[22m gold and \x1b[1m"+str(enemies[thisUserLevel][thisEnemy][5])+"\x1b[22m experience\x1b[0m\r\n")
 		user.pause()
 	if ( ctrlDead ) :
-		if ( user.didFairy() == True ):
-			hptoadd = user.getHPMax()
-			user.updateHP(1)
+		if ( user.fairy == True ):
+			user.hp = 1
+			user.fairy = 0
 			user.write(func_casebold("  Miraculously, your fairy saves you from the edge of defeat.  You escape with your life.\r\n", 2))
-			user.setFairy(0)
 		else:
-			user.setDead()
+			user.alive = 0
 			#exception handles, do it later. user.logout()
 			lamentTop = len(forestdie) - 1
 			lamentThis = forestdie[random.randint(0, lamentTop)]
 			lamentThis = re.sub("`n", "\r\n", lamentThis)
 			lamentThis = re.sub("`g", user.thisFullname, lamentThis)
 			lamentThis = re.sub("`e", thisEnemyName, lamentThis)
-			lamentThis = user.dbc.escape_string(lamentThis)
-			thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+lamentThis+"')"
-			user.db.execute(thisSQL)
+			user.dbcon.execute("INSERT INTO daily ( `data` ) VALUES ( ? )", (lamentThis,))
+			user.dbcon.commit()
 			user.write(func_casebold("  Tragically, you died.  Returning to the mundane world for the day...\n", 1))
 			raise Exception('normal', "User is DOA.  Bummer.")
 
 def forest_menu(user, enemyHP, enemyName, special=False) : 
 	""" Forest Fight Menu """
-	thismenu  = "\r\n  \x1b[32mYour Hitpoints : \x1b[1m"+str(user.getHP())+"\x1b[0m\r\n"
+	thismenu  = "\r\n  \x1b[32mYour Hitpoints : \x1b[1m"+str(user.hp)+"\x1b[0m\r\n"
 	thismenu += "  \x1b[32m"+enemyName+"'s Hitpoints : \x1b[1m"+str(enemyHP)+"\x1b[0m\r\n\r\n"
 	thismenu += func_normmenu("(A)ttack")
 	thismenu += func_normmenu("(S)tats")
@@ -748,9 +733,7 @@ def forest_lesson_d(user) :
 		user.write("\r\n   \x1b[1,32mDeath Knight #1: \x1b[0;32mWell spotted young warrior.                    We shall teach you!\x1b[0m\r\n")
 		user.write("  \x1b[32mYou recieve \x1b[1m1\x1b[0;32m use point")
 		user.updateSkillUse(1, 1)
-		addtohp = user.getHPMax() - user.getHP()
-		if ( addtohp > 0 ):
-			user.updateHP(addtohp)
+		user.hp = user.hpmax
 		if ( user.getSkillPoint(1) < 40 ):
 			user.updateSkillPoint(1, 1)
 			user.write(" and \x1b[1m1\x1b[0;32m skill point")
@@ -779,14 +762,14 @@ def forest_lesson_t(user) :
 			miniQuit = True
 		elif ( data[0] == 'g' or data[0] == 'G' ):
 			user.write('G')
-			if ( user.getGems() > 0 ):
+			if ( user.gems > 0 ):
 				user.updateSkillUse(3, 1)
 				user.write("\r\n  \x1b[32mYou recieve \x1b[1m1\x1b[0,32m use point")
 				if ( user.getSkillPoint(3) < 40 ):
 					user.updateSkillPoint(3, 1)
 					user.write(" and \x1b[1m1\x1b[0,32m skill point")
 				user.write(".\x1b[0m\n")
-				user.updateGems(-1)
+				user.gems -= 1
 			else:
 				user.write("\r\n  \x1b[1,32mThief #1: \x1b[0,32mYou don't have any gems dumbass.\x1b[0m\r\n")
 			miniQuit = True
@@ -874,8 +857,8 @@ def module_turgon(user):
 		elif ( data[0] == 'q' or data[0] == 'Q' ):
 			user.write("Q\r\n")
 			if ( user.getLevel() < 12 ):
-				thisUserLevel = user.getLevel()
-				thisUserExp   = user.getExperience()
+				thisUserLevel = user.level
+				thisUserExp   = user.exp
 				thisNeedExp   = masters[thisUserLevel][2] - thisUserExp
 				for thisWisdom in masters[thisUserLevel][3]:
 					user.write("\r\n  \x1b[32m"+thisWisdom+"\x1b[0m")
@@ -889,15 +872,18 @@ def module_turgon(user):
 			user.pause()
 		elif ( data[0] == 'v' or data[0] == 'V' ):
 			user.write('V')
-			thisSQL = "SELECT fullname, dkill FROM "+user.thisSord.sqlPrefix()+"users u, "+user.thisSord.sqlPrefix()+"stats s WHERE s.userid = u.userid AND s.dkill > 0 ORDER by s.dkill DESC"
-			user.db.execute(thisSQL)
-			if user.db.rowcount > 0:
-				user.write("\r\n\r\n  \x1b[32mUsers who have slain the dragon:\x1b[0m\r\n")
-				for (nombre, data) in user.db.fetchall():
-					user.write("  \x1b[32m"+nombre+padnumcol(nombre, 25)+"\x1b[1m"+str(data)+"\x1b[0m\r\n")
-				user.write("\r\n")
-			else:
-				user.write("\r\n\r\n  \x1b[32mWhat a sad thing - there are no heroes in this realm.\x1b[0m\r\n")
+			db = user.dbcon.cursor()
+			db.execute("SELECT fullname, dkill FROM users u, stats s WHERE s.userid = u.userid AND s.dkill > 0 ORDER by s.dkill DESC")
+			user.write("\r\n\r\n  \x1b[32mUsers who have slain the dragon:\x1b[0m\r\n")
+			for row in db.fetchall():
+				if not row:
+					user.write("\r\n\r\n  \x1b[32mWhat a sad thing - there are no heroes in this realm.\x1b[0m\r\n")
+					break
+				else:
+					for (nombre, data) in row:
+						user.write("  \x1b[32m"+nombre+padnumcol(nombre, 25)+"\x1b[1m"+str(data)+"\x1b[0m\r\n")
+			user.write("\r\n")
+			db.close()
 			user.pause()
 		elif ( data[0] == 'y' or data[0] == 'Y' ):
 			user.write('Y')
@@ -905,9 +891,9 @@ def module_turgon(user):
 			user.pause()
 		elif ( data[0] == 'a' or data[0] == 'A' ):
 			user.write('A')
-			if ( user.getLevel() > 11 ):
+			if ( user.level > 11 ):
 				user.write("\r\n\r\n  \x1b[32mThere is no master for you to attack stoopid!\x1b[0m\r\n")
-			elif ( user.didMaster() ):
+			elif ( user.master ):
 				user.write("\r\n\r\n  \x1b[32mI'm sorry my son, you may only fight me once per game-day\x1b[0m\r\n")
 			else:
 				master_fight(user)
@@ -916,10 +902,10 @@ def module_turgon(user):
 
 def master_fight(user):
 	""" Master Fight System """
-	thisUserLevel = user.getLevel()
+	thisUserLevel = user.level
 	thisTopEnemy  = len(enemies[thisUserLevel]) - 1
-	thisUserDefense = user.getDefense()
-	thisUserHit     = user.getStrength() / 2
+	thisUserDefense = user.defence
+	thisUserHit     = user.str / 2
 	ctrlDead = False
 	ctrlRan  = False
 	ctrlWin  = False
@@ -933,7 +919,7 @@ def master_fight(user):
 	user.write("\r\n  \x1b[32mYou have encountered "+thisEnemyName+"!!\x1b[0m\r\n")
 
 	skipDisp = False
-	while ( user.getHP() > 0 and thisEnemyHP > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
+	while ( user.hp > 0 and thisEnemyHP > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
 		if ( not skipDisp ):
 			user.write(forest_menu(user, thisEnemyHP, thisEnemyName))
 		skipDisp = False
@@ -949,12 +935,12 @@ def master_fight(user):
 			if ( False ): # We Hit First (always)
 				if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
 					hisAttack = 0
-			if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+			if ( hisAttack >= user.hp() ): # We are dead.  Bummer.
 				ctrlDead = True
-				hisAttack = user.getHP() # No insult to injury
+				hisAttack = user.hp() # No insult to injury
 			if ( hisAttack > 0 ): # He hit us
 				user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
-				user.updateHP(hisAttack * -1)
+				user.hp -= hisAttack
 			else: 
 				user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
 			if ( myAttack > 0 and not ctrlDead ): # We hit him!
@@ -965,10 +951,8 @@ def master_fight(user):
 					user.write("\r\n  \x1b[31m"+masters[thisUserLevel][5]+"\x1b[0m\r\n")
 		elif ( data[0] == 'r' or data[0] == 'R' ): # Run Away
 			user.write("\r\n  \x1b[32mYou retire from the field before getting yourself killed.\x1b[0m\r\n")
-			hptogive = user.getHPMax() - user.getHP()
-			if ( hptogive > 0 ):
-				user.updateHP(hptogive)
-			user.setMaster()
+			user.hp = user.hpmax
+			user.master = 1
 			ctrlRan = True
 		elif ( data[0] == 'q' or data[0] == 'Q' ):
 			user.write("\r\n  \x1b[31mYou are in Combat!  Try Running!\x1b[0m\r\n")
@@ -978,26 +962,20 @@ def master_fight(user):
 			skipDisp = True
 
 	if ( ctrlWin ) :
-		addExp = masters[thisUserLevel][2] / 10
-		newLvl = user.getLevel() + 1
-		user.setLevel(newLvl)
-		user.updateExperience(addExp)
-		user.updateDefense(masterwin[thisUserLevel][2])
-		user.updateStrength(masterwin[thisUserLevel][1])
-		user.updateHPMax(masterwin[thisUserLevel][0])
-		user.updateSkillPoint(user.getClass(), 1)
-		user.updateSkillUse(user.getClass(), 1)
-		hptoheal = user.getHPMax() - user.getHP()
-		if ( hptoheal > 0 ):
-			user.updateHP(hptoheal)
+		user.exp += masters[thisUserLevel][2] / 10
+		user.level += 1
+		user.defence += masterwin[thisUserLevel][2]
+		user.str += masterwin[thisUserLevel][1]
+		user.hpmax += masterwin[thisUserLevel][0]
+		user.updateSkillPoint(user.cls, 1)
+		user.updateSkillUse(user.cls, 1)
+		user.hp = user.hpmax
 		user.write("\r\n  \x1b[32mYou have receieved \x1b[1m+"+str(masterwin[thisUserLevel][2])+"\x1b[22m vitality, \x1b[1m+"+str(masterwin[thisUserLevel][1])+"\x1b[22m strength, and \x1b[1m+"+str(masterwin[thisUserLevel][0])+"\x1b[22m hitpoints.\x1b[0m\r\n")
-		user.write("  \x1b[32mYou have gained \x1b[1m"+str(addExp)+"\x1b[22m experience, and are now level \x1b[1m"+str(newLvl)+"\x1b[22m.\x1b[0m\r\n")
+		user.write("  \x1b[32mYou have gained \x1b[1m"+str(addExp)+"\x1b[22m experience, and are now level \x1b[1m"+str(user.level)+"\x1b[22m.\x1b[0m\r\n")
 		user.pause()
 	if ( ctrlDead ) :
-		user.setMaster()
-		hptoheal = user.getHPMax() - user.getHP()
-		if ( hptoheal > 0 ):
-			user.updateHP(hptoheal)
+		user.master = 1
+		user.hp = user.hpmax
 		user.write("\r\n  \x1b[31mTragically, you are horribly disfigured....  oh wait...\x1b[0m\r\n")
 		user.write("  \x1b[31mYou always looked like that you say?...  That's unfortunate...\x1b[0m\r\n")
 		user.write("  \x1b[32mAnyway, you lost.  Being the gracious master "+thisEnemyName+" is, he heals\r\n  you and sends you away for the day.\x1b[0m\r\n")
@@ -1005,23 +983,23 @@ def master_fight(user):
 		
 def killer_fight(user, usertokill):
 	""" Master Fight System """
-	user.updatePlayerFight(-1)
-	thisUserDefense = user.getDefense()
-	thisUserHit     = user.getStrength() / 2
+	user.pfight -= 1
+	thisUserDefense = user.defence
+	thisUserHit     = user.str / 2
 	ctrlDead = False
 	ctrlRan  = False
 	ctrlWin  = False
-	thisEnemyHit     = usertokill.getStrength() / 2
-	thisEnemyDefense = usertokill.getDefense()
-	thisEnemyWeapon  = weapon[usertokill.getWeapon()]
+	thisEnemyHit     = usertokill.str / 2
+	thisEnemyDefense = usertokill.defence
+	thisEnemyWeapon  = weapon[usertokill.weapon]
 	
 	user.write("\r\n\r\n  \x1b[32m**\x1b[1;37mFIGHT\x1b[0m\x1b[32m**\r\n")
 	user.write("\r\n  \x1b[32mYou have encountered "+usertokill.thisFullname+"!!\x1b[0m\r\n")
 
 	skipDisp = False
-	while ( user.getHP() > 0 and usertokill.getHP() > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
+	while ( user.hp() > 0 and usertokill.hp() > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
 		if ( not skipDisp ):
-			user.write(forest_menu(user, usertokill.getHP(), usertokill.thisFullname))
+			user.write(forest_menu(user, usertokill.hp, usertokill.thisFullname))
 		skipDisp = False
 		data = user.ntcon.recv(2)
 		if not data: break
@@ -1033,33 +1011,33 @@ def killer_fight(user, usertokill):
 			hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
 			myAttack  = ( thisUserHit + random.randint(0, thisUserHit)) - thisEnemyDefense
 			if ( True ): # We Hit First (always)
-				if ( myAttack >= usertokill.getHP() ): # If he's dead, he didn't hit us at all - also, set our attack to zero him
-					myAttack = usertokill.getHP()
+				if ( myAttack >= usertokill.hp ): # If he's dead, he didn't hit us at all - also, set our attack to zero him
+					myAttack = usertokill.hp
 					hisAttack = 0
-			if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+			if ( hisAttack >= user.hp ): # We are dead.  Bummer.
 				ctrlDead = True
-				hisAttack = user.getHP() # No insult to injury
+				hisAttack = user.hp # No insult to injury
 			if ( hisAttack > 0 ): # He hit us
 				user.write("\r\n  \x1b[32m"+usertokill.thisFullname+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
-				user.updateHP(hisAttack * -1)
+				user.hp -= hisAttack
 			else: 
 				user.write("\r\n  \x1b[32m"+usertokill.thisFullname+" misses you completely\x1b[0m\r\n")
 			if ( myAttack > 0 and not ctrlDead ): # We hit him!
 				user.write("\r\n  \x1b[32mYou hit "+usertokill.thisFullname+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
-				usertokill.updateHP(myAttack * -1)
-				if ( usertokill.getHP() < 1 ): # We Win!
+				usertokill.hp -= myAttack
+				if ( usertokill.hp < 1 ): # We Win!
 					ctrlWin = True
 					user.write("\r\n  \x1b[31m"+usertokill.thisFullname+" lies diead at your feet!\x1b[0m\r\n")
 		elif ( data[0] == 'r' or data[0] == 'R' ): # Run Away
 			user.write('R')
 			if ( random.randint(1, 10) == 4 ): # Hit in the back.
 				hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
-				if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+				if ( hisAttack >= user.hp ): # We are dead.  Bummer.
 					ctrlDead = True
-					hisAttack = user.getHP() # No insult to injury
+					hisAttack = user.hp # No insult to injury
 				if ( hisAttack > 0 ): # He hit us
 					user.write("\r\n  \x1b[32m"+usertokill.thisFullname+" hits you in the back with it's "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\r\n")
-					user.updateHP(hisAttack)
+					user.hp -= hisAttack
 			else:
 				user.write("\r\n  \x1b[32mYou narrowly escape harm.\x1b[0m\r\n")
 				ctrlRan = True
@@ -1071,58 +1049,57 @@ def killer_fight(user, usertokill):
 			skipDisp = True
 
 	if ( ctrlWin ) :
-		user.setKiller()
-		addExp = usertokill.getExperience() / 2
-		delExp = usertokill.getExperience() / 10
-		addGems = usertokill.getGems() / 2
+		user.pkill += 1
+		addExp = usertokill.exp / 2
+		delExp = usertokill.exp / 10
+		addGems = usertokill.gems / 2
 		if ( addGems < 1 ):
 			addGems = 0
 		else:
-			user.updateGems(addGems)
-			usertokill.updateGems(addGems * -1)
-		addGold = usertokill.getGold()
+			user.gems += addGems
+			usertokill.gems -= addGems
+		addGold = usertokill.gold
 		if ( addGold > 0 ):
-			user.updateGold(addGold)
-			usertokill.updateGold(addGold * -1)
-		user.updateExperience(addExp)
-		usertokill.updateExperience(delExp * -1)
-		usertokill.setDead()
+			user.gold += addGold
+			usertokill.gold -= addGold
+		user.exp += addExp
+		usertokill.exp -= delExp
+		usertokill.alive = 0
 		user.write("\r\n  \x1b[32mYou have gained \x1b[1m"+str(addExp)+"\x1b[0;32m experience, \x1b[1m"+str(addGems)+"\x1b[0;32m gems, and \x1b[1m"+str(addGold)+"\x1b[0;32m gold.\x1b[0m\r\n")
 		lamentTop = len(killerwin) - 1
 		lamentThis = killerwin[random.randint(0, lamentTop)]
 		lamentThis = re.sub("`n", "\r\n", lamentThis)
 		lamentThis = re.sub("`g", user.thisFullname, lamentThis)
 		lamentThis = re.sub("`e", usertokill.thisFullname, lamentThis)
-		lamentThis = user.dbc.escape_string(lamentThis)
-		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+lamentThis+"')"
-		user.db.execute(thisSQL)
+		user.dbcon.execute("INSERT INTO daily ( `data` ) VALUES ( ? )", (lamentThis,))
+		user.dbcon.commit()
 		user.pause()
 	if ( ctrlDead ) :
-		usertokill.setKiller()
-		addExp = user.getExperience() / 2
-		delExp = user.getExperience() / 10
-		addGems = user.getGems() / 2
+		usertokill.pkill += 1
+		usertokill.hp = usertokill.hpmax #Heal the undead other player (he won)
+		addExp = user.exp / 2
+		delExp = user.exp / 10
+		addGems = user.gems / 2
 		if ( addGems < 1 ):
 			addGems = 0
 		else:
-			user.updateGems(addGems * -1)
-			usertokill.updateGems(addGems)
-		addGold = user.getGold()
+			user.gems -= addGems
+			usertokill.gems += addGems
+		addGold = user.gold
 		if ( addGold > 0 ):
-			user.updateGold(addGold * -1)
-			usertokill.updateGold(addGold)
-		user.updateExperience(delExp * -1)
-		usertokill.updateExperience(addExp)
-		user.setDead()
+			user.gold -= addGold
+			usertokill.gold += addGold
+		user.exp -= delExp
+		usertokill.exp += addExp
+		user.alive = 0
 		#exception handles, do it later. user.logout()
 		lamentTop = len(killerlose) - 1
 		lamentThis = killerlose[random.randint(0, lamentTop)]
 		lamentThis = re.sub("`n", "\r\n", lamentThis)
 		lamentThis = re.sub("`g", user.thisFullname, lamentThis)
 		lamentThis = re.sub("`e", usertokill.thisFullname, lamentThis)
-		lamentThis = user.dbc.escape_string(lamentThis)
-		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+lamentThis+"')"
-		user.db.execute(thisSQL)
+		user.dbcon.execute("INSERT INTO daily ( `data` ) VALUES ( ? )", (lamentThis,))
+		user.dbcon.commit()
 		user.write(func_casebold("  Tragically, you died.  Returning to the mundane world for the day...\n", 1))
 		raise Exception('normal', "User is DOA.  Bummer.")
 
@@ -1150,22 +1127,22 @@ def dht_prompt(user):
 
 def dht_converse(user):
 	""" Converse with patrons (dht)"""
-	thisSQL = "SELECT data, nombre FROM (SELECT * FROM "+user.thisSord.sqlPrefix()+"dhtpatrons ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id"
 	output  = "\r\n\r\n  \x1b[1;37mConverse with the Patrons\x1b[22;32m....\x1b[0m\r\n"
 	output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
-	user.db.execute(thisSQL)
-	for (data, nombre) in user.db.fetchall():
+	db = user.dbcon.cursor()
+	db.execute("SELECT data, nombre FROM (SELECT * FROM dhtpatrons ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id")
+	for (data, nombre) in db.fetchall():
 		output += "    \x1b[32m"+nombre+" \x1b[1;37msays... \x1b[0m\x1b[32m" + func_colorcode(data)
 		output += "\x1b[0m\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
 	output += "\r\n  \x1b[32mAdd to the conversation? \x1b[1m: \x1b[0m"
 	user.write(output)
+	db.close()
 	yesno = user.ntcon.recv(2)
 	if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 		user.write(func_casebold("\r\n  What say you? :-: ", 2))
 		ann = func_getLine(user.ntcon, True)
-		safeann = user.dbc.escape_string(ann)
-		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"dhtpatrons ( `data`, `nombre` ) VALUES ('"+safeann+"', '"+user.thisFullname+"')"
-		user.db.execute(thisSQL)
+		user.dbcon.execute("INSERT INTO dhtpatrons ( `data`, `nombre` ) VALUES ( ?, ? )", (ann, user.thisFullname))
+		user.dbcon.commit()
 		user.write(func_casebold("\r\n  Wisdom added!\r\n", 2))
 		user.pause()
 
@@ -1190,22 +1167,25 @@ def dht_logic(user):
 			user.pause()
 		elif ( data[0] == 'd' or data[0] == 'D' ):
 			user.write('D')
-			user.write(module_dailyhappen(True, user.db, user.thisSord.sqlPrefix()))
+			user.write(module_dailyhappen(True, user.dbcon, ''))
 			user.pause()
 		elif ( data[0] == 'c' or data[0] == 'C' ):
 			user.write('C')
 			dht_converse(user)
 		elif ( data[0] == 'e' or data[0] == 'E' ):
 			user.write('E')
-			thisSQL = "SELECT fullname, fuck FROM "+user.thisSord.sqlPrefix()+"users u, "+user.thisSord.sqlPrefix()+"stats s WHERE s.userid = u.userid AND s.fuck > 0 ORDER by s.fuck DESC"
-			user.db.execute(thisSQL)
-			if user.db.rowcount > 0:
-				user.write("\r\n\r\n  \x1b[32mUsers who have gotten lucky:\x1b[0m\r\n")
-				for (nombre, data) in user.db.fetchall():
-					user.write("  \x1b[32m"+nombre+padnumcol(nombre, 25)+"\x1b[1m"+str(data)+"\x1b[0m\r\n")
-				user.write("\r\n")
-			else:
-				user.write("\r\n\r\n  \x1b[32mWhat a sad thing - there are no carvings here after all.\x1b[0m\r\n")
+			db = user.dbcon.cursor()
+			db.execute("SELECT fullname, fuck FROM users u, stats s WHERE s.userid = u.userid AND s.fuck > 0 ORDER by s.fuck DESC")
+			user.write("\r\n\r\n  \x1b[32mUsers who have gotten lucky:\x1b[0m\r\n")
+			
+			for row in db.fetchall():
+				if not row:
+					user.write("\r\n\r\n  \x1b[32mWhat a sad thing - there are no carvings here after all.\x1b[0m\r\n")
+				else:
+					for (nombre, data) in row:
+						user.write("  \x1b[32m"+nombre+padnumcol(nombre, 25)+"\x1b[1m"+str(data)+"\x1b[0m\r\n")
+			user.write("\r\n")
+			db.close()
 			user.pause()
 		elif ( data[0] == 't' or data[0] == 'T' ):
 			user.write('T')
@@ -1249,16 +1229,16 @@ def dht_chance(user):
 			whoid = module_finduser(user, "\r\n  \x1b[32mGet information on who?")
 			if ( whoid > 0 ):
 				whoName = user.userGetLogin(whoid)
-				whoCost = user.getLevel() * 100
+				whoCost = user.level * 100
 				user.write("\r\n  \x1b[32mThat will be \x1b[1m"+str(whoCost)+"\x1b[0;32m gold.  Ok? ")
 				yesno = user.ntcon.recv(2)
 				if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 					user.write('Y')
-					if ( user.getGold() < whoCost ):
+					if ( user.gold < whoCost ):
 						user.write("\r\n  \x1b[32mYou don't have enough gold jackass!\x1b[0m\r\n")
 					else:
-						usertoSee = sordUser(whoName, user.dbc, user.db, user.ntcon, user.art)
-						user.updateGold(whoCost * -1)
+						usertoSee = sorduser(whoName, user.dbcon, user.ntcon, user.art)
+						user.gold -= whoCost
 						user.write(module_viewstats(usertoSee))
 						user.pause()
 				else:
@@ -1300,8 +1280,8 @@ def dht_chance(user):
 def dragon_fight(user):
 	""" Forest Fight System """
 	user.write(user.art.lair())
-	thisUserDefense = user.getDefense()
-	thisUserHit     = user.getStrength() / 2
+	thisUserDefense = user.defence
+	thisUserHit     = user.str / 2
 	ctrlDead = False
 	ctrlRan  = False
 	ctrlWin  = False
@@ -1316,7 +1296,7 @@ def dragon_fight(user):
 	user.write("\r\n  \x1b[32mYour skill allows you to get the first strike.\x1b[0m\r\n")
 
 	skipDisp = False
-	while ( user.getHP() > 0 and thisEnemyHP > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
+	while ( user.hp > 0 and thisEnemyHP > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
 		if ( not skipDisp ):
 			user.write(forest_menu(user, thisEnemyHP, thisEnemyName, True))
 		hisType = random.randint(1, 7)
@@ -1345,12 +1325,12 @@ def dragon_fight(user):
 			if ( True ): # We Hit First
 				if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
 					hisAttack = 0
-			if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+			if ( hisAttack >= user.hp ): # We are dead.  Bummer.
 				ctrlDead = True
-				hisAttack = user.getHP() # No insult to injury
+				hisAttack = user.hp # No insult to injury
 			if ( hisAttack > 0 ): # He hit us
 				user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
-				user.updateHP(hisAttack * -1)
+				user.hp -= hisAttack
 			else: 
 				user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
 			if ( myAttack > 0 and not ctrlDead ): # We hit him!
@@ -1367,12 +1347,12 @@ def dragon_fight(user):
 				if ( True ): # We Hit First
 					if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
 						hisAttack = 0
-				if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+				if ( hisAttack >= user.hp ): # We are dead.  Bummer.
 					ctrlDead = True
-					hisAttack = user.getHP() # No insult to injury
+					hisAttack = user.hp # No insult to injury
 				if ( hisAttack > 0 ): # He hit us
 					user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
-					user.updateHP(hisAttack * -1)
+					user.hp -= hisAttack
 				else: 
 					user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
 				if ( myAttack > 0 and not ctrlDead ): # We hit him!
@@ -1391,12 +1371,12 @@ def dragon_fight(user):
 				if ( True ): # We Hit First
 					if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
 						hisAttack = 0
-				if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+				if ( hisAttack >= user.hp ): # We are dead.  Bummer.
 					ctrlDead = True
-					hisAttack = user.getHP() # No insult to injury
+					hisAttack = user.hp # No insult to injury
 				if ( hisAttack > 0 ): # He hit us
 					user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
-					user.updateHP(hisAttack * -1)
+					user.hp -= hisAttack
 				else: 
 					user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
 				if ( myAttack > 0 and not ctrlDead ): # We hit him!
@@ -1409,12 +1389,12 @@ def dragon_fight(user):
 		elif ( data[0] == 'r' or data[0] == 'R' ): # Run Away
 			if ( random.randint(1, 10) == 4 ): # Hit in the back.
 				hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
-				if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+				if ( hisAttack >= user.hp ): # We are dead.  Bummer.
 					ctrlDead = True
-					hisAttack = user.getHP() # No insult to injury
+					hisAttack = user.hp # No insult to injury
 				if ( hisAttack > 0 ): # He hit us
 					user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you in the back with it's "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\r\n")
-					user.updateHP(hisAttack)
+					user.hp -= hisAttack
 					ctrlRan = True
 			else:
 				user.write("\r\n  \x1b[32mYou narrowly escape harm.\x1b[0m\r\n")
@@ -1457,12 +1437,12 @@ def dragon_fight(user):
 						if ( True ): # We Hit First
 							if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
 								hisAttack = 0
-						if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+						if ( hisAttack >= user.hp ): # We are dead.  Bummer.
 							ctrlDead = True
-							hisAttack = user.getHP() # No insult to injury
+							hisAttack = user.hp # No insult to injury
 						if ( hisAttack > 0 ): # He hit us
 							user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
-							user.updateHP(hisAttack * -1)
+							user.hp -= hisAttack
 						else: 
 							user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
 						if ( myAttack > 0 and not ctrlDead ): # We hit him!
@@ -1484,12 +1464,12 @@ def dragon_fight(user):
 						if ( True ): # We Hit First
 							if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
 								hisAttack = 0
-						if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+						if ( hisAttack >= user.hp ): # We are dead.  Bummer.
 							ctrlDead = True
-							hisAttack = user.getHP() # No insult to injury
+							hisAttack = user.hp # No insult to injury
 						if ( hisAttack > 0 ): # He hit us
 							user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
-							user.updateHP(hisAttack * -1)
+							user.hp -= hisAttack
 						else: 
 							user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
 						if ( myAttack > 0 and not ctrlDead ): # We hit him!
@@ -1511,12 +1491,12 @@ def dragon_fight(user):
 						if ( not thisUnderdog ): # We Hit First
 							if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
 								hisAttack = 0
-						if ( hisAttack >= user.getHP() ): # We are dead.  Bummer.
+						if ( hisAttack >= user.hp ): # We are dead.  Bummer.
 							ctrlDead = True
-							hisAttack = user.getHP() # No insult to injury
+							hisAttack = user.hp # No insult to injury
 						if ( hisAttack > 0 ): # He hit us
 							user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
-							user.updateHP(hisAttack * -1)
+							user.hp -= hisAttack
 						else: 
 							user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
 						if ( myAttack > 0 and not ctrlDead ): # We hit him!
@@ -1527,47 +1507,39 @@ def dragon_fight(user):
 					elif ( (miniData[0] == 'm' or miniData[0] == 'M') and ( user.getSkillUse(2) > 19 ) ): #Mind Heal
 						user.write("M\r\n  \x1b[32mYou feel much better!\x1b[0m\r\n")
 						user.updateSkillUse(2, -20)
-						hptoadd = user.getHPMax() - user.getHP()
-						if ( hptoadd > 0 ):
-							user.updateHP(hptoadd)
+						hptoadd = user.hpmax - user.hp
+						user.hp = user.hpmax
 						if ( hptoadd < 5 ):
-							user.write("\r\n  \x1b[32mThough, you are likely clinicly retarded.\x1b[0m\r\n")
+							user.write("\r\n  \x1b[32mEven though you are clearly a fuck-tard...\x1b[0m\r\n")
 						tinyQuit = True
 		else: #Catch non-options
 			skipDisp = True
 
 	if ( ctrlWin ) :
-		user.updateGold(user.getGold() * -1)
-		user.updateBank(user.getBank() * -1)
-		user.updateDefense(user.getDefense() * -1)
-		user.updateStrength(user.getStrength() * -1)
-		user.updateExperience(user.getExperience() * -1)
-		user.updateStrength(10)
-		user.updateDefense(1)
-		user.updateGold(500)
-		user.setLevel(1)
-		user.setDragon()
-		user.updateForestFight(user.getForestFight() * -1)
-		user.updateForestFight(user.thisSord.forestFights())
-		user.updatePlayerFight(user.getPlayerFight() * -1)
-		user.updatePlayerFight(user.thisSord.playerFights())
-		user.updateHPMax(user.getHPMax() * -1)
-		user.updateHP(user.getHP() * -1)
-		user.updateHP(20)
-		user.updateHPMax(20)
-		user.updateGems(user.getGems() * -1)
-		user.updateGems(10)
-		user.setWeapon(1)
-		user.setArmor(1)
+		user.gold = 500
+		user.bank = 0
+		user.str = 10
+		user.defence = 1
+		user.level = 1
+		user.exp = 1
+		user.dragon += 1
+		user.ffight = user.thisSord.forestFights()
+		user.pfight = user.thisSord.playerFights()
+		user.hp = 20
+		user.hpmax = 20
+		user.gems = 10
+		user.weapon = 1
+		user.armor = 1
+		
 		lamentThis = "{32}{1}"+user.thisFullname+" {0}{32}Decimated {0}{31}{1}The Red Dragon!!! {0}{32}Rejoice!!!{0}"
-		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+lamentThis+"')"
-		user.db.execute(thisSQL)
+		user.dbcon.execute("INSERT INTO daily ( `data` ) VALUES ( ? )", (lamentThis,))
+		user.dbcon.commit()
 		user.write(func_casebold("\r\n\r\n  You have defeated the Dragon, and saved the town.  Your stomach\r\n", 2))
 		user.write(func_casebold("\x1b[32m  churns at the site of stacks of clean white bones - Bones of small\r\n", 2))
 		user.write(func_casebold("\x1b[32m  children.\r\n\r\n", 2))
 		user.write(func_casebold("  THANKS TO YOU, THE HORROR HAS ENDED!\r\n\r\n", 2))
 		user.pause()
-		for myline in endstory[user.getClass()]:
+		for myline in endstory[user.cls]:
 			user.write("\x1b[32m"+myline+"\x1b[0m\r\n")
 		user.pause()
 		user.write(func_casebold("                  ** YOUR QUEST IS NOT OVER **\r\n\r\n", 2))
@@ -1579,17 +1551,16 @@ def dragon_fight(user):
 		user.pause()
 		
 	if ( ctrlDead ) :
-		if ( user.didFairy() == True ):
-			hptoadd = user.getHPMax()
-			user.updateHP(1)
+		if ( user.fairy == True ):
+			user.hp = 1
+			user.fairy = 0
 			user.write(func_casebold("  Miraculously, your fairy saves you from the edge of defeat.  You escape with your life.\r\n", 2))
-			user.setFairy(0)
 		else:
-			user.setDead()
+			user.alive = 0
 			#exception handles, do it later. user.logout()
 			lamentThis = "{31}{1}The Red Dragon{0}{32} Decimated "+user.thisFullname+"{0}"
-			thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ('"+lamentThis+"')"
-			user.db.execute(thisSQL)
+			user.dbcon.execute("INSERT INTO daily ( `data` ) VALUES ( ? )", (lamentThis,))
+			user.dbcon.commit()
 			user.write(func_casebold("\r\n\r\n  The Dragon pauses to look at you, then snorts in a Dragon laugh, and\r\n", 1))
 			user.write(func_casebold("\x1b[31m  delicately rips your head off, with the finess only a Dragon well\r\n", 1))
 			user.write(func_casebold("\x1b[31m  practiced in the art could do.\r\n", 1))
