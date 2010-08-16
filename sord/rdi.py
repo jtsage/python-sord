@@ -9,7 +9,7 @@ from functions import *
 from data import *
 from modules import *
 from messaging import *
-from user import sordUser
+from user2 import sorduser
 
 def rdi_menu_main(user):
 	""" Main Menu """
@@ -21,7 +21,7 @@ def rdi_menu_main(user):
 	thismenu += "\x1b[32m  are scattered across the room.  You smile as the well-rounded Violet\x1b[0m\r\n"
 	thismenu += "\x1b[32m  brushes by you....\x1b[0m\r\n\r\n"
 	thismenu += func_menu_2col("(C)onverse with the patrons", "(D)aily News", 5, 5)
-	if ( user.getSex() == 1 ):
+	if ( user.sex == 1 ):
 		flirtwith = "Violet"
 	else:
 		flirtwith = "Seth Able"
@@ -56,11 +56,11 @@ def rdi_logic(user):
 			thisQuit = True
 		elif ( data[0] == '?' ):
 			user.write('?')
-			if ( user.expert):
+			if ( user.expert ):
 				user.write(rdi_menu_main(user))
 		elif ( data[0] == 'd' or data[0] == 'D' ):
 			user.write('D')
-			user.write(module_dailyhappen(True, user.db, user.thisSord.sqlPrefix()))
+			user.write(module_dailyhappen(True, user.dbcon, ''))
 			user.pause()
 		elif ( data[0] == 't' or data[0] == 'T' ):
 			user.write('T')
@@ -74,7 +74,7 @@ def rdi_logic(user):
 			msg_announce(user)
 		elif ( data[0] == 'f' or data[0] == 'F' ):
 			user.write('F')
-			if ( user.didFlirt() ):
+			if ( user.flirt ):
 				user.write(func_casebold("\r\n  You have already flirted once today\r\n", 2))
 			else:
 				rdi_flirt(user)
@@ -111,27 +111,24 @@ def rdi_logic(user):
 					user.updateGems(1)
 					user.write("\r\n  \x1b[32mAnd how!\x1b[0m\r\n")
 				elif ( desc == "gift" or desc == "GIFT" ):
-					addskill = user.getSkillPoint(user.getClass()) - user.getSkillUse(user.getClass())
+					addskill = user.getSkillPoint(user.cls) - user.getSkillUse(user.cls)
 					if ( addskill > 0 ):
-						user.updateSkillUse(user.getClass(), addskill)
+						user.updateSkillUse(user.cls, addskill)
 					user.write("\r\n  \x1b[32mOk, she can give you a gift.\x1b[0m\r\n")
 				elif ( desc == "hott" or desc == "HOTT" ):
 					user.write("\r\n  \x1b[32mHell yeah she is!\x1b[0m\r\n")
-					addtohp = user.getHPMax() - user.getHP()
-					addtohp = addtohp + ( user.getHPMax() / 5 )
-					user.updateHP(addtohp)
+					user.hp = user.hpmax + (user.hpmax / 5)
 				elif ( desc == "lady" or desc == "LADY" ):
 					user.write("\r\n  \x1b[32mShe's a lady... woo woo woo\x1b[0m\r\n")
-					user.updateGold(user.getLevel() * 1000)
+					user.gold += user.level * 1000
 				elif ( desc == "nice" or desc == "NICE" or desc == "star" or desc == "STAR" ):
 					user.write("\r\n  \x1b[32mDuh.\x1b[0m\r\n")
 				elif ( desc == "sexy" or desc == "SEXY" ):
 					user.write("\r\n  \x1b[32mIndeed.\x1b[0m\r\n")
-					user.updatePlayerFight(1)
+					user.pfight += 1
 				elif ( desc == "ugly" or desc == "UGLY" ):
 					user.write("\r\n  \x1b[31mYou're an ass.\x1b[0m\r\n")
-					hptorem = user.getHP() - 1
-					user.updateHP(hptorem * -1)
+					user.hp = 1
 				else:
 					user.write("\r\n  \x1b[34mBetter luck next time.\x1b[0m\r\n")
 		else:
@@ -139,18 +136,18 @@ def rdi_logic(user):
 
 def rdi_getroom(user):
 	""" Red Dragon Inn Get a Room """
-	price = user.getLevel() * 400
+	price = user.level * 400
 	user.write("\r\n  \x1b[32mThe bartender approaches you at the mention of a room.\x1b[0m\r\n")
 	user.write("  \x1b[35m\"You want a room, eh?  That'll be "+str(price)+" gold!\"\x1b[0m\r\n")
 	user.write("  \x1b[32mDo you agree? \x1b[1m: \x1b[0m")
 	yesno = user.ntcon.recv(2)
 	if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
-		if ( user.getGold() < price ):
+		if ( user.gold < price ):
 			user.write("\r\n  \x1b[35m\"How bout you find yourself a nice stretch of cardboard box ya bum?\x1b[0m\r\n")
 		else:
-			user.updateGold(price * -1)
+			user.gold -= price
 			user.write("\r\n  \x1b[32mEnjoy your stay.  At next login, you will automatically leave the inn.\x1b[0m\r\n")
-			user.setInn(1)
+			user.atinn = 1
 			#Not needed, exception handles. user.logout()
 			raise Exception('normal', "User got a room.  Enjoy.")
 	else:
@@ -158,22 +155,22 @@ def rdi_getroom(user):
 
 def rdi_converse(user):
 	""" Converse with patrons """
-	thisSQL = "SELECT data, nombre FROM (SELECT * FROM "+user.thisSord.sqlPrefix()+"patrons ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id"
+	db = user.dbcon.cursor()
 	output  = "\r\n\r\n  \x1b[1;37mConverse with the Patrons\x1b[22;32m....\x1b[0m\r\n"
 	output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
-	user.db.execute(thisSQL)
+	db.execute("SELECT data, nombre FROM (SELECT * FROM patrons ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id")
 	for (data, nombre) in user.db.fetchall():
 		output += "    \x1b[32m"+nombre+" \x1b[1;37msays... \x1b[0m\x1b[32m" + func_colorcode(data)
 		output += "\x1b[0m\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
 	output += "\r\n  \x1b[32mAdd to the conversation? \x1b[1m: \x1b[0m"
+	db.close()
 	user.write(output)
 	yesno = user.ntcon.recv(2)
 	if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 		user.write(func_casebold("\r\n  What say you? :-: ", 2))
 		ann = func_getLine(user.ntcon, True)
-		safeann = user.dbc.escape_string(ann)
-		thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"patrons ( `data`, `nombre` ) VALUES ('"+safeann+"', '"+user.thisFullname+"')"
-		user.db.execute(thisSQL)
+		user.dbcon.execute("INSERT INTO patrons ( `data`, `nombre` ) VALUES ( ?, ? )", (ann, user.thisFullname))
+		user.dbcon.commit()
 		user.write(func_casebold("\r\n  Wisdom added!\r\n", 2))
 		user.pause()
 
@@ -206,7 +203,7 @@ def rdi_menu_bard(user):
 
 def rdi_hearbard(user):
 	""" Hear the bard sing"""
-	if ( not user.didBard() ):
+	if ( not user.sung ):
 		user.write("\r\n  \x1b[32mSeth thinks for a moment, picks up his lute, and begins...\r\n\r\n")
 		songnum = random.randint(1, 10)
 		for lyrics in thebard[songnum][0]:
@@ -217,9 +214,9 @@ def rdi_hearbard(user):
 			user.write(lyrics+"\r\n")
 		user.write("\r\n  \x1b[1;32m"+thebard[songnum][1][0]+"\x1b[0m\r\n")
 		user.write("\r\n  \x1b[1;34m"+thebard[songnum][1][1]+"\x1b[0m\r\n\r\n")
-		thisSQL = "UPDATE "+user.thisSord.sqlPrefix()+"stats SET "+thebard[songnum][2]+" WHERE userid = "+str(user.thisUserID)
-		user.db.execute(thisSQL)
-		user.setBard()
+		user.dbcon.execute("UPDATE stats SET "+thebard[songnum][2]+" WHERE userid = ?", (user.thisUserID, ))
+		user.dbcon.commit()
+		user.sung = 1
 		user.pause()
 	else:
 		user.write(func_casebold("\r\n  Seth says:  I'm a bit tired, maybe tommorow...\r\n", 2))
@@ -229,7 +226,7 @@ def rdi_flirt(user):
 	@todo else should go to seth.  """
 	user.write(rdi_menu_flirt(user))
 	user.write("\n  \x1b[32mYour Choice? \x1b[1m: \x1b[0m ")
-	if ( user.getSex() == 1 ):
+	if ( user.sex == 1 ):
 		rdi_flirt_violet(user)
 	else:
 		rdi_flirt_violet(user) #rdi_flirt_seth(connection, user)
@@ -286,11 +283,12 @@ def rdi_flirt_violet(user):
 		user.write("\x1b[31mAND\x1b[37m")
 		time.sleep(1)
 		user.write("...\x1b[0m")
-		if ( user.getCharm() > violet[thisRun][0] ):
-			thisExp = user.getLevel() * violet[thisRun][1]
-			user.updateExperience(thisExp)
-			user.setFlirt()
-			user.updateFuck(1)
+		if ( user.charm > violet[thisRun][0] ):
+			thisExp = user.level * violet[thisRun][1]
+			user.exp += thisExp
+			user.flirt = 1
+			if ( thisScrew ):
+				user.fuck += 1
 			user.write("\r\n  \x1b[1;34m"+violet[thisRun][3]+"\x1b[0m\r\n  \x1b[32mYou gain \x1b[1m"+str(thisExp)+"\x1b[22m experience.\x1b[0m\r\n")
 		else:
 			thisScrew = False
@@ -299,15 +297,15 @@ def rdi_flirt_violet(user):
 		if ( thisScrew ):
 			vd = ['herpes', 'crabs', 'ghonnereah']
 			vdc = random.randint(0, 2)
-			thisSQL = "INSERT INTO "+user.thisSord.sqlPrefix()+"daily ( `data` ) VALUES ( '{32}{1}"+user.thisFullname+"{0}{32} got a little somethin somethin today.  {34}And "+vd[vdc]+".')"
-			user.db.execute(thisSQL)
+			user.dbcon.execute("INSERT INTO daily ( `data` ) VALUES ( ? )", ("{32}{1}"+user.thisFullname+"{0}{32} got a little somethin somethin today.  {34}And "+vd[vdc]+".'", ))
+			user.dbcon.commit()
 
 def rdi_menu_flirt(user):
 	thismenu = "\r\n"
-	if (user.getSex() == 1):
+	if (user.sex == 1):
 		thismenu = user.art.violet()
 	else:
-		for saying in flirts[user.getSex()]:
+		for saying in flirts[user.sex]:
 			thismenu += func_normmenu(saying[1])
 	return thismenu
 
@@ -315,7 +313,7 @@ def rdi_bartend(user):
 	""" Bartender Logic """
 	thisQuit = False
 	dispSkip = False
-	if ( user.getLevel() < 2 ):
+	if ( user.level < 2 ):
 		user.write("\r\n  \x1b[32mNever heard of ya...  Come back when you've done something.\x1b[0m\r\n")
 		thisQuit = True
 	while ( not thisQuit ):
@@ -336,20 +334,20 @@ def rdi_bartend(user):
 		elif ( data[0] == 'c' or data[0] == 'C' ):
 			user.write('C')
 			user.write("\r\n  \x1b[35m\"Ya wanna change your name, eh?  Yeah..\x1b[0m")
-			if ( user.getClass() == 1 ):
+			if ( user.cls == 1 ):
 				thisTitle = "the Death Knight"
-			elif ( user.getClass() == 2 ):
+			elif ( user.cls == 2 ):
 				thisTitle = "the Magiciain"
 			else:
 				thisTitle = "the Thief"
-			thisPrice = user.getLevel() * 500
+			thisPrice = user.level * 500
 			user.write("\r\n  \x1b[35m"+user.thisFullname+" "+thisTitle+" does sound kinda funny..\x1b[0m")
 			user.write("\r\n  \x1b[35mit would cost ya "+str(thisPrice)+" gold... Deal?\"\x1b[0m")
 			user.write("\r\n  \x1b[32mChange your name? [\x1b[1mN\x1b[22m]\x1b[0m ")
 			yesno = user.ntcon.recv(2)
 			if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 				user.write('Y')
-				if ( user.getGold() < thisPrice ):
+				if ( user.gold < thisPrice ):
 					func_slowecho("\r\n  \x1b[35m\"Then I suggest you go find some more gold...\"\x1b[0m\r\n")
 				else:
 					thisGoodName = False;
@@ -377,15 +375,15 @@ def rdi_bartend(user):
 						user.write("\r\n  \x1b[31m** \x1b[35mWhy not go take a chance with a rattlesnake? \x1b[31m**\x1b[0m\r\n")
 					else:
 						user.write("\r\n  \x1b[32mName Changed.\x1b[0m\r\n")
-						thisSQL = "UPDATE "+user.thisSord.sqlPrefix()+"users SET fullname = '"+user.dbc.escape_string(ann)+"' WHERE userid = "+str(user.thisUserID)
-						user.db.execute(thisSQL)
-						user.updateGold(thisPrice * -1)
+						user.dbcon.execute("UPDATE users SET fullname = ? WHERE userid = ?", (ann, user.thisUserID))
+						user.dbcon.commit()
+						user.gold -= thisPrice
 						user.thisFullname = ann
 			else:
 				user.write("\r\n  \x1b[35m\"Fine...Keep your stupid name...See if I care...\"\x1b[0m\r\n")
 			user.pause()
 		elif ( data[0] == 'd' or data[0] == 'D' ):
-			if ( user.getLevel() == 12 ):
+			if ( user.getlevel == 12 ):
 				user.write('D')
 				user.write("\r\n  \x1b[32mA \x1b[1;31mRed Dragon\x1b[0m\x1b[32m eh?  Have you tried to \x1b[1mS\x1b[22mearch?\r\n")
 		elif ( data[0] == 'g' or data[0] == 'G' ):
@@ -397,7 +395,7 @@ def rdi_bartend(user):
 			except ValueError:
 				number = 0
 			if ( number > 0 ):
-				if ( number * 2 > user.getGems() ):
+				if ( number * 2 > user.gems ):
 					user.write("\r\n  \x1b[31mYou don't have that many gems!\x1b[0m\r\n")
 				else: # /*sell and process elixer */
 					user.write("\r\n  \x1b[32mIncrease which stat?\x1b[0m\r\n")
@@ -414,21 +412,21 @@ def rdi_bartend(user):
 							tinyQuit = True
 						if ( thisType[0] == 'H' or thisType[0] == 'h' ):
 							user.write('H')
-							user.updateHPMax(number)
-							user.updateHP(number)
-							user.updateGems(number * -2)
+							user.hpmax += number
+							user.hp = user.hpmax
+							user.gems -= ( number * 2 )
 							user.write("\r\n  \x1b[32mYou feel as if your stamina is greater\r\n")
 							tinyQuit = True
 						if ( thisType[0] == 'S' or thisType[0] == 's' ):
 							user.write('S')
-							user.updateStrength(number)
-							user.updateGems(number * -2)
+							user.str += number
+							user.gems -= ( number * 2 )
 							user.write("\r\n  \x1b[32mYou feel as if your strength is greater\r\n")
 							tinyQuit = True
 						if ( thisType[0] == 'v' or thisType[0] == 'V' ):
 							user.write('V')
-							user.updateDefense(number)
-							user.updateGems(number * -2)
+							user.defence += number
+							user.gems -= ( number * 2 )
 							user.write("\r\n  \x1b[32mYou feel as if your vitality is greater\r\n")
 							tinyQuit = True
 					user.write("\r\n  \x1b[32mPleasure doing business with you\x1b[0m\r\n")
@@ -438,21 +436,21 @@ def rdi_bartend(user):
 			kickID = module_finduser(user, "\r\n  \x1b[32mWho will it be?")
 			if ( kickID > 0 ):
 				kickName = user.userGetLogin(kickID)
-				kickCost = user.getLevel() * 5000
-				usertoKick = sordUser(kickName, user.dbc, user.db, user.ntcon, user.art)
-				if ( usertoKick.didInn() == True ):
+				kickCost = user.getlevel * 5000
+				usertoKick = sorduser(kickName, user.dbc, user.ntcon, user.art)
+				if ( usertoKick.atinn == True ):
 					user.write("\r\n  \x1b[32mThat will be \x1b[1m"+str(kickCost)+"\x1b[0;32m gold.  Ok? ")
 					yesno = user.ntcon.recv(2)
 					if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 						user.write('Y')
-						if ( user.getGold() < kickCost ):
+						if ( user.gold < kickCost ):
 							user.write("\r\n  \x1b[32mYou don't have enough gold jackass!\x1b[0m\r\n")
 						else:
-							user.updateGold(kickCost * -1)
-							if ( usertoKick.getLevel() + 2 < user.getLevel() ):
+							user.gold -= kickCost
+							if ( usertoKick.level + 2 < user.level ):
 								user.write("\r\n  \x1b[32mI don't like bullies.  Thanks for the nice tip\x1b[0m\r\n")
 							else:
-								usertoKick.setInn(0)
+								usertoKick.atinn = 0
 								user.write("\r\n  \x1b[32mBooted to the killing fields.\x1b[0m\r\n")
 				else:
 					user.write("\r\n  \x1b[32mThey aren't staying here...\x1b[0m\r\n")

@@ -136,12 +136,12 @@ def module_viewstats(user):
 	output += "\r\n \x1b[1;32mYou are currently interested in \x1b[37mThe "+classes[user.cls]+" \x1b[32mskills.\r\n\r\n";
 	return output
 
-def module_dailyhappen(noprmpt, db, prefix=''):
+def module_dailyhappen(noprmpt, dbc, prefix=''):
 	""" View Daily Happenings
 	* @param bool $noprmpt Do not prompt for additions.
 	* @return string Formatted output for display """
-	thisSQL = "SELECT data FROM (SELECT * FROM daily ORDER BY id DESC LIMIT 10) AS tbl ORDER BY tbl.id"
-	db.execute(thisSQL)
+	db = dbc.cursor()
+	db.execute("SELECT data FROM (SELECT * FROM daily ORDER BY id DESC LIMIT 10) AS tbl ORDER BY tbl.id")
 	output  = "\r\n\r\n\x1b[1;37mRecent Happenings\033[22;32m....\x1b[0m\r\n"
 	output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
 	for line in db.fetchall():
@@ -149,25 +149,27 @@ def module_dailyhappen(noprmpt, db, prefix=''):
 		output += "\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
 	if ( not noprmpt ) :
 		output +=  "\n\x1b[32m(\x1b[1;35mC\x1b[22;32m)ontinue  \x1b[32m(\x1b[1;35mT\x1b[22;32m)odays happenings again  \x1b[1;32m[\x1b[35mC\x1b[32m] \x1b[22m:-: "
+	db.close()
 	return output
 
-def module_who(art, db, prefix=''):
+def module_who(art, dbc, prefix=''):
 	""" Who's Online
 	* @return string Formatted output for display"""
-	thisSQL = "SELECT o.userid, fullname, whence FROM users u, online o WHERE o.userid = u.userid ORDER BY whence ASC"
-	db.execute(thisSQL)
+	db = dbc.cursor()
+	db.execute("SELECT o.userid, fullname, whence FROM users u, online o WHERE o.userid = u.userid ORDER BY whence ASC")
 	output  = "\r\n\r\n\x1b[1;37m                     Warriors In The Realm Now\x1b[22;32m\x1b[0m\r\n"
 	output += art.line()
 	for line in db.fetchall():
 		output += "  \x1b[1;32m" + line[1] + padnumcol(line[1], 28)
 		output += "\x1b[0m\x1b[32mArrived At             \x1b[1;37m" + str(line[2]) + "\x1b[0m\r\n"
+	db.close()
 	return output + "\r\n"
 
-def module_list(art, db, prefix=''):
+def module_list(art, dbc, prefix=''):
 	""" Player List
 	* @return string Formatted output for display """
-	thisSQL = "SELECT users.userid, fullname, exp, level, cls, spclm, spcld, spclt, sex, alive FROM users, stats WHERE users.userid = stats.userid ORDER BY exp DESC"
-	db.execute(thisSQL)
+	db = dbc.cursor()
+	db.execute("SELECT users.userid, fullname, exp, level, cls, spclm, spcld, spclt, sex, alive FROM users, stats WHERE users.userid = stats.userid ORDER BY exp DESC")
 	output = "\r\n\r\n\x1b[32m    Name                    Experience    Level    Mastered    Status\x1b[0m\r\n";
 	output += art.line()
 	for line in db.fetchall():
@@ -216,6 +218,7 @@ def module_list(art, db, prefix=''):
 			
 		output += lineSex + lineClass + "\x1b[32m" + line[1] + padnumcol(str(line[1]), 23) + padright(str(line[2]), 11)
 		output += padright(str(line[3]), 6) + "        " + lineMaster + padnumcol(lineMaster, 12) + lineStatus + "\r\n"
+	db.close()
 	return output + "\r\n"
 
 def module_heal(user):

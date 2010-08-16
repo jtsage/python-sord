@@ -84,10 +84,10 @@ def createdb():
 		('cls' , 1) , ('sex', 1), ('flirt', 0), ('sung', 0), ('master', 0),
 		('atinn', 0), ('horse', 0), ('fairy', 0), ('ffight', 20), ('pfight', 3),
 		('gems', 0), ('gold', 500), ('bank', 0), ('level', 1), ('charm', 0),
-		('spclm', 0), ('spclt', 0), ('spcld', 0), ('used', 0),
+		('spclm', 0), ('spclt', 0), ('spcld', 0), ('used', 0), ('dragon', 0),
 		('uset', 0), ('usem', 0), ('str', 10), ('defence', 1), ('exp', 1),
 		('hp', 20), ('hpmax', 20), ('weapon', 1), ('armor', 1), ('pkill', 0),
-		('dkill', 0), ('fuck', 0) ]
+		('dkill', 0), ('fuck', 0), ('alive', 1) ]
 	statssql = "create table stats ( userid INTEGER"
 	for stat in statstable:
 		name, defu = stat
@@ -119,7 +119,7 @@ def createdb():
 		sqc.execute("insert into patrons (data, nombre) values (?, ?)", ('{34}Welcome to the {31}Red Dragon {34}Inn', 'The Bartender'))
 		
 		sqc.execute(statssql)
-		sqc.execute("create table users ( userid INTEGER PRIMARY KEY, username TEXT, password TEXT, fullname TEXT, last TEXT, alive INTEGER DEFAULT 1 )")
+		sqc.execute("create table users ( userid INTEGER PRIMARY KEY, username TEXT, password TEXT, fullname TEXT, last TEXT )")
 		sqc.execute("insert into users ( userid, username, password, fullname ) values (?, ?, ?, ?)", (1, mySord.gameadmin(), mySord.gameadminpass(), mySord.admin()))
 		sqc.execute("insert into stats ( userid ) values (?)", (1,))
 
@@ -225,9 +225,9 @@ def handleClient(connection):
 		
 		if ( not quitfull ):
 			if ( not SORDDEBUG ):
-				currentUser.write(module_dailyhappen(True, sqr, mySord.sqlPrefix()))
+				currentUser.write(module_dailyhappen(True, sqc))
 				currentUser.pause()
-				currentUser.write( module_who(artwork, sqr, mySord.sqlPrefix()))
+				currentUser.write( module_who(artwork, sqc))
 				currentUser.pause()
 				currentUser.write(module_viewstats(currentUser))
 				currentUser.pause()
@@ -256,7 +256,7 @@ def handleClient(connection):
 			elif ( data[0] == "d" or data[0] == "D" ):
 				connection.send('D')
 				currentUser.jennielevel = 0
-				currentUser.write(module_dailyhappen(True, sqr, mySord.sqlPrefix()))
+				currentUser.write(module_dailyhappen(True, sqc))
 				currentUser.pause()
 			elif ( data[0] == "?" ):
 				connection.send('?')
@@ -266,12 +266,12 @@ def handleClient(connection):
 			elif ( data[0] == "p" or data[0] == "P" ):
 				connection.send('P')
 				currentUser.jennielevel = 0
-				currentUser.write(module_who(artwork, sqr, mySord.sqlPrefix()))
+				currentUser.write(module_who(artwork, sqc))
 				currentUser.pause()
 			elif ( data[0] == "l" or data[0] == "L" ):
 				connection.send('L')
 				currentUser.jennielevel = 0
-				currentUser.write(module_list(artwork, sqr, mySord.sqlPrefix()))
+				currentUser.write(module_list(artwork, sqc))
 				currentUser.pause()
 			elif ( data[0] == "a" or data[0] == "A" ):
 				connection.send('A')
