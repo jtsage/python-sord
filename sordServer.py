@@ -34,7 +34,7 @@ from sord.usereditor import *
 from socket import *
 from config import sord
 myHost = ''  #all hosts.
-myPort = 6969 + random.randint(1, 8)
+myPort = 6969 #+ random.randint(1, 8)
 mySord = sord()
 
 try:
@@ -61,6 +61,8 @@ def testdb(log):
 	if ( isfile("./" + mySord.sqlitefile()) ):
 		sqc = sqlite3.connect("./" + mySord.sqlitefile())
 		sqr = sqc.cursor()
+		sqc.execute("vacuum")
+		sqc.commit()
 		for row in sqr.execute("select value from sord where name=?", ('version',)):
 			version, = row
 			if ( version > 0 ):
@@ -520,7 +522,7 @@ def dispatcher():
 	log = mainLogger(myPort)
 	log.add("-=-=-=-=-=-= SORD Server Version " + mySord.version() + " =-=-=-=-=-=-")
 	testdb(log)
-	log.add(" === Starting Server (Port:"+str(myPort)+")")
+	log.add(" === Starting Server on port: "+str(myPort))
 	if ( SORDDEBUG ):
 		log.add(" !!! DEBUG MODE ENABLED !!!")
 	if ( SKIPLONGANSI ):
@@ -532,19 +534,53 @@ def dispatcher():
 	curses.init_pair(2, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
 	curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLACK)
 	curses.init_pair(4, curses.COLOR_GREEN, curses.COLOR_BLACK)
+	curses.init_pair(5, curses.COLOR_BLACK, curses.COLOR_BLACK)
 	curses.noecho()
 	curses.curs_set(0)
-	cmdscreen.border(0)
 	cmdscreen.timeout(1000)
 	toty, totx = cmdscreen.getmaxyx()
 	loglines = toty - 7
 	
-	cmdscreen.hline((toty-3), 1, ord('='), (totx-2))
-	cmdscreen.hline(2, 1, ord('='), (totx-2))
-	cmdscreen.addstr((toty-3), (totx-10), '(Q,D,A)')
+	cmdscreen.attron(curses.color_pair(5) | curses.A_BOLD)
+	cmdscreen.border(0)
+	cmdscreen.hline((toty-3), 1,  curses.ACS_HLINE, (totx-2))
+	cmdscreen.hline(2, 1, curses.ACS_HLINE, (totx-2))
+	cmdscreen.attroff(curses.color_pair(5) | curses.A_BOLD)
+	cmdscreen.addstr((toty-3), (totx-13), '(Q,D,A,S,?)')
 	cmdscreen.addstr(1,(totx / 2)-21, 'Saga Of The Red Dragon -=- Command Center', curses.A_BOLD)
-	cmdscreen.addstr(2,6,'-server-log-')
-	cmdscreen.addstr((toty-3),6,'-server-stats-')
+	cmdscreen.addstr(1,(totx / 2)-21, 'S', curses.color_pair(3) | curses.A_BOLD)
+	cmdscreen.addstr(1,(totx / 2)-16, 'O', curses.color_pair(3) | curses.A_BOLD)
+	cmdscreen.addstr(1,(totx / 2)-13, 'T', curses.color_pair(3) | curses.A_BOLD)
+	cmdscreen.addstr(1,(totx / 2)-9, 'R', curses.color_pair(3) | curses.A_BOLD)
+	cmdscreen.addstr(1,(totx / 2)-5, 'D', curses.color_pair(3) | curses.A_BOLD)
+	cmdscreen.addstr(1,(totx / 2)-20, 'aga', curses.color_pair(3))
+	cmdscreen.addstr(1,(totx / 2)-15, 'f', curses.color_pair(3))
+	cmdscreen.addstr(1,(totx / 2)-12, 'he', curses.color_pair(3))
+	cmdscreen.addstr(1,(totx / 2)-8, 'ed', curses.color_pair(3))
+	cmdscreen.addstr(1,(totx / 2)-4, 'ragon', curses.color_pair(3))
+	cmdscreen.addstr(1,(totx / 2)+7, 'ommand', curses.color_pair(0))
+	cmdscreen.addstr(1,(totx / 2)+15, 'enter', curses.color_pair(0))
+	cmdscreen.addstr(2,7, 'server')
+	cmdscreen.addstr(2,14, 'log')
+	cmdscreen.addstr((toty-3),7,'server')
+	cmdscreen.addstr((toty-3),14, 'stats')
+	cmdscreen.addch(toty-1,24,curses.ACS_BTEE, curses.color_pair(5) | curses.A_BOLD)
+	cmdscreen.addch(toty-1,44,curses.ACS_BTEE, curses.color_pair(5) | curses.A_BOLD)
+	cmdscreen.addch(toty-1,60,curses.ACS_BTEE, curses.color_pair(5) | curses.A_BOLD)
+	cmdscreen.addch(toty-3,24,curses.ACS_TTEE, curses.color_pair(5) | curses.A_BOLD)
+	cmdscreen.addch(toty-3,44,curses.ACS_TTEE, curses.color_pair(5) | curses.A_BOLD)
+	cmdscreen.addch(toty-3,60,curses.ACS_TTEE, curses.color_pair(5) | curses.A_BOLD)
+	cmdscreen.addch(toty-3,0,curses.ACS_LTEE, curses.color_pair(5) | curses.A_BOLD)
+	cmdscreen.addch(toty-3,totx-1,curses.ACS_RTEE, curses.color_pair(5) | curses.A_BOLD)
+	cmdscreen.addch(2,0,curses.ACS_LTEE, curses.color_pair(5) | curses.A_BOLD)
+	cmdscreen.addch(2,totx-1,curses.ACS_RTEE, curses.color_pair(5) | curses.A_BOLD)
+	cmdscreen.addstr(toty-2,2,'Connected Peers: ', curses.color_pair(2))
+	cmdscreen.addstr(toty-2,26,'Total Peers: ', curses.color_pair(2))
+	cmdscreen.addstr(toty-2,46,'Port: ', curses.color_pair(2))
+	cmdscreen.addstr(toty-2,62,'Time: ', curses.color_pair(2))
+	cmdscreen.addch(toty-2,24,curses.ACS_VLINE, curses.color_pair(5) | curses.A_BOLD)
+	cmdscreen.addch(toty-2,44,curses.ACS_VLINE, curses.color_pair(5) | curses.A_BOLD)
+	cmdscreen.addch(toty-2,60,curses.ACS_VLINE, curses.color_pair(5) | curses.A_BOLD)
 	
 	print help
 	
@@ -568,17 +604,15 @@ def dispatcher():
 					thisattr = curses.color_pair(3) | curses.A_BOLD
 				elif ( line.find('-=-') > -1 ):
 					thisattr = curses.color_pair(0) | curses.A_BOLD
-				cmdscreen.addstr(lineno, 2, line.ljust(linelength), (thisattr))
+				cmdscreen.addstr(lineno, 2, line.ljust(linelength)[:linelength], (thisattr))
+				cmdscreen.chgat(lineno, 2, 17, curses.color_pair(0))
+				cmdscreen.chgat(lineno, 19, 2, curses.color_pair(5) | curses.A_BOLD)
 				lineno += 1
-			cmdscreen.addstr(toty-2,2,str(lineno).ljust(linelength))
-			cmdscreen.addstr(toty-2,2,'Connected Peers: ', curses.color_pair(2))
-			cmdscreen.addstr(toty-2,30,'Total Peers: ', curses.color_pair(2))
-			cmdscreen.addstr(toty-2,53,'Port: ', curses.color_pair(2))
-			cmdscreen.addstr(toty-2,70,'Time: ', curses.color_pair(2))
-			cmdscreen.addstr(toty-2,20,str(log.getactive()), curses.color_pair(4))
-			cmdscreen.addstr(toty-2,43,str(log.gettotal()), curses.color_pair(4))
-			cmdscreen.addstr(toty-2,59,str(log.getport()), curses.color_pair(4) | curses.A_BOLD)
-			cmdscreen.addstr(toty-2,76,time.strftime('%H:%M:%S', time.localtime()), curses.color_pair(4))
+			cmdscreen.addstr(toty-2,19,str(log.getactive()), curses.color_pair(4))
+			cmdscreen.addstr(toty-2,39,str(log.gettotal()), curses.color_pair(4))
+			cmdscreen.addstr(toty-2,52,str(log.getport()), curses.color_pair(4) | curses.A_BOLD)
+			cmdscreen.addstr(toty-2,67,'            ')
+			cmdscreen.addstr(toty-2,68,time.strftime('%H:%M:%S', time.localtime()), curses.color_pair(4))
 			cmdscreen.refresh()
 			key = cmdscreen.getch()
 			if ( key == ord('Q') or key == ord('q') ):
@@ -587,7 +621,7 @@ def dispatcher():
 				if ( SORDDEBUG ) :
 					SORDDEBUG = False
 					log.add("  !!! DEBUG MODE DISABLED !!!")
-					cmdscreen.addstr(toty-3,2,'=')
+					cmdscreen.addch(toty-3,2,curses.ACS_HLINE,curses.color_pair(5)|curses.A_BOLD)
 				else:
 					SORDDEBUG = True
 					log.add("  !!! DEBUG MODE ENABLED !!!")
@@ -596,11 +630,22 @@ def dispatcher():
 				if ( SKIPLONGANSI ) :
 					SKIPLONGANSI = False
 					log.add("  !!! LONG ANSI ENABLED !!! ")
-					cmdscreen.addstr(toty-3,4,'=')
+					cmdscreen.addch(toty-3,4,curses.ACS_HLINE,curses.color_pair(5)|curses.A_BOLD)
 				else:
 					SKIPLONGANSI = True
 					log.add("  !!! LONG ANSI DISABLED !!! ")
 					cmdscreen.addstr(toty-3,4,'A',curses.A_BOLD)
+			if ( key == ord('S') or key == ord('s') ):
+				f = open("sord.log", 'w')
+				for line in log.show(100):
+					f.write(line+"\n")
+				f.close()
+				log.add("   && Wrote log to file (sord.log)")
+			if ( key == ord('?') ):
+				log.add("(Q) Quit to shell")
+				log.add("(A) Toggle Long ANSI Display")
+				log.add("(D) Toggle Debug (autologin / skip intros) Mode")
+				log.add("(S) Save Current Log to File")
 
 		except KeyboardInterrupt:
 			curses.endwin()

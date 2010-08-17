@@ -356,7 +356,7 @@ def forest_fairies(user):
 	user.pause()
 	user.write("  \x1b[32mYou glance at the fairies, trying to decide what to do.\r\n\r\n")
 	user.write(func_normmenu("(A)sk for a Blessing"))
-	user.write(func_nomrmenu("(T)ry and catch one"))
+	user.write(func_normmenu("(T)ry and catch one"))
 	miniQuit = False
 	while ( not miniQuit ):
 		user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
@@ -730,7 +730,7 @@ def forest_lesson_d(user) :
 	user.write("...\x1b[0m")
 	
 	if ( thisChoice == random.randint(1,2) ):
-		user.write("\r\n   \x1b[1,32mDeath Knight #1: \x1b[0;32mWell spotted young warrior.                    We shall teach you!\x1b[0m\r\n")
+		user.write("\r\n   \x1b[1;32mDeath Knight #1: \x1b[0;32mWell spotted young warrior.                    We shall teach you!\x1b[0m\r\n")
 		user.write("  \x1b[32mYou recieve \x1b[1m1\x1b[0;32m use point")
 		user.updateSkillUse(1, 1)
 		user.hp = user.hpmax
@@ -739,13 +739,13 @@ def forest_lesson_d(user) :
 			user.write(" and \x1b[1m1\x1b[0;32m skill point")
 		user.write(".\x1b[0m\r\n")
 	else:
-		user.write("\r\n   \x1b[1,32mDeath Knight #3: \x1b[0;32mOh god no!  That wasn't right at all!\r\n                    Somebody get a mop and a bandaid!\x1b[0m\r\n")
+		user.write("\r\n   \x1b[1;32mDeath Knight #3: \x1b[0;32mOh god no!  That wasn't right at all!\r\n                    Somebody get a mop and a bandaid!\x1b[0m\r\n")
 
 def forest_lesson_t(user) :
 	""" LEarn to be a thief """
 	user.write(user.art.line())
 	user.write("\r\n  \x1b[32mYou come upon a gathering of the theives guild, they kinda smell bad.\x1b[0m\r\n")
-	user.write("\r\n   \x1b[1,32mThief #1: \x1b[0,32mWe can make you a better thief.  Just cost ya a gem.\x1b[0m\r\n")
+	user.write("\r\n   \x1b[1;32mThief #1: \x1b[0,32mWe can make you a better thief.  Just cost ya a gem.\x1b[0m\r\n")
 	user.write(func_normmenu("(G)ive him the gem"))
 	user.write(func_normmenu("(S)pit on him and walk away"))
 	user.write(func_normmenu("(M)utter incoherantly, hoping he'll leave"))
@@ -764,14 +764,14 @@ def forest_lesson_t(user) :
 			user.write('G')
 			if ( user.gems > 0 ):
 				user.updateSkillUse(3, 1)
-				user.write("\r\n  \x1b[32mYou recieve \x1b[1m1\x1b[0,32m use point")
+				user.write("\r\n  \x1b[32mYou recieve \x1b[1m1\x1b[0;32m use point")
 				if ( user.getSkillPoint(3) < 40 ):
 					user.updateSkillPoint(3, 1)
 					user.write(" and \x1b[1m1\x1b[0,32m skill point")
 				user.write(".\x1b[0m\n")
 				user.gems -= 1
 			else:
-				user.write("\r\n  \x1b[1,32mThief #1: \x1b[0,32mYou don't have any gems dumbass.\x1b[0m\r\n")
+				user.write("\r\n  \x1b[1,32mThief #1: \x1b[0;32mYou don't have any gems dumbass.\x1b[0m\r\n")
 			miniQuit = True
 
 def forest_lesson_m(user) :
@@ -829,10 +829,10 @@ def forest_lesson_m(user) :
 			if ( magicCorrect ):
 				user.write("\r\n  \x1b[32mWell Done young mage!\x1b[0m\r\n")
 				user.updateSkillUse(2, 1)
-				user.write("  \x1b[32mYou recieve \x1b[1m1\x1b[0,32m use point")
+				user.write("  \x1b[32mYou recieve \x1b[1m1\x1b[0;32m use point")
 				if ( user.getSkillPoint(2) < 40 ):
 					user.updateSkillPoint(2, 1)
-					user.write(" and \x1b[1m1\x1b[0,32m skill point")
+					user.write(" and \x1b[1m1\x1b[0;32m skill point")
 				user.write(".\x1b[0m\r\n")
 			else:
 				user.write("\r\n  \x1b[32mBetter luck next time!\x1b[0m\r\n")
@@ -962,7 +962,8 @@ def master_fight(user):
 			skipDisp = True
 
 	if ( ctrlWin ) :
-		user.exp += masters[thisUserLevel][2] / 10
+		addExp = masters[thisUserLevel][2] / 10
+		user.exp += addExp
 		user.level += 1
 		user.defence += masterwin[thisUserLevel][2]
 		user.str += masterwin[thisUserLevel][1]
