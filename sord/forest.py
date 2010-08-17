@@ -67,7 +67,7 @@ def killer_list(user):
 	""" Player List
 	* @return string Formatted output for display """
 	db = user.dbcon.cursor()
-	db.excute("SELECT u.userid, fullname, exp, level, class, sex, alive FROM users u, stats s WHERE u.userid = s.userid AND s.atinn = 0 AND u.userid <> ? AND u.userid NOT IN ( SELECT userid FROM online ) ORDER BY exp DESC", (user.thisUserID,))
+	db.execute("SELECT u.userid, fullname, exp, level, cls, sex, alive FROM users u, stats s WHERE u.userid = s.userid AND s.atinn = 0 AND u.userid <> ? AND u.userid NOT IN ( SELECT userid FROM online ) ORDER BY exp DESC", (user.thisUserID,))
 	output = "\r\n\r\n\x1b[32m    Name                    Experience    Level     Status\x1b[0m\r\n";
 	output += user.art.line()
 	for line in db.fetchall():
@@ -118,7 +118,7 @@ def module_forest(user):
 			user.write('X')
 			user.toggleXprt()
 		elif ( data[0] == 's' or data[0] == 'S' ):
-			if ( user.getLevel() == 12 ):
+			if ( user.level == 12 ):
 				user.write('S')
 				dragon_fight(user)
 		elif ( data[0] == 'h' or data[0] == 'H' ):
@@ -146,7 +146,7 @@ def module_forest(user):
 			user.write(func_casebold("\r\n  Your Mystical skills cannot help your here.\r\n", 2))
 		elif ( data[0] == 't' or data[0] == 'T' ):
 			user.write('T')
-			if ( user.horse() == True ):
+			if ( user.horse == True ):
 				dht_logic(user)
 			else:
 				user.write(func_casebold("\r\n  Your Thieving skills cannot help your here.\r\n", 2))
@@ -335,9 +335,9 @@ def forest_special(user):
 				miniQuit = True
 		user.pause()
 	elif ( happening == 10 ): # lessons DKNIGHT GOOD, 
-		if ( user.getClass() == 1 ):
+		if ( user.cls == 1 ):
 			forest_lesson_d(user)
-		elif ( user.getClass() == 2 ):
+		elif ( user.cls == 2 ):
 			forest_lesson_m(user)
 		else:
 			forest_lesson_t(user)
@@ -658,8 +658,8 @@ def forest_fight(user):
 			skipDisp = True
 
 	if ( ctrlWin ) :
-		user.updateExperience(enemies[thisUserLevel][thisEnemy][5])
-		user.updateGold(enemies[thisUserLevel][thisEnemy][4])
+		user.exp += enemies[thisUserLevel][thisEnemy][5]
+		user.gold += enemies[thisUserLevel][thisEnemy][4]
 		user.write("\r\n  \x1b[32mYou have recieved \x1b[1m"+str(enemies[thisUserLevel][thisEnemy][4])+"\x1b[22m gold and \x1b[1m"+str(enemies[thisUserLevel][thisEnemy][5])+"\x1b[22m experience\x1b[0m\r\n")
 		user.pause()
 	if ( ctrlDead ) :
@@ -856,7 +856,7 @@ def module_turgon(user):
 			user.write("?\r\n")
 		elif ( data[0] == 'q' or data[0] == 'Q' ):
 			user.write("Q\r\n")
-			if ( user.getLevel() < 12 ):
+			if ( user.level < 12 ):
 				thisUserLevel = user.level
 				thisUserExp   = user.exp
 				thisNeedExp   = masters[thisUserLevel][2] - thisUserExp
@@ -935,9 +935,9 @@ def master_fight(user):
 			if ( False ): # We Hit First (always)
 				if ( myAttack >= thisEnemyHP ): # If he's dead, he didn't hit us at all
 					hisAttack = 0
-			if ( hisAttack >= user.hp() ): # We are dead.  Bummer.
+			if ( hisAttack >= user.hp ): # We are dead.  Bummer.
 				ctrlDead = True
-				hisAttack = user.hp() # No insult to injury
+				hisAttack = user.hp # No insult to injury
 			if ( hisAttack > 0 ): # He hit us
 				user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
 				user.hp -= hisAttack
@@ -997,7 +997,7 @@ def killer_fight(user, usertokill):
 	user.write("\r\n  \x1b[32mYou have encountered "+usertokill.thisFullname+"!!\x1b[0m\r\n")
 
 	skipDisp = False
-	while ( user.hp() > 0 and usertokill.hp() > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
+	while ( user.hp > 0 and usertokill.hp > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
 		if ( not skipDisp ):
 			user.write(forest_menu(user, usertokill.hp, usertokill.thisFullname))
 		skipDisp = False
@@ -1161,6 +1161,10 @@ def dht_logic(user):
 		elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
 			user.write('R')
 			thisQuit = True
+		elif ( data[0] == '?' ):
+			user.write('?')
+			user.write(dht_main_menu(user))
+			skipDisp = True
 		elif ( data[0] == 'y' or data[0] == 'Y' ):
 			user.write('Y')
 			user.write(module_viewstats(user))
@@ -1272,7 +1276,7 @@ def dht_chance(user):
 					newclassnum = 3
 					thisLooper = True
 					user.write(func_casebold("\r\n  You're a real shitheel, you know that?\r\n", 2))
-			user.setClass(newclassnum)
+			user.cls = newclassnum
 		else:
 			skipDisp = True
 	

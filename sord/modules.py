@@ -510,7 +510,7 @@ def module_arthurs(user):
 		elif ( data[0] == "?" ):
 			user.write('?')
 			if ( user.expert ):
-				user.write(user.art.abdul())
+				user.write(user.art.arthur())
 		elif ( data[0] == 'Y' or data[0] == 'y' ):
 			user.write('Y')
 			user.write(module_viewstats(user))
