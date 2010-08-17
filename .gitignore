@@ -1,2 +1,6 @@
 *.pyc
 nbproject
+sord.db
+sord.log
+sord-last.log
+

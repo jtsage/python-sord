@@ -10,7 +10,7 @@
   * @copyright 2009-2011
   * @license http://sord.jtsage.com/LICENSE Disclaimer's License
   * @version 1.1
-  * Aug 16, 2010 - magic number: 5779
+  * Aug 16, 2010 - magic number: 5384
   
   @todo IGM framework"""
 import thread, threading, time, sys, traceback, random, curses, re
@@ -616,6 +616,10 @@ def dispatcher():
 			cmdscreen.refresh()
 			key = cmdscreen.getch()
 			if ( key == ord('Q') or key == ord('q') ):
+				f = open("sord-last.log", 'w')
+				for line in log.show(100):
+					f.write(line+"\n")
+				f.close()
 				raise KeyboardInterrupt
 			if ( key == ord('D') or key == ord('d') ):
 				if ( SORDDEBUG ) :

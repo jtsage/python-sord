@@ -745,7 +745,7 @@ def forest_lesson_t(user) :
 	""" LEarn to be a thief """
 	user.write(user.art.line())
 	user.write("\r\n  \x1b[32mYou come upon a gathering of the theives guild, they kinda smell bad.\x1b[0m\r\n")
-	user.write("\r\n   \x1b[1;32mThief #1: \x1b[0,32mWe can make you a better thief.  Just cost ya a gem.\x1b[0m\r\n")
+	user.write("\r\n   \x1b[1;32mThief #1: \x1b[0;32mWe can make you a better thief.  Just cost ya a gem.\x1b[0m\r\n")
 	user.write(func_normmenu("(G)ive him the gem"))
 	user.write(func_normmenu("(S)pit on him and walk away"))
 	user.write(func_normmenu("(M)utter incoherantly, hoping he'll leave"))
@@ -767,11 +767,11 @@ def forest_lesson_t(user) :
 				user.write("\r\n  \x1b[32mYou recieve \x1b[1m1\x1b[0;32m use point")
 				if ( user.getSkillPoint(3) < 40 ):
 					user.updateSkillPoint(3, 1)
-					user.write(" and \x1b[1m1\x1b[0,32m skill point")
+					user.write(" and \x1b[1m1\x1b[0;32m skill point")
 				user.write(".\x1b[0m\n")
 				user.gems -= 1
 			else:
-				user.write("\r\n  \x1b[1,32mThief #1: \x1b[0;32mYou don't have any gems dumbass.\x1b[0m\r\n")
+				user.write("\r\n  \x1b[1;32mThief #1: \x1b[0;32mYou don't have any gems dumbass.\x1b[0m\r\n")
 			miniQuit = True
 
 def forest_lesson_m(user) :
