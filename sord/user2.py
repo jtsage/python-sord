@@ -8,7 +8,7 @@
  * @subpackage phpsord-general
  * @author J.T.Sage
 """
-import time, socket
+import time, socket, random
 from config import sord
 
 class sorduser(object):
@@ -24,13 +24,24 @@ class sorduser(object):
 		'sung', 'flirt', 'atinn', 'master', 'horse', 'fairy', 
 		'dragon', 'alive']
 	
-	def __init__(self, loginname, dbcon, ntcon, art):
+	def __init__(self, loginname, dbcon, ntcon, art, speed = 0, noise=0):
 		""" Create a sord user class - all functions through here"""
 		self.dbcon = dbcon
 		self.ntcon = ntcon
 		self.art = art
 		self.jennielevel = 0
 		self.jennieused = False
+		self.linespeed = speed
+		self.noise = noise
+		
+		if ( speed == 0 ):
+			self.ppause = 0.001
+		elif ( speed == 1 ):
+			self.ppause = 0.002
+		elif ( speed == 2 ):
+			self.ppause = 0.0005
+		elif ( speed == 3 ):
+			self.ppause = 0.00001
 		
 		thisSQL = "SELECT userid,password,fullname FROM users WHERE username = '"+loginname+"'"
 		self.thisUserName = loginname
@@ -118,10 +129,15 @@ class sorduser(object):
 			
 	def write(self, data):
 		""" Send data to connected client """
-		for thisData in list(data):
-			if ( not self.quick ):
-				time.sleep(0.001)
-			self.ntcon.send(thisData)
+		if ( self.quick ): 
+			self.ntcon.send(data)
+		else:
+			for thisData in list(data):
+				if ( self.noise ):
+					if ( random.randint(1, 2000) == 3 ):
+						thisData = ''
+				time.sleep(self.ppause)
+				self.ntcon.send(thisData)
 
 	def pause(self):
 		""" Send pause string and wait for input """

@@ -10,10 +10,10 @@
   * @copyright 2009-2011
   * @license http://sord.jtsage.com/LICENSE Disclaimer's License
   * @version 1.1
-  * Aug 16, 2010 - magic number: 5526
+  * Aug 16, 2010 - magic number: 5779
   
   @todo IGM framework"""
-import thread, threading, time, sys, traceback, random
+import thread, threading, time, sys, traceback, random, curses, re
 #import MySQLdb
 import sqlite3
 from os.path import isfile
@@ -45,8 +45,6 @@ except:
 	print "Socket In Use!"
 	sys.exit()
 
-
-connectedHosts = 0
 IAC  = chr(255) # "Interpret As Command"
 DONT = chr(254)
 DO   = chr(253)
@@ -54,33 +52,35 @@ WONT = chr(252)
 WILL = chr(251)
 ECHO = chr(1)
 LINEMODE = chr(34) # Linemode option
-SORDDEBUG = False
-SORDDEBUG = True
-SKIPLONGANSI = False
-SKIPLONGANSI = True
+SORDDEBUG = False # Change in command center now!
+SKIPLONGANSI = False # Change in command center now!
 
-def testdb():
+
+def testdb(log):
+	""" Check for db existence and check version """
 	if ( isfile("./" + mySord.sqlitefile()) ):
 		sqc = sqlite3.connect("./" + mySord.sqlitefile())
 		sqr = sqc.cursor()
 		for row in sqr.execute("select value from sord where name=?", ('version',)):
 			version, = row
 			if ( version > 0 ):
-				print " =+= SQLite Database is up to date"
+				log.add(" === SQLite Database is up to date")
 			else:
-				print " =+= SQLite Database is out of date (corrupt), rebuilding..."
-				updatedb()
+				log.add(" === SQLite Database is out of date (corrupt), rebuilding...")
+				updatedb(log)
 		sqc.close()
 	else:
-		createdb()
+		createdb(log)
 		
-def updatedb():
+def updatedb(log):
+	""" Update sord datebase - for now, nuke and start over """
 	copy("./" + mySord.sqlitefile(), "./" + mySord.sqlitefile()+".bak")
 	unlink("./" + mySord.sqlitefile())
 	createdb()
 		
-def createdb():
-	print " =+= Creating New Database - First Run!"
+def createdb(log):
+	""" Create new sord database """
+	log.add(" === Creating New Database - First Run!")
 	sqc = sqlite3.connect("./" + mySord.sqlitefile())
 	
 	statstable = [ # (name, default value)
@@ -131,8 +131,7 @@ def createdb():
 def now():			  #Server Time
 	return time.ctime(time.time())
 	
-def handleClient(connection):
-	global connectedHosts
+def handleClient(connection, log):
 	try:
 		loggedin = False
 		sqc = sqlite3.connect("./" + mySord.sqlitefile())
@@ -190,8 +189,8 @@ def handleClient(connection):
 		for row in sqr.execute("select value from sord where name=?", ('lastday',)):
 			lday, = row
 			if ( int(lday) < int(checklast) ):
-				connection.send("Updateing... to NEW DAY... ")
-				print ' --- DAY ROLLOVER HAPPENED AT', now()
+				connection.send("Updating... to NEW DAY... ")
+				log.add(" === DAY ROLLOVER")
 				rsaying = randdaily[random.randint(0, 9)]
 				laster = time.strftime('%Y%j', time.localtime(time.mktime(time.localtime()) - (mySord.deleteInactive()*24*60*60)))
 				sqc.execute("UPDATE stats set ffight = ? WHERE 1", (mySord.forestFights(), ))
@@ -208,13 +207,63 @@ def handleClient(connection):
 				sqc.execute("UPDATE sord set value = ? WHERE name = 'lastday'", (time.strftime(timestr, time.localtime()),))
 				sqc.commit()
 				connection.send(" DONE!\r\n")
-				
+		
+		""" Line speed and noise options """
 		func_pauser(connection)
+		LINESPEED = 0
+		LINENOISE = 0
+		func_slowecho(connection, "\r\n"+func_normmenu('(A) 1200 Baud'))
+		func_slowecho(connection, func_normmenu('(B) 2400 Baud'))
+		func_slowecho(connection, func_normmenu('(C) 28800 Baud'))
+		func_slowecho(connection, func_normmenu('(D) T1 Line (no delay)'))
+		func_slowecho(connection, func_casebold('\r\n  Emulated Linespeed [B] : ', 7))
+		linespeeds = ['2400', '1200', '28800', 'ISDN' ]
+		quitter = False
+		while ( not quitter):
+			data = connection.recv(2)
+			if not data: break
+			elif ( data == "A" or data == "a" ):
+				connection.send('A')
+				LINESPEED = 1
+				quitter = True
+			elif ( data == "B" or data == "b" ):
+				connection.send('B')
+				LINESPEED = 0
+				quitter = True
+			elif ( data == "C" or data == "c" ):
+				connection.send('C')
+				LINESPEED = 2
+				quitter = True
+			elif ( data == "D" or data == "d" ):
+				connection.send('D')
+				LINESPEED = 3
+				quitter = True
+			else:
+				connection.send('B')
+				LINESPEED = 0
+				quitter = True
+		log.add('   ** User at emulated linespeed::' + linespeeds[LINESPEED] + ' ' + str(thisClientAddress))
+		func_slowecho(connection, func_casebold('\r\n  Emulated Line Noise [y/N] : ', 7))
+		quitter = False
+		while ( not quitter):
+			data = connection.recv(2)
+			if not data: break
+			elif ( data == "Y" or data == "y" ):
+				connection.send('Y')
+				log.add('   ** User at emulated line noise:: ' + str(thisClientAddress))
+				LINENOISE = 1
+				quitter = True
+			else:
+				connection.send('N')
+				LINENOISE = 0
+				quitter = True
+		
 		if ( not SORDDEBUG ):
 			if ( not SKIPLONGANSI ):
-				func_slowecho(connection, artwork.header())
+				func_slowecho(connection, artwork.header(), LINESPEED, LINENOISE)
 			func_pauser(connection)
 	
+		""" Intro Menu """
 		quitter = False
 		quitfull = False
 		if ( SORDDEBUG):
@@ -222,23 +271,26 @@ def handleClient(connection):
 		skipDisp = False
 		while ( not quitter ):
 			if ( not skipDisp ):
-				func_slowecho(connection, artwork.banner(mySord,sqr))
+				func_slowecho(connection, artwork.banner(mySord,sqr), LINESPEED, LINENOISE)
 			skipDisp = False
-			data = connection.recv(1)
+			data = connection.recv(2)
 			if not data: break
 			elif ( data == "Q" or data == "q" ):
+				connection.send('Q')
 				quitter = True
 				quitfull = True
 			elif ( data == "L" or data == "l" ):
-				func_slowecho(connection, module_list(artwork, sqr, mySord.sqlPrefix()))
+				connection.send('L')
+				func_slowecho(connection, module_list(artwork, sqc, ''), LINESPEED, LINENOISE)
 				func_pauser(connection)
 			elif ( data == "E" or data == "e" ):
-				print '   ** User Logging In::' + str(thisClientAddress)
+				connection.send('E')
+				log.add('   ** User Logging In::' + str(thisClientAddress))
 				quitter = True
 			elif ( data == 'S' or data == 's' ):
 				func_slowecho(connection, "S\r\n")
 				for storyitem in story:
-					func_slowecho(connection, func_casebold("  \x1b[37m" + storyitem + "\r\n", 7))
+					func_slowecho(connection, func_casebold("  \x1b[37m" + storyitem + "\r\n", 7), LINESPEED, LINENOISE)
 				func_pauser(connection)
 			else:
 				skipDisp = True
@@ -246,43 +298,45 @@ def handleClient(connection):
 		ittr = 0
 		if ( SORDDEBUG ):
 			loggedin = True
-			currentUser = sorduser('jtsage', sqc, connection, artwork)
+			currentUser = sorduser(mySord.gameadmin(), sqc, connection, artwork, LINESPEED, LINENOISE)
 	
+		""" Login Code """
 		while ( not loggedin and not quitfull ):
 			username = ""
 			password = ""
 			currentUser = ""
 			ittr += 1
 			if ( ittr > 3 ):
-				func_slowecho(connection, func_casebold("\r\n\r\nDisconnecting - Too Many Login Attempts\r\n", 1))
-				print '  !!! Too Many Login Attemtps::' + str(thisClientAddress)
+				func_slowecho(connection, func_casebold("\r\n\r\nDisconnecting - Too Many Login Attempts\r\n", 1), LINESPEED, LINENOISE)
+				log.add('  !!! Too Many Login Attemtps::' + str(thisClientAddress))
 				raise Exception, "Too many bad logins!"
-			func_slowecho(connection, func_casebold("\r\n\r\nWelcome Warrior!  Enter Your Login Name (OR '\x1b[1m\x1b[31mnew\x1b[32m') :-: ", 2))
+			func_slowecho(connection, func_casebold("\r\n\r\nWelcome Warrior!  Enter Your Login Name (OR '\x1b[1m\x1b[31mnew\x1b[32m') :-: ", 2), LINESPEED)
 			username = func_getLine(connection, True)
-			currentUser = sorduser(username, sqc, connection, artwork)
+			currentUser = sorduser(username, sqc, connection, artwork, LINESPEED, LINENOISE)
 			if ( currentUser.thisUserID > 0 ):
-				func_slowecho(connection, func_casebold("\r\nPassword :-: ",2));  
+				func_slowecho(connection, func_casebold("\r\nPassword :-: ",2), LINESPEED, LINENOISE);  
 				password = func_getLine(connection, False)
 				password = password.strip()
 				if ( password == currentUser.thisPassword ):
 					loggedin = True
 				else:
-					func_slowecho(connection, func_casebold("\r\nIncorrect Password\r\n", 1))
+					func_slowecho(connection, func_casebold("\r\nIncorrect Password\r\n", 1), LINESPEED, LINENOISE)
 			else:
 				if ( username == "new" ):
-					print '   ** New User! ' + str(thisClientAddress)
+					log.add('   ** New User! ' + str(thisClientAddress))
 					newusername = module_newuser(currentUser)
-					currentUser = sorduser(newusername, sqc, connection, artwork)
+					currentUser = sorduser(newusername, sqc, connection, artwork, LINESPEED, LINENOISE)
 					newclass = currentUser.cls
 					currentUser.updateSkillUse(newclass, 1)
 					currentUser.updateSkillPoint(newclass, 1)
 					loggedin = True
+					log.add('   ** User Created: ' + newusername)
 				else:
-					func_slowecho(connection, func_casebold("\r\nUser Name Not Found!\r\n",2))
+					func_slowecho(connection, func_casebold("\r\nUser Name Not Found!\r\n",2), LINESPEED, LINENOISE)
 				
 		if ( not quitfull ):
 			currentUser.login()
-			print '   ** User Logged in::' + currentUser.thisFullname + ' ' + str(thisClientAddress)
+			log.add('   ** User Logged in::' + currentUser.thisFullname + ' ' + str(thisClientAddress))
 
 			if not currentUser.alive :
 				quitfull = 2
@@ -292,11 +346,12 @@ def handleClient(connection):
 			if ( not SORDDEBUG ):
 				currentUser.write(module_dailyhappen(True, sqc))
 				currentUser.pause()
-				currentUser.write( module_who(artwork, sqc))
+				currentUser.write(module_who(artwork, sqc))
 				currentUser.pause()
 				currentUser.write(module_viewstats(currentUser))
 				currentUser.pause()
 	
+		""" Main Menu Logic """
 		skipDisp = False
 		while ( not quitfull ):
 			if ( not skipDisp ):
@@ -404,9 +459,9 @@ def handleClient(connection):
 					currentUser.jennielevel = 0
 			elif ( data[0] == "!" ):
 				if (currentUser.thisUserID == 1):
-					print " !!! ENTERING USER EDITOR !!!"
+					log.add(" !!! ENTERING USER EDITOR !!!")
 					editor_main_logic(currentUser)
-					print " !!! EXITING USER EDITOR !!!"
+					log.add(" !!! EXITING USER EDITOR !!!")
 				else:
 					skipDisp = True
 			elif ( data[0] == "@" ):
@@ -420,66 +475,178 @@ def handleClient(connection):
 		exitTop = len(exitQuote) - 1
 		exitThis = exitQuote[random.randint(0, exitTop)]
 		connection.send(func_casebold("\r\n\r\n   "+exitThis+"\r\n\r\n", 7))
+		connection.send("NO CARRIER\r\n\r\n")
 		if ( loggedin ):
 			currentUser.logout()
 		connection.shutdown(SHUT_RD)
 		connection.close()
 		sqc.close()
-		print '  *** Thread Disconnected:' + str(thisClientAddress) + " at " + now()
-		connectedHosts -= 1
-		print "  --- Connected Hosts: " + str(connectedHosts)
+		log.add('  *** Thread Disconnected:' + str(thisClientAddress))
+		log.remcon()
 		thread.exit()
 		
 	except Exception as e:
 		skipClose = False
 		if ( e[0] == "timed out" ):
-			print "  *** Network Timeout: " + str(thisClientAddress) + " at " + now()
+			log.add("  *** Network Timeout: " + str(thisClientAddress))
 			connection.send("\r\n\r\n\x1b[0mNetwork Connection has timed out.  120sec of inactivity.\r\n\r\n")
+			connection.send("NO CARRIER\r\n\r\n")
 		elif ( e[0] == "normal" ):
-			print "  *** Normal Exit ("+e[1]+"): " + str(thisClientAddress) + " at " + now()
+			log.add("  *** Normal Exit ("+e[1]+"): " + str(thisClientAddress))
 		elif type(e) is error:
-			print "  *** Remote Closed Host: " + str(thisClientAddress) + " at " + now()
+			log.add("  *** Remote Closed Host: " + str(thisClientAddress))
 			skipClose = True
 		else:
-			print "  !!! Program Error Encountered("+ str(e) + "): " + str(thisClientAddress) + " at " + now()
+			log.add("  !!! Program Error Encountered("+ str(e) + "): " + str(thisClientAddress))
 			try:
 				connection.send("\r\n\x1b[0mProgram Error Encountered ( "+str(e)+" ), Closing Connection.\r\n")
+				connection.send("NO CARRIER\r\n\r\n")
 			except:
-				print "   && No message to client"
+				log.add("   && No message to client")
 			formatted = traceback.format_exc().splitlines()
 			for formattedline in formatted:
-				print "    ~~~ " + formattedline
+				log.add("    ~~~ " + formattedline)
 		if ( loggedin ):
 			currentUser.logout()
-		connectedHosts -= 1
+		log.remcon()
 		if ( not skipClose ):
 			connection.shutdown(SHUT_RD)
 			connection.close()
-		print "  --- Connected Hosts: " + str(connectedHosts)
 		thread.exit()
 	
 def dispatcher():
-	global connectedHosts
-	print "-=-=-=-=-=-= SORD Server Version " + mySord.version() + " =-=-=-=-=-=-"
-	print " === Starting Server (Port:"+str(myPort)+")"
+	""" Spawn server thread, run command center """
+	global SORDDEBUG, SKIPLONGANSI
+	log = mainLogger(myPort)
+	log.add("-=-=-=-=-=-= SORD Server Version " + mySord.version() + " =-=-=-=-=-=-")
+	testdb(log)
+	log.add(" === Starting Server (Port:"+str(myPort)+")")
 	if ( SORDDEBUG ):
-		print " !!! DEBUG MODE ENABLED !!!"
+		log.add(" !!! DEBUG MODE ENABLED !!!")
 	if ( SKIPLONGANSI ):
-		print " !!! LONG ANSI DISABLED !!!"
+		log.add(" !!! LONG ANSI DISABLED !!!")
+	thread.start_new(mainlisten, (log, ))
+	cmdscreen = curses.initscr()
+	curses.start_color()
+	curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_BLACK)
+	curses.init_pair(2, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
+	curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLACK)
+	curses.init_pair(4, curses.COLOR_GREEN, curses.COLOR_BLACK)
+	curses.noecho()
+	curses.curs_set(0)
+	cmdscreen.border(0)
+	cmdscreen.timeout(1000)
+	toty, totx = cmdscreen.getmaxyx()
+	loglines = toty - 7
+	
+	cmdscreen.hline((toty-3), 1, ord('='), (totx-2))
+	cmdscreen.hline(2, 1, ord('='), (totx-2))
+	cmdscreen.addstr((toty-3), (totx-10), '(Q,D,A)')
+	cmdscreen.addstr(1,(totx / 2)-21, 'Saga Of The Red Dragon -=- Command Center', curses.A_BOLD)
+	cmdscreen.addstr(2,6,'-server-log-')
+	cmdscreen.addstr((toty-3),6,'-server-stats-')
+	
+	print help
+	
+	while True:
+		try:
+			lineno = 3
+			linelength = totx - 4
+			for line in log.show(loglines):
+				thisattr = curses.color_pair(0)
+				if ( line.find('===') > -1 ):
+					thisattr = curses.color_pair(4) | curses.A_BOLD
+				elif ( line.find(' *** ') > -1 ):
+					thisattr = curses.color_pair(4)
+				elif ( line.find(' ** ') > -1 ):
+					thisattr = curses.color_pair(1) | curses.A_BOLD
+				elif ( line.find(' !!! ') > -1 ):
+					thisattr = curses.color_pair(3)
+				elif ( line.find(' ~~~ ') > -1 ):
+					thisattr = curses.color_pair(3) | curses.A_BOLD
+				elif ( line.find(' && ') > -1 ):
+					thisattr = curses.color_pair(3) | curses.A_BOLD
+				elif ( line.find('-=-') > -1 ):
+					thisattr = curses.color_pair(0) | curses.A_BOLD
+				cmdscreen.addstr(lineno, 2, line.ljust(linelength), (thisattr))
+				lineno += 1
+			cmdscreen.addstr(toty-2,2,str(lineno).ljust(linelength))
+			cmdscreen.addstr(toty-2,2,'Connected Peers: ', curses.color_pair(2))
+			cmdscreen.addstr(toty-2,30,'Total Peers: ', curses.color_pair(2))
+			cmdscreen.addstr(toty-2,53,'Port: ', curses.color_pair(2))
+			cmdscreen.addstr(toty-2,70,'Time: ', curses.color_pair(2))
+			cmdscreen.addstr(toty-2,20,str(log.getactive()), curses.color_pair(4))
+			cmdscreen.addstr(toty-2,43,str(log.gettotal()), curses.color_pair(4))
+			cmdscreen.addstr(toty-2,59,str(log.getport()), curses.color_pair(4) | curses.A_BOLD)
+			cmdscreen.addstr(toty-2,76,time.strftime('%H:%M:%S', time.localtime()), curses.color_pair(4))
+			cmdscreen.refresh()
+			key = cmdscreen.getch()
+			if ( key == ord('Q') or key == ord('q') ):
+				raise KeyboardInterrupt
+			if ( key == ord('D') or key == ord('d') ):
+				if ( SORDDEBUG ) :
+					SORDDEBUG = False
+					log.add("  !!! DEBUG MODE DISABLED !!!")
+					cmdscreen.addstr(toty-3,2,'=')
+				else:
+					SORDDEBUG = True
+					log.add("  !!! DEBUG MODE ENABLED !!!")
+					cmdscreen.addstr(toty-3,2,'D',curses.A_BOLD)
+			if ( key == ord('A') or key == ord('a') ):
+				if ( SKIPLONGANSI ) :
+					SKIPLONGANSI = False
+					log.add("  !!! LONG ANSI ENABLED !!! ")
+					cmdscreen.addstr(toty-3,4,'=')
+				else:
+					SKIPLONGANSI = True
+					log.add("  !!! LONG ANSI DISABLED !!! ")
+					cmdscreen.addstr(toty-3,4,'A',curses.A_BOLD)
+
+		except KeyboardInterrupt:
+			curses.endwin()
+			print "\nS.O.R.D. Server Exiting. (main)  GoodBye!"
+			sockobj.shutdown(2)
+			sockobj.close()
+			sys.exit()
+
+def mainlisten(log):
+	""" Server listening thread """
 	while True:
 		try:
 			connection, address = sockobj.accept()
-			print '  *** Server connected by', address, 
-			print 'at', now()
-			thread.start_new(handleClient, (connection,))
-			connectedHosts += 1
-			print "  --- Connected Hosts: " + str(connectedHosts)
+			log.add('  *** Server connected by'+str(address))
+			thread.start_new(handleClient, (connection,log))
+			log.addcon()
 		except KeyboardInterrupt:
 			print "\n === Stopping Server"
 			sockobj.shutdown(2)
 			sockobj.close()
 			sys.exit()
 			
+class mainLogger():
+	""" Logger class """
+	def __init__(self, port):
+		self.__port = port
+		self.__mainLogger = list()
+		self.__activePeers = 0
+		self.__totalPeers = 0
+	def add(self, value):
+		tmptime = time.strftime('%Y-%m-%d %H:%M', time.localtime())
+		self.__mainLogger.append(tmptime+" :: "+value)
+		self.__mainLogger = self.__mainLogger[-100:]
+	def show(self, value):
+		return self.__mainLogger[(value * -1):]
+	def addcon(self):
+		self.__activePeers += 1
+		self.__totalPeers += 1
+	def remcon(self):
+		self.__activePeers -= 1
+	def getactive(self):
+		return self.__activePeers
+	def gettotal(self):
+		return self.__totalPeers
+	def getport(self):
+		return self.__port
 
-testdb()
+
 dispatcher()  #MAIN PROGRAM LOOP

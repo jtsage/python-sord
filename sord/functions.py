@@ -8,12 +8,23 @@
  * @subpackage phpsord-general
  * @author J.T.Sage
 """
-import re, time, socket
+import re, time, socket, random
 
-def func_slowecho(connection, data):
+def func_slowecho(connection, data, LINESPEED=0, NOISE=0):
 	"""slowecho"""
+	if ( LINESPEED == 0 ):
+		pause = 0.001
+	elif ( LINESPEED == 1 ):
+		pause = 0.002
+	elif ( LINESPEED == 2 ):
+		pause = 0.0005
+	elif ( LINESPEED == 3 ):
+		pause = 0.00001
 	for thisData in list(data):
-		time.sleep(0.001)
+		if ( NOISE ):
+			if ( random.randint(1, 2000) == 3 ):
+				thisData = ' '
+		time.sleep(pause)
 		connection.send(thisData)
 		
 
