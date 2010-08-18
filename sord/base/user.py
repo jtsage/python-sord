@@ -9,14 +9,11 @@
  * @author J.T.Sage
 """
 import time, socket, random
-from config import sord
 
 class sorduser(object):
-	
 	expert = False # Expert mode enabled
 	quick = False # No modem pause
 	skills = ['', 'd', 'm', 't' ] # Enumerated skill names (db)
-	thisSord = sord() # Local copy of config
 	directsql = [ # Direct SQL name access
 		'level', 'armor', 'weapon', 'gold', 'bank', 'defence', 
 		'str', 'hp', 'hpmax', 'exp', 'gems', 'charm', 'pkill', 
@@ -24,7 +21,7 @@ class sorduser(object):
 		'sung', 'flirt', 'atinn', 'master', 'horse', 'fairy', 
 		'dragon', 'alive']
 	
-	def __init__(self, loginname, dbcon, ntcon, art, speed = 0, noise=0):
+	def __init__(self, loginname, dbcon, ntcon, art, config, log = 0, speed = 0, noise=0):
 		""" Create a sord user class - all functions through here"""
 		self.dbcon = dbcon
 		self.ntcon = ntcon
@@ -33,6 +30,7 @@ class sorduser(object):
 		self.jennieused = False
 		self.linespeed = speed
 		self.noise = noise
+		self.config = config
 		
 		if ( speed == 0 ):
 			self.ppause = 0.001

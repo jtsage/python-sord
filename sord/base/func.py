@@ -3,14 +3,11 @@
  * General Base Functions.
  * 
  * Contains all low level input/output functions.
- * 
- * @package phpsord
- * @subpackage phpsord-general
- * @author J.T.Sage
+ *
 """
-import re, time, socket, random
+import re, time, random
 
-def func_slowecho(connection, data, LINESPEED=0, NOISE=0):
+def slowecho(connection, data, LINESPEED=0, NOISE=0):
 	"""slowecho"""
 	if ( LINESPEED == 0 ):
 		pause = 0.001
@@ -28,10 +25,9 @@ def func_slowecho(connection, data, LINESPEED=0, NOISE=0):
 		connection.send(thisData)
 		
 
-def func_pauser(connection):
+def pauser(connection):
 	"""Sreen pauser"""
-	#data = connection.recv(1024) #clear buffer
-	func_slowecho(connection, func_casebold("\r\n    :-: Press Any Key :-:", 2))
+	slowecho(connection, casebold("\r\n    :-: Press Any Key :-:", 2))
 	pauser_quit = False
 	while ( not pauser_quit ):
 		data = connection.recv(5)
@@ -40,7 +36,7 @@ def func_pauser(connection):
 		connection.send("\r\n")
 		
 
-def func_getLine(connection, echo, prompt=""):
+def getLine(connection, echo, prompt=""):
 	""" Get line from user"""
 	getterquit = False
 	retval = ""
@@ -63,7 +59,7 @@ def func_getLine(connection, echo, prompt=""):
 					connection.send('*')
 	return retval
 
-def func_caseclr(text, boldcolor, normcolor):
+def caseclr(text, boldcolor, normcolor):
 	""" Color by character case.
 	* Capitals returns in boldcolor, lowercase in normcolor
 	* 
@@ -75,7 +71,7 @@ def func_caseclr(text, boldcolor, normcolor):
 	nclrstr = "\x1b[0m\x1b[3" + str(normcolor) + "m"
 	return re.sub("([A-Z:<>])", bclrstr + r"\1" + nclrstr, text) + "\x1b[0m"
 
-def func_casebold(text, boldcolor):
+def casebold(text, boldcolor):
 	""" Color by character case.
 	* Capitals returns in bold of suplied color, lowercase in suplied color.
 	* 
@@ -86,7 +82,7 @@ def func_casebold(text, boldcolor):
 	nclrstr = "\x1b[0m\x1b[3" + str(boldcolor) + "m"
 	return re.sub("([A-Z:*<>])", bclrstr + r"\1" + nclrstr, text) + "\x1b[0m"
 
-def func_colorcode(text):
+def colorcode(text):
 	""" Process user entered color codes.
 	* Uses color codes contained in curly braces.  Standard ANSI codes work.
 	* 
@@ -96,7 +92,7 @@ def func_colorcode(text):
 	return re.sub("\{(\d+)\}", "\x1b[" + r"\1" + "m" , text) + "\x1b[0m"
 
 
-def func_normmenu(text):
+def normmenu(text):
 	"""Return a standard colored menu entry.
 	* 
 	* @param string $text Text to convert to menu entry
@@ -106,7 +102,7 @@ def func_normmenu(text):
 	return re.sub("\(([A-Z:<>])\)", bclrstr + r"\1" + nclrstr, text) + "\x1b[0m\r\n"
 
 
-def func_menu_2col(text1, text2, col1, col2):
+def menu_2col(text1, text2, col1, col2):
 	""" 2 Column Menu
 	* Generate a 2 column menu entry
 	* 
@@ -122,7 +118,7 @@ def func_menu_2col(text1, text2, col1, col2):
 	text2col = re.sub("\(([A-Z:<>])\)", bclrstr2 + r"\1" + nclrstr, text2) + "\x1b[0m"
 	return "  " + text1col + padnumcol(text1, 36) + text2col + "\x1b[0m\r\n"
 
-def func_maketime(user):
+def maketime(user):
 	""" Make a time since login string"""
 	currenttime = time.time()
 	ontime = int(currenttime) - int(user.logontime)
@@ -161,3 +157,53 @@ def padright(text, col):
 		retval += " "
 		ittr += 1
 	return retval + text
+
+def getclientconfig(connection, log):
+	LINESPEED = 0
+	LINENOISE = 0
+	slowecho(connection, "\r\n"+normmenu('(A) 1200 Baud'))
+	slowecho(connection, normmenu('(B) 2400 Baud'))
+	slowecho(connection, normmenu('(C) 28800 Baud'))
+	slowecho(connection, normmenu('(D) T1 Line (no delay)'))
+	slowecho(connection, casebold('\r\n  Emulated Linespeed [B] : ', 7))
+	linespeeds = ['2400', '1200', '28800', 'ISDN' ]
+	quitter = False
+	while ( not quitter):
+		data = connection.recv(2)
+		if not data: break
+		elif ( data == "A" or data == "a" ):
+			connection.send('A')
+			LINESPEED = 1
+			quitter = True
+		elif ( data == "B" or data == "b" ):
+			connection.send('B')
+			LINESPEED = 0
+			quitter = True
+		elif ( data == "C" or data == "c" ):
+			connection.send('C')
+			LINESPEED = 2
+			quitter = True
+		elif ( data == "D" or data == "d" ):
+			connection.send('D')
+			LINESPEED = 3
+			quitter = True
+		else:
+			connection.send('B')
+			LINESPEED = 0
+			quitter = True
+	log.add('   ** User at emulated linespeed::' + linespeeds[LINESPEED] + ' ' + str(connection.getpeername()))
+	slowecho(connection, casebold('\r\n  Emulated Line Noise [y/N] : ', 7))
+	quitter = False
+	while ( not quitter):
+		data = connection.recv(2)
+		if not data: break
+		elif ( data == "Y" or data == "y" ):
+			connection.send('Y')
+			log.add('   ** User at emulated line noise:: ' + str(connection.getpeername()))
+			LINENOISE = 1
+			quitter = True
+		else:
+			connection.send('N')
+			LINENOISE = 0
+			quitter = True
+	return (LINESPEED, LINENOISE)
