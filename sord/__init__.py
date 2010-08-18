@@ -1,1 +1,1 @@
-from . import config, base, game
+from . import config, base, game, igm

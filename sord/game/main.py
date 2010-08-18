@@ -4,12 +4,52 @@
  *
 """
 import random
-from ..base import func, editor
-#from ..base import editor
+from ..base import func
+from ..base import peditor
 from . import util
 from . import data
 from . import menu
+from ..sord import igm
 
+class other():
+	def __init__(self, user):
+		self.user = user
+	def run(self):
+		""" Main Menu Logic """
+		quitfull = False
+		skipDisp = False
+		while ( not quitfull ):
+			if ( not skipDisp ):
+				ptime = func.maketime(self.user)
+				optionslist = ""
+				self.user.write("\r\n\r\n\x1b[1;37m  Saga of the Red Dragon - \x1b[0m\x1b[32mOther Places\x1b[0m\r\n")
+				self.user.write(self.user.art.line())
+				self.user.write("\x1b[32m  You see some odd places to go...\r\n\r\n")
+				for item in igm.igmlist:
+					optionslist += item[0] + ","
+					self.user.write(func.normmenu("("+item[0]+") "+item[2]))
+				self.user.write("\r\n  \x1b[1;35mOther Places\x1b[0m \x1b[1;30m("+optionslist+"Q)\x1b[0m\x1b[1;30m (? for menu)\x1b[0m\r\n")
+				self.user.write("  \x1b[32mYour command, \x1b[1m" + self.user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m")
+			skipDisp = False
+			key = self.user.ntcon.recv(2)
+			if not key: break
+			elif ( key[0] == "?" ):
+				skipDisp = False
+			elif ( key[0] == "q" or key[0] == "Q" ):
+				self.user.ntcon.send('Q')
+				quitfull = True
+			else:
+				skipDisp = True
+				for item in igm.igmlist:
+					if ( key[0] == item[0] or key[0] == item[0].lower() ):
+						self.user.write(key[0].upper())
+						thismod = item[1]
+						thismod.run(self.user)
+						del thismod
+						skipDisp = False
+						
+				
+					
 
 class mainmenu():
 	def __init__(self, user):
@@ -58,6 +98,12 @@ class mainmenu():
 				self.user.jennielevel = 0
 				self.user.write(util.list(self.user.art, self.user.sqcon))
 				self.user.pause()
+			elif ( key[0] == "o" or key[0] == "O" ):
+				self.user.ntcon.send('O')
+				self.user.jennielevel = 0
+				thismod = other(self.user)
+				thismod.run()
+				del thismod
 			elif ( key[0] == "a" or key[0] == "A" ):
 				self.user.ntcon.send('A')
 				self.user.jennielevel = 0
@@ -91,7 +137,7 @@ class mainmenu():
 				self.user.jennielevel = 0
 				util.sendmail(user)
 			elif ( key[0] == "i" or key[0] == "I" ): #"""RIGHT HERE"""
-				ntcon.send('I')
+				self.user.tcon.send('I')
 				rdi_logic(user)
 			elif ( key[0] == "f" or key[0] == "F" ): #"""RIGHT HERE"""
 				self.user.ntcon.send('F')
@@ -133,7 +179,7 @@ class mainmenu():
 			elif ( key[0] == "!" ):	
 				if (self.user.thisUserID == 1):
 					self.user.log.add(" !!! ENTERING USER EDITOR !!!")
-					thismod = editor.editor(self.user)
+					thismod = peditor.editor(self.user)
 					thismod.run()
 					del thismod
 					self.user.log.add(" !!! EXITING USER EDITOR !!!")

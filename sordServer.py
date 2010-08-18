@@ -160,6 +160,10 @@ def sordLoop(config, log):
 	log.add("-=-=-=-=-=-= SORD Server Version " + config.version + " =-=-=-=-=-=-")	
 	sord.base.dbase.initialTest(config, log)
 	log.add(" === Starting Server on port: "+str(config.port))
+	igms = list()
+	for item in sord.igm.igmlist:
+		igms.append(item[2])
+	log.add(" === Found IGMs: "+str(igms))
 	
 	thread.start_new(telnetServe, (config, log))
 	

@@ -78,9 +78,9 @@ def mainlong(user):
 	thismenu += func.menu_2col("(I)nn", "(T)urgons Warrior Training", 5, 5)
 	thismenu += func.menu_2col("(Y)e Old Bank", "(L)ist Warriors", 5, 5)
 	thismenu += func.menu_2col("(W)rite Mail", "(D)aily News", 5, 5)
-	#thismenu += func_menu_2col("(C)onjugality List", "(O)ther Places", 5, 5)
+	thismenu += func.menu_2col("(P)eople Online", "(O)ther Places", 5, 5)
 	thismenu += func.menu_2col("(X)pert Mode", "(M)ake Announcement", 7, 5)
-	thismenu += func.menu_2col("(P)eople Online", "(Q)uit to Fields", 5, 2)
+	thismenu += func.menu_2col("", "(Q)uit to Fields", 5, 2)
 	return thismenu
 
 def mainshort(user):
@@ -89,7 +89,7 @@ def mainshort(user):
 	* @return string Fully formatted menu """
 	ptime = func.maketime(user)
 	thismenu  = "\r\n  \x1b[1;35mThe Town Square\x1b[0m\x1b[1;30m (? for menu)\x1b[0m\r\n"
-	thismenu += "  \x1b[1;30m(F,S,K,A,H,V,I,T,Y,L,W,D,X,M,P,Q)\x1b[0m\r\n\r\n"
+	thismenu += "  \x1b[1;30m(F,S,K,A,H,V,I,T,Y,L,W,D,P,O,X,M,Q)\x1b[0m\r\n\r\n"
 	thismenu += "  \x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
 	return thismenu
 
