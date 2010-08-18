@@ -6,6 +6,64 @@
 from ..base import func
 from . import data
 
+def readmail(user):
+	""" Read waiting in-game e-mail. Very simple.
+	* @param int $userid User ID to pull in game mail for."""
+	db = user.dbcon.cursor()
+	db.execute("SELECT `id`, `from`, `message`, DATE_FORMAT(sent, '%W %M %Y, %H:%i') as sent FROM mail WHERE `to` = ?", (user.thisUserID,))
+	for (id, sender, message, sent) in db.fetchall():
+		thismail  = "\r\n  \x1b[1;37mNew Mail...\x1b[0m\r\n"
+		thismail += "\x1b[32m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\x1b[0m\r\n"
+		thismail += "\x1b[32m  From: \x1b[1m" + user.userGetName(sender) + "\x1b[0m\r\n"
+		thismail += "\x1b[32m  Date: \x1b[1m" + sent + "\x1b[0m\r\n"
+		thismail += "\x1b[32m  Message: " + func.colorcode(message) + "\x1b[0m\r\n\r\n"
+		user.write(thismail)
+		user.pause()
+	db.close()
+	user.dbcon.execute("DELETE FROM mail WHERE `to` = ?", (user.thisUserID,))
+	user.dbcon.commit()
+
+def announce(user):
+	""" Make announcment """
+	user.write(func.casebold("\r\n  Your announcment? :-: ", 2))
+	ann = func.getLine(user.ntcon, True)
+	user.dbcon.execute("INSERT INTO daily ( `data` ) VALUES ( ? )", (ann, ))
+	user.dbcon.commit()
+	user.write(func.casebold("\r\n  Announcment Made!\r\n", 2))
+	user.pause()
+
+def sendmail(user):
+	""" Send in game mail to a user """
+	toid = finduser(user, "\r\n  \x1b[32mSend mail to which user?")
+	if ( toid == 0 ):
+		return False
+	else:
+		user.write("\r\n  \x1b[32mYour message \x1b[1m:\x1b[0m ")
+		msg = func.getLine(user.ntcon, True)
+		user.dbcon.execute("INSERT INTO mail (`to`, `from`, `message`) VALUES ( ?, ?, ? )", (toid, user.thisUserID, msg))
+		user.dbcon.commit()
+		user.write(func.casebold("\r\n  Message Sent\r\n", 2))
+		user.pause()
+
+def finduser(user, prompter):
+	"""Find a user"""
+	user.write(prompter + " \x1b[1;32m:\x1b[0;32m-\x1b[1;32m:\x1b[0m ")
+	name = func.getLine(user.ntcon, True)
+	returnID = user.userExist(name)
+	if ( returnID > 0 ) :
+		if ( returnID == user.thisUserID ):
+			user.write(func.casebold("\r\n  Masturbation is gross...\r\n", 1))
+			return 0
+		else:
+			user.write("\r\n  \x1b[32mDid you mean \x1b[1m" + user.userGetName(returnID) +"\x1b[0m \x1b[1;30m(Y/N)\x1b[0m\x1b[32m ?\x1b[0m ")
+			yesno = user.ntcon.recv(2)
+			if ( yesno[0] == "Y" or yesno[0] == "y" ):
+				return returnID
+			else:
+				return 0
+	else:
+		return 0
+
 def viewstats(user):
 	""" View Player Stats
 	* @param int $userid User ID
@@ -115,3 +173,111 @@ def list(art, dbc):
 		output += func.padright(str(line[3]), 6) + "        " + lineMaster + func.padnumcol(lineMaster, 12) + lineStatus + "\r\n"
 	db.close()
 	return output + "\r\n"
+	
+def flowers(user):
+	""" The forest flowers """
+	output  = "\r\n\r\n  \x1b[1;37mStudy the forest flowers\x1b[22;32m....\x1b[0m\r\n"
+	output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+	db = user.dbcon.cursor()
+	db.execute("SELECT data, nombre FROM (SELECT * FROM flowers ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id")
+	for (data, nombre) in db.fetchall():
+		output += "    \x1b[32m"+nombre+" \x1b[1;37msays... \x1b[0m\x1b[32m" + func.colorcode(data)
+		output += "\x1b[0m\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+	output += "\r\n  \x1b[32mAdd to the conversation? (Y/N) \x1b[1m: \x1b[0m"
+	db.close()
+	user.write(output)
+	yesno = user.ntcon.recv(2)
+	if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
+		user.write(func.casebold("Y\r\n  What!? What do you want? :-: ", 2))
+		ann = func.getLine(user.ntcon, True)
+		user.dbcon.execute("INSERT INTO flowers ( `data`, `nombre` ) VALUES ( ?, ? )", (safeann, user.thisFullname))
+		user.dbcon.commit()
+		user.write(func.casebold("\r\n  Idiocy added!\r\n", 2))
+		user.pause()
+	else:
+		user.write('N\r\n')
+
+def dirt(user):
+	""" The slaughter dirt """
+	output  = "\r\n\r\n  \x1b[1;37mExamine the dirt\x1b[22;32m....\x1b[0m\r\n"
+	output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+	db = user.dbcon.cursor()
+	db.execute("SELECT data, nombre FROM (SELECT * FROM dirt ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id")
+	for (data, nombre) in db.fetchall():
+		output += "    \x1b[32m"+nombre+" \x1b[1;37msays... \x1b[0m\x1b[32m" + func.colorcode(data)
+		output += "\x1b[0m\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+	user.write(output)
+	user.pause()
+
+def newuser(user):
+	"""Create a user"""
+	user.write(func.casebold("\r\nCreating a New Character...\r\n", 2))
+	thisLooper = False
+	while ( not thisLooper ):
+		user.write(func.casebold("\r\nPlease Choose a Username (12 characters MAX) :-: ", 2))
+		newname = func.getLine(user.ntcon, True)
+		newname = newname[:12]
+		if ( user.userLoginExist(newname) ):
+			user.write(func.casebold("\r\nName In Use!\r\n", 1))
+		else:
+			thisLooper = True
+	thisLooper = False
+	while ( not thisLooper ):
+		user.write(func.casebold("\r\nAnd, how will you be addressed? (a Handle) (40 characters MAX) :-: ", 2))
+		newfname = func.getLine(user.ntcon, True)
+		newfname = newfname[:40]
+		if ( newfname == "" ):
+			user.write(func.casebold("\r\nHEY! No Anonymous Players!\r\n", 1))
+		else:
+			thisLooper = True
+	thisLooper = False
+	while ( not thisLooper ):
+		user.write(func.casebold("\r\nPick a Password (12 characters MAX) :-: ", 2))
+		newpass = func.getLine(user.ntcon, True)
+		newpass = newpass[:12]
+		if ( newpass == "" ):
+			user.write(func.casebold("\r\nPassword MUST Not Be Empty\r\n", 1))
+		else:
+			thisLooper = True
+	thisLooper = False
+	while ( not thisLooper ):
+		user.write(func.casebold("\r\nYour Sex (M/F) :-: ", 2))
+		data = user.ntcon.recv(2)
+		if not data: break
+		if ( data[0] == 'm' or data[0] == 'M' ):
+			user.write('M')
+			newsexnum = 1
+			thisLooper = True
+			user.write(func.casebold("\r\nMy, what a girly man you are...\r\n", 2))
+		if ( data[0] == 'f' or data[0] == 'F' ):
+			user.write('F')
+			newsexnum = 2
+			thisLooper = True
+			user.write(func.casebold("\r\nGee sweetheart, hope you don't break a nail...\r\n", 2))
+	user.write(func.casebold("\r\nPick that which best describes your childhood.\r\nFrom an early age, you remember:\r\n\r\n", 2))
+	user.write(func.normmenu("(D)abbling in the mystical forces"))
+	user.write(func.normmenu("(K)illing a lot of woodland creatures"))
+	user.write(func.normmenu("(L)ying, cheating, and stealing from the blind"))
+	thisLooper = False
+	while ( not thisLooper ):
+		user.write(func.casebold("\r\nYour Choice (D/K/L) :-: ", 2))
+		data = user.ntcon.recv(2)
+		if not data: break
+		if ( data[0] == 'k' or data[0] == 'K' ):
+			user.write('K')
+			newclassnum = 1
+			thisLooper = True
+			user.write(func.casebold("\r\nWelcome warrior to the ranks of the Death Knights!\n", 2))
+		if ( data[0] == 'd' or data[0] == 'D' ):
+			user.write('D')
+			newclassnum = 2
+			thisLooper = True
+			user.write(func.casebold("\r\nFeel the force young jedi.!\n", 2))
+		if ( data[0] == 'l' or data[0] == 'L' ):
+			user.write('L')
+			newclassnum = 3
+			thisLooper = True
+			user.write(func.casebold("\r\nYou're a real shitheel, you know that?\n", 2))
+	user.dbcon.execute("INSERT INTO users (`username`, `password`, `fullname`, `sex`, `cls`) VALUES ( ?, ?, ?, ?, ?)", (newname, newpass, newfname, newsexnum, newclassnum))
+	user.dbcon.commit()
+	return newname

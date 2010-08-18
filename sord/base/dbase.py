@@ -63,16 +63,16 @@ def dayRollover(config, sqc, log):
 			log.add(" === DAY ROLLOVER")
 			rsaying = randdaily[random.randint(0, 9)]
 			laster = time.strftime('%Y%j', time.localtime(time.mktime(time.localtime()) - (config.delinactive*24*60*60)))
-			sqc.execute("UPDATE stats set ffight = ? WHERE 1", (config.ffight, ))
-			sqc.execute("UPDATE stats set pfight = ? WHERE 1", (config.pfight, ))
-			sqc.execute("UPDATE stats set usem = spclm WHERE 1")
-			sqc.execute("UPDATE stats set used = (spcld / 5 ) + 1 WHERE spcld > 0")
-			sqc.execute("UPDATE stats set uset = (spclt / 5 ) + 1 WHERE spclt > 0")
+			sqc.execute("UPDATE users set ffight = ? WHERE 1", (config.ffight, ))
+			sqc.execute("UPDATE users set pfight = ? WHERE 1", (config.pfight, ))
+			sqc.execute("UPDATE users set usem = spclm WHERE 1")
+			sqc.execute("UPDATE users set used = (spcld / 5 ) + 1 WHERE spcld > 0")
+			sqc.execute("UPDATE users set uset = (spclt / 5 ) + 1 WHERE spclt > 0")
 			sqc.execute("INSERT INTO daily ( 'data' ) VALUES ( ? )", ( "{31}"+rsaying, ))
-			sqc.execute("UPDATE stats set bank = bank + ( bank * ("+str(config.bankinterest)+"/100) ) WHERE bank > 0")
+			sqc.execute("UPDATE users set bank = bank + ( bank * ("+str(config.bankinterest)+"/100) ) WHERE bank > 0")
 			sqc.execute("DELETE from users WHERE last < ?", (laster,))
-			sqc.execute("UPDATE stats set flirt = 0, sung = 0, master = 0, alive = 1 WHERE 1")
-			sqc.execute("UPDATE stats set hp = hpmax WHERE hp < hpmax")
+			sqc.execute("UPDATE users set flirt = 0, sung = 0, master = 0, alive = 1 WHERE 1")
+			sqc.execute("UPDATE users set hp = hpmax WHERE hp < hpmax")
 			sqc.execute("UPDATE sord set value = value + 1 WHERE 'name' = 'gdays'")
 			sqc.execute("UPDATE sord set value = ? WHERE name = 'lastday'", (time.strftime(timestr, time.localtime()),))
 			sqc.commit()
@@ -116,7 +116,7 @@ def createDB(config, log):
 		('uset', 0), ('usem', 0), ('str', 10), ('defence', 1), ('exp', 1),
 		('hp', 20), ('hpmax', 20), ('weapon', 1), ('armor', 1), ('pkill', 0),
 		('dkill', 0), ('fuck', 0), ('alive', 1) ]
-	statssql = "create table stats ( userid INTEGER"
+	statssql = "create table users ( userid INTEGER PRIMARY KEY, username TEXT, password TEXT, fullname TEXT, last TEXT"
 	for stat in statstable:
 		name, defu = stat
 		statssql = statssql + ", " + name + " INTEGER DEFAULT " + str(defu)
@@ -148,6 +148,5 @@ def createDB(config, log):
 		sqc.execute("insert into patrons (data, nombre) values (?, ?)", ('{34}Welcome to the {31}Red Dragon {34}Inn', 'The Bartender'))
 		
 		sqc.execute(statssql)
-		sqc.execute("create table users ( userid INTEGER PRIMARY KEY, username TEXT, password TEXT, fullname TEXT, last TEXT )")
-		sqc.execute("insert into users ( userid, username, password, fullname ) values (?, ?, ?, ?)", (1, config.gameadmin, config.gameadminpass, config.admin))
-		sqc.execute("insert into stats ( userid ) values (?)", (1,))
+		sqc.execute("insert into users ( userid, username, password, fullname, used, spcld ) values (?, ?, ?, ?)", (1, config.gameadmin, config.gameadminpass, config.admin,1,1))
+

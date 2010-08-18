@@ -83,7 +83,7 @@ def handleClient(connection, config, log):
 			else:
 				if ( username == "new" ):
 					log.add('   ** New User! ' + str(thisClientAddress))
-					newusername = module_newuser(currentUser)
+					newusername = sord.game.util.newuser(currentUser)
 					currentUser = sorduser(newusername, sqc, connection, art, config, log, lineconfig[0], lineconfig[1])
 					newclass = currentUser.cls
 					currentUser.updateSkillUse(newclass, 1)
@@ -107,6 +107,7 @@ def handleClient(connection, config, log):
 			currentUser.pause()
 			currentUser.write(sord.game.util.viewstats(currentUser))
 			currentUser.pause()
+			currentUser.write(sord.game.util.readmail(currentUser))
 	
 		townSquare = sord.game.main.mainmenu(currentUser)
 		townSquare.run()
@@ -165,7 +166,10 @@ def sordLoop(config, log):
 	display = sord.base.commandcenter.sordCommandCenter(config, log)
 	display.run()
 	
-	sockobj.shutdown(2)
+	try:
+		sockobj.shutdown(2)
+	except:
+		pass
 	sockobj.close()
 	sys.exit()
 

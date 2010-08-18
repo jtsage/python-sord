@@ -19,7 +19,8 @@ class sorduser(object):
 		'str', 'hp', 'hpmax', 'exp', 'gems', 'charm', 'pkill', 
 		'fuck', 'ffight', 'pfight', 'dkill', 'cls', 'sex', 
 		'sung', 'flirt', 'atinn', 'master', 'horse', 'fairy', 
-		'dragon', 'alive']
+		'dragon', 'alive', 'used', 'uset', 'usem',
+		'spcld', 'spclt', 'spclm']
 	
 	def __init__(self, loginname, dbcon, ntcon, art, config, log = 0, speed = 0, noise=0):
 		""" Create a sord user class - all functions through here"""
@@ -63,7 +64,7 @@ class sorduser(object):
 		""" Get object attribute - hijack sql attributes for lookup from sqlite """
 		if name in self.directsql :
 			db = self.dbcon.cursor()
-			db.execute("SELECT "+name+" FROM stats WHERE userid = ?", (self.thisUserID,))
+			db.execute("SELECT "+name+" FROM users WHERE userid = ?", (self.thisUserID,))
 			return db.fetchone()[0]
 			db.close()
 		else: 
@@ -72,7 +73,7 @@ class sorduser(object):
 	def __setattr__(self,name,value):
 		""" Set object attribute - hijack sql attributes - set immediatly in sqlite """
 		if name in self.directsql :
-			self.dbcon.execute("UPDATE stats SET "+name+"=? WHERE userid=?", (value, self.thisUserID))
+			self.dbcon.execute("UPDATE users SET "+name+"=? WHERE userid=?", (value, self.thisUserID))
 			self.dbcon.commit()
 		else:
 			object.__setattr__(self,name,value)
@@ -89,27 +90,21 @@ class sorduser(object):
 
 	def getSkillUse(self, skill):
 		""" Get skill use points """
-		db = self.dbcon.cursor()
-		db.execute("SELECT use"+self.skills[skill]+" FROM stats WHERE userid = ?", (self.thisUserID, ))
-		return db.fetchone()[0]
-		db.close()
+		return getattr(self, 'use'+self.skills[skill])
+
 		
 	def getSkillPoint(self, skill):
 		""" Get skill experience points """
-		db = self.dbcon.cursor()
-		db.execute("SELECT spcl"+self.skills[skill]+" FROM stats WHERE userid = ?", (self.thisUserID, ))
-		return db.fetchone()[0]
-		db.close()
+		return getattr(self, 'spcl'+self.skills[skill])
+
 
 	def updateSkillUse(self, skill, value):
 		""" Update skill use points """
-		self.dbcon.execute("UPDATE stats SET use"+self.skills[skill]+"= use"+self.skills[skill]+" + ? WHERE userid=?", (value, self.thisUserID))
-		self.dbcon.commit()
+		setattr(self, 'use'+self.skills[skill], (getattr(self, 'use'+self.skills[skill]) + value))
 		
 	def updateSkillPoint(self, skill, value):
 		""" Update skill experience points """
-		self.dbcon.execute("UPDATE stats SET spcl"+self.skills[skill]+"= spcl"+self.skills[skill]+" + ? WHERE userid=?", (value, self.thisUserID))
-		self.dbcon.commit()
+		setattr(self, 'spcl'+self.skills[skill], (getattr(self, 'spcl'+self.skills[skill]) + value))
 		
 	def toggleXprt(self):
 		""" Toggle expert mode """
@@ -149,9 +144,8 @@ class sorduser(object):
 			
 	def login(self):
 		""" Process user login """
-		self.dbcon.execute("UPDATE users SET last = ? WHERE userid = ?", (time.strftime('%Y%j', time.localtime()),self.thisUserID))
+		self.dbcon.execute("UPDATE users SET last = ?, atinn = 0 WHERE userid = ?", (time.strftime('%Y%j', time.localtime()),self.thisUserID))
 		self.dbcon.execute("INSERT INTO online ( userid, whence ) VALUES ( ?, ? )", (self.thisUserID, time.ctime(time.time())))
-		self.dbcon.execute("UPDATE stats SET atinn = 0 WHERE userid = ?", (self.thisUserID,))
 		self.logontime = time.time()
 		self.dbcon.commit()
 		
