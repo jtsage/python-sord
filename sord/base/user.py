@@ -32,6 +32,7 @@ class sorduser(object):
 		self.linespeed = speed
 		self.noise = noise
 		self.config = config
+		self.log = log
 		
 		if ( speed == 0 ):
 			self.ppause = 0.001

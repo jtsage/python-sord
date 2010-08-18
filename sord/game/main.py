@@ -4,10 +4,12 @@
  *
 """
 import random
-from ..base import func
+from ..base import func, editor
+#from ..base import editor
 from . import util
 from . import data
 from . import menu
+
 
 class mainmenu():
 	def __init__(self, user):
@@ -128,11 +130,13 @@ class mainmenu():
 					self.user.jennielevel = 4
 				else:
 					self.user.jennielevel = 0
-			elif ( key[0] == "!" ):						#"""RIGHT HERE"""
+			elif ( key[0] == "!" ):	
 				if (self.user.thisUserID == 1):
-					log.add(" !!! ENTERING USER EDITOR !!!")
-					editor_main_logic(user)
-					log.add(" !!! EXITING USER EDITOR !!!")
+					self.user.log.add(" !!! ENTERING USER EDITOR !!!")
+					thismod = editor.editor(self.user)
+					thismod.run()
+					del thismod
+					self.user.log.add(" !!! EXITING USER EDITOR !!!")
 				else:
 					skipDisp = True
 			elif ( key[0] == "@" ):

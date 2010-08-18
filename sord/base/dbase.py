@@ -63,16 +63,13 @@ def dayRollover(config, sqc, log):
 			log.add(" === DAY ROLLOVER")
 			rsaying = randdaily[random.randint(0, 9)]
 			laster = time.strftime('%Y%j', time.localtime(time.mktime(time.localtime()) - (config.delinactive*24*60*60)))
-			sqc.execute("UPDATE users set ffight = ? WHERE 1", (config.ffight, ))
-			sqc.execute("UPDATE users set pfight = ? WHERE 1", (config.pfight, ))
-			sqc.execute("UPDATE users set usem = spclm WHERE 1")
+			sqc.execute("UPDATE users set ffight = ?, pfight = ? WHERE 1", (config.ffight, config.pfight))
+			sqc.execute("UPDATE users set flirt = 0, sung = 0, master = 0, alive = 1, usem = spclm, hp = hpmax WHERE 1")			
 			sqc.execute("UPDATE users set used = (spcld / 5 ) + 1 WHERE spcld > 0")
 			sqc.execute("UPDATE users set uset = (spclt / 5 ) + 1 WHERE spclt > 0")
-			sqc.execute("INSERT INTO daily ( 'data' ) VALUES ( ? )", ( "{31}"+rsaying, ))
 			sqc.execute("UPDATE users set bank = bank + ( bank * ("+str(config.bankinterest)+"/100) ) WHERE bank > 0")
+			sqc.execute("INSERT INTO daily ( 'data' ) VALUES ( ? )", ( "{31}"+rsaying, ))
 			sqc.execute("DELETE from users WHERE last < ?", (laster,))
-			sqc.execute("UPDATE users set flirt = 0, sung = 0, master = 0, alive = 1 WHERE 1")
-			sqc.execute("UPDATE users set hp = hpmax WHERE hp < hpmax")
 			sqc.execute("UPDATE sord set value = value + 1 WHERE 'name' = 'gdays'")
 			sqc.execute("UPDATE sord set value = ? WHERE name = 'lastday'", (time.strftime(timestr, time.localtime()),))
 			sqc.commit()
@@ -88,7 +85,7 @@ def initialTest(config, log):
 		
 		for row in sqr.execute("select value from sord where name=?", ('version',)):
 			version, = row
-			if ( version > 0 ):
+			if ( version > 1 ):
 				log.add(" === SQLite Database is up to date")
 			else:
 				log.add(" === SQLite Database is out of date (corrupt), rebuilding...")
@@ -123,12 +120,12 @@ def createDB(config, log):
 	statssql = statssql + " )"
 	with sqc:
 		sqc.execute("create table sord ( name TEXT, value integer)")
-		sqc.execute("insert into sord values (?,?)", ('version', '1'))
+		sqc.execute("insert into sord values (?,?)", ('version', '2'))
 		sqc.execute("insert into sord values (?,?)", ('gdays', '0'))
 		sqc.execute("insert into sord values (?,?)", ('lastday', '201000101'))
 		
 		sqc.execute("create table daily ( id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT )")
-		sqc.execute("insert into daily (data) values (?)", ('{31}Welcome to {1}{37}S{0}{32}.O.R.D', ))
+		sqc.execute("insert into daily (data) values (?)", ('{31}Welcome to {1}{37}S{0}{32}.{1}{37}O{0}{32}.{1}{37}R{0}{32}.{1}{37}D{0}{32}.', ))
 		sqc.execute("insert into daily (data) values (?)", ('{31}Despair covers the land - more bloody remains have been found today.',))
 		
 		sqc.execute("create table dhtpatrons (id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT, nombre TEXT)")
@@ -148,5 +145,5 @@ def createDB(config, log):
 		sqc.execute("insert into patrons (data, nombre) values (?, ?)", ('{34}Welcome to the {31}Red Dragon {34}Inn', 'The Bartender'))
 		
 		sqc.execute(statssql)
-		sqc.execute("insert into users ( userid, username, password, fullname, used, spcld ) values (?, ?, ?, ?)", (1, config.gameadmin, config.gameadminpass, config.admin,1,1))
+		sqc.execute("insert into users ( userid, username, password, fullname, used, spcld ) values (?, ?, ?, ?, ?, ?)", (1, config.gameadmin, config.gameadminpass, config.admin,1,1))
 
