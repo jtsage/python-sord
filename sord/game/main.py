@@ -1,8 +1,20 @@
 #!/usr/bin/python
-"""
- * Contains main game loops
- *
-"""
+""" Saga of the Red Dragon
+
+ * A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  
+ * All attempts were made to be as close to the original as possible, 
+ * including some original artwork, the original fight equations, and 
+ * most especially the original spelling and punctuation mistakes.  Enjoy.
+
+ * Contains main game modules 
+
+ * (c) 2009 - 2011 J.T.Sage
+ * No Rights Reserved - but don't sell it please."""
+__author__ = "Jonathan T. Sage <jtsage@gmail.com>"
+__date__ = "18 August 2010"
+__version__ = "2.0-pysqlite"
+__credits__ = "Seth Able Robinson, original game concept"
+
 import random
 from ..base import func
 from ..base import peditor
@@ -11,13 +23,17 @@ from . import data
 from . import menu
 from . import rdi
 from . import forest
+from . import pfights
+from . import turgon
 from ..sord import igm
 
 class other():
+	""" Other Places (IGMs) """
 	def __init__(self, user):
+		""" Initialize Other Places """
 		self.user = user
 	def run(self):
-		""" Main Menu Logic """
+		""" Other Places Run Logic """
 		quitfull = False
 		skipDisp = False
 		while ( not quitfull ):
@@ -54,10 +70,12 @@ class other():
 					
 
 class mainmenu():
+	""" Main Game Menu """
 	def __init__(self, user):
+		""" Initialize Main Game Menu """
 		self.user = user
 	def run(self):
-		""" Main Menu Logic """
+		""" Main Game Run Logic """
 		quitfull = False
 		skipDisp = False
 		while ( not quitfull ):
@@ -149,19 +167,23 @@ class mainmenu():
 				thismod = forest.ffight(self.user, heal(self.user))
 				thismod.run()
 				del thismod
-			elif ( key[0] == 't' or key[0] == 'T' ): #"""RIGHT HERE"""
+			elif ( key[0] == 't' or key[0] == 'T' ):
 				self.user.ntcon.send('T')
 				self.user.jennielevel = 0
-				module_turgon(user)
-			elif ( key[0] == "1" ): 				#"""RIGHT HERE"""
+				thismod = turgon.turgon(user)
+				thismod.run()
+				del thismod
+			elif ( key[0] == "1" ):
 				self.user.ntcon.send("1\r\n")
 				self.user.jennielevel = 0
-				self.user.write(artwork.info(user))
+				self.user.write(self.user.art.info(self.user,data.charmsay))
 				self.user.pause()
-			elif ( key[0] == 's' or key[0] == 'S' ): #"""RIGHT HERE"""
+			elif ( key[0] == 's' or key[0] == 'S' ): 
 				self.user.ntcon.send('S')
 				self.user.jennielevel = 0
-				module_killer(user)
+				thismod = pfights.killer(self.user)
+				thismod.run()
+				del thismod
 			elif ( key[0] == 'j' or key[0] == 'J' ):
 				skipDisp = True
 				if self.user.jennielevel == 0 :
@@ -199,7 +221,9 @@ class mainmenu():
 				self.user.jennielevel = 0
 
 class intro():
+	""" Intro (pre-login) Options """
 	def __init__(self, connection, config, art, log, sqc, lineconfig):
+		""" Initialize Intro Menu """
 		self.config = config
 		self.art = art
 		self.sqc = sqc
@@ -208,6 +232,7 @@ class intro():
 		self.log = log
 		
 	def run(self):
+		""" Intro Menu Run Logic """
 		quitter = False
 		skipDisp = False
 		while ( not quitter ):
@@ -238,10 +263,12 @@ class intro():
 				skipDisp = True
 
 class abduls():
+	""" Abdul's Armor """
 	def __init__(self, user):
+		""" Initialize Armory """
 		self.user = user
 	def run(self):
-		""" Abdul's Armor"""
+		""" Abdul's Armor Run Logic """
 		thisQuit = False
 		skipDisp = False
 		while ( not thisQuit ):
@@ -323,10 +350,12 @@ class abduls():
 				skipDisp = True
 
 class heal():
+	""" Healers Hut """
 	def __init__(self, user):
+		""" Initialize Healers Hut """
 		self.user = user
 	def run(self):
-		""" Healers Hut Logic """
+		""" Healers Hut Run Logic """
 		user = self.user
 		thisQuit = False
 		skipDisp = False
@@ -384,10 +413,12 @@ class heal():
 				skipDisp = True
 			
 class arthurs():
+	""" King Arthur's Weapons """
 	def __init__(self, user):
+		""" Initialize King Arthur's """
 		self.user = user
 	def run(self):
-		"""King Arthur's Weapons"""
+		""" King Arthur's Weapons Run Logic """
 		thisQuit = False
 		skipDisp = False
 		while ( not thisQuit ):
@@ -469,10 +500,12 @@ class arthurs():
 				skipDisp = True
 			
 class bank():
+	""" Ye Olde Bank """
 	def __init__(self, user):
+		""" Initialize Ye Olde Bank """
 		self.user = user
 	def run(self):
-		""" Ye Olde Bank """
+		""" Ye Olde Bank Run Logic """
 		thisQuit = False
 		skipDisp = False
 		while ( not thisQuit ):
