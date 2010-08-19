@@ -1,36 +1,42 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-#from functions import func.normmenu
-#from data import charmsay
+""" Saga of the Red Dragon
 
-"""
- * Artwork headers.
- * 
- * Contains all ANSI/ASCII art headers used throughout.
- * 
- * @package phpsord
- * @subpackage phpsord-ui
- * @author J.T.Sage
- * @author Seth Able Robinson original artwork
- * 
+ * A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  
+ * All attempts were made to be as close to the original as possible, 
+ * including some original artwork, the original fight equations, and 
+ * most especially the original spelling and punctuation mistakes.  Enjoy.
+
+ * Contains all basic game functions.
+
+ * (c) 2009 - 2011 J.T.Sage
+ * No Rights Reserved - but don't sell it please.
+
  * To Add ANSI Files, convert all high-ascii characters to variables as follows:
- * 
- * 				ASCII			UTF
- * VAR		OCT		DEC		DEC		HEX
- * a176		260		176		9617	2591
- * a177		261		177		9618	2592
- * a178		262		178		9619	2593
- * a219		333		219		9608	2588
- * a220		334		220		9604	2584
- * a221		335		221		9612	258C
- * a222		336		222		9616	2590
- * a223		337		223		9600	2580
- * a254		376		254		9642	25AA
+
+				ASCII				UTF
+	Variable	OCT		DEC		DEC		HEX
+	A176		260		176		9617		2591
+	A177		261		177		9618		2592
+	A178		262		178		9619		2593
+	A219		333		219		9608		2588
+	A220		334		220		9604		2584
+	A221		335		221		9612		258C
+	A222		336		222		9616		2590
+	A223		337		223		9600		2580
+	A254		376		254		9642		25AA
 """
+__author__ = "Jonathan T. Sage <jtsage@gmail.com>"
+__date__ = "18 August 2010"
+__version__ = "2.0-pysqlite"
+__credits__ = "Seth Able Robinson, original game concept"
+
 from ..base import func
 
 class sordArtwork():
+	""" S.O.R.D. ANSI Artwork """
 	def __init__(self, config, sqc):
+		""" Initialize artwork, choose character set """
 		self.sqc = sqc
 		self.config = config
 		
@@ -53,7 +59,7 @@ class sordArtwork():
 		""" Dark Blue Horizontal Rule """
 		return self.ESC+"34m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"+self.ESC+"0m\r\n"
 
-	def info(self, user):
+	def info(self, user, charmsay):
 		""" Game System Information Banner"""
 		rundays = 0
 		db = user.dbcon.cursor()
@@ -62,16 +68,16 @@ class sordArtwork():
 			rundays = value
 		db.close()
 		thismsg  = "\r\n"+self.ESC+"32m                           Saga Of The Red Dragon"+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m                           "+user.thisSord.host()+"\r\n\r\n"+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m                    Compiled June 25, 2009: Version "+self.ESC+"1;37m"+user.thisSord.version()+self.ESC+"0m\r\n"
+		thismsg += self.ESC+"32m                           "+user.config.host+"\r\n\r\n"+self.ESC+"0m\r\n"
+		thismsg += self.ESC+"32m                    Compiled June 25, 2009: Version "+self.ESC+"1;37m"+user.config.version+self.ESC+"0m\r\n"
 		thismsg += self.ESC+"22;32m                        (c) pre-2009 by Someone Else\r\n\r\n"+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m                           "+self.ESC+"1;37mREGISTERED TO "+self.ESC+"0m"+self.ESC+"1;34m"+user.thisSord.admin()+self.ESC+"0m\r\n\r\n"
+		thismsg += self.ESC+"32m                           "+self.ESC+"1;37mREGISTERED TO "+self.ESC+"0m"+self.ESC+"1;34m"+user.config.admin+self.ESC+"0m\r\n\r\n"
 		thismsg += self.ESC+"32m             The current game has been running for "+self.ESC+"1m"+str(rundays)+self.ESC+"22m game days.\r\n"+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m            Players are deleted after "+self.ESC+"1m"+str(user.thisSord.deleteInactive())+self.ESC+"22m real days of inactivity."+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m               Players are enjoying "+self.ESC+"1m"+str(user.thisSord.forestFights())+self.ESC+"22m forest fights per day."+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m               Players are enjoying "+self.ESC+"1m"+str(user.thisSord.playerFights())+self.ESC+"22m player fights per day."+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m            Players are enjoying "+self.ESC+"1m"+str(user.thisSord.bankInterest())+"%"+self.ESC+"22m interest at the bank per day."+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m                   The current game day is "+self.ESC+"1m"+str(user.thisSord.dayLength())+self.ESC+"22m real hours long.\r\n"+self.ESC+"0m\r\n"
+		thismsg += self.ESC+"32m            Players are deleted after "+self.ESC+"1m"+str(user.config.delinactive)+self.ESC+"22m real days of inactivity."+self.ESC+"0m\r\n"
+		thismsg += self.ESC+"32m               Players are enjoying "+self.ESC+"1m"+str(user.config.ffights)+self.ESC+"22m forest fights per day."+self.ESC+"0m\r\n"
+		thismsg += self.ESC+"32m               Players are enjoying "+self.ESC+"1m"+str(user.config.pfights)+self.ESC+"22m player fights per day."+self.ESC+"0m\r\n"
+		thismsg += self.ESC+"32m            Players are enjoying "+self.ESC+"1m"+str(user.config.bankinterest)+"%"+self.ESC+"22m interest at the bank per day."+self.ESC+"0m\r\n"
+		thismsg += self.ESC+"32m                   The current game day is "+self.ESC+"1m"+str(user.config.daylength)+self.ESC+"22m real hours long.\r\n"+self.ESC+"0m\r\n"
 		thismsg += "\r\n"+self.ESC+"32m  The peasants say this about you : \r\n    "
 		try: 
 			thismsg += charmsay[user.sex][user.charm]
@@ -347,6 +353,7 @@ class sordArtwork():
 		return thismsg
 
 	def bank(self):
+		""" Ye Olde Bank """
 		thismsg = "\r\n"+self.ESC+"40m"+self.ESC+"0;1;35m"+self.A220+self.A220+self.A220+self.A220+self.ESC+"0;35m"+self.A220+self.A220+self.ESC+"1m"+self.A220+self.A220+self.ESC+"0;35m"+self.A220+self.ESC+"1m"+self.A220+self.A220+self.A220+self.ESC+"0;35m"+self.A220+self.ESC+"1m"+self.A220+self.A220+self.ESC+"0;35m"+self.A220+self.ESC+"1m"+self.A220+self.ESC+"0;35m"+self.A220+self.A220+self.ESC+"1m"+self.A220+self.ESC+"0;35m"+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.ESC+"1;30m"+self.A220+" "+self.ESC+"0;35m"+self.A220+self.A220+self.A220+self.A220+"\r\n"
 		thismsg += self.ESC+"1m"+self.A219+self.ESC+"0;35m"+self.A219+self.A219+self.A219+self.A223+self.A219+self.A223+self.ESC+"32m"+self.A220+self.ESC+"1m"+self.A219+self.ESC+"0;32m"+self.A223+self.A254+self.ESC+"35m"+self.A219+self.A219+self.A219+self.A219+self.A219+self.A220+self.ESC+"32m"+self.A223+self.A178+self.A220+self.A254+self.ESC+"35m"+self.A219+self.A219+self.ESC+"1;30m"+self.A176+" "+self.ESC+"0;35m"+self.A219+self.ESC+"1;45m"+self.A177+self.A176+self.ESC+"1C"+self.ESC+"0;35m"+self.A178+" "+self.ESC+"1;37mSaga Of the Red Dragon - "+self.ESC+"0;32mYe Old Bank\r\n"
 		thismsg += self.ESC+"1;35m"+self.A219+self.ESC+"0;35m"+self.A219+self.A219+self.ESC+"32m"+self.A220+self.ESC+"1;42m"+self.A176+self.ESC+"0;32m"+self.A220+self.A254+self.ESC+"35m"+self.A220+self.A220+self.A219+self.A219+self.A219+self.A223+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.ESC+"32m"+self.A220+self.ESC+"1;42m"+self.A176+self.ESC+"0;32m"+self.A220+self.ESC+"1;30m"+self.A176+"  "+self.ESC+"0;35m"+self.A223+self.A219+" "+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A178+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A178+self.A223+self.A220+"\r\n"
@@ -366,6 +373,7 @@ class sordArtwork():
 		return thismsg
 		
 	def killer(self):
+		""" Slaughter other players """
 		thismsg = "\r\n"+self.ESC+"40m"+self.ESC+"0;1;35m"+self.A220+self.A220+self.A220+self.A220+self.ESC+"0;35m"+self.A220+self.A220+self.ESC+"1m"+self.A220+self.A220+self.ESC+"0;35m"+self.A220+self.ESC+"1m"+self.A220+self.A220+self.A220+self.ESC+"0;35m"+self.A220+self.ESC+"1m"+self.A220+self.A220+self.ESC+"0;35m"+self.A220+self.ESC+"1m"+self.A220+self.ESC+"0;35m"+self.A220+self.A220+self.ESC+"1m"+self.A220+self.ESC+"0;35m"+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.A220+self.ESC+"1;30m"+self.A220+" "+self.ESC+"0;35m"+self.A220+self.A220+self.A220+self.A220+"\r\n"
 		thismsg += self.ESC+"1m"+self.A219+self.A178+self.ESC+"0;35m"+self.A219+self.A219+self.A223+self.A223+self.A223+self.A223+self.A219+self.A219+self.A219+self.ESC+"37m"+self.A222+self.ESC+"35m"+self.A222+self.A219+self.A219+self.A221+self.ESC+"1;33m"+self.A223+self.A223+self.A219+self.A220+self.ESC+"0;35m"+self.A223+self.A219+self.A219+self.ESC+"1;30m"+self.A176+" "+self.ESC+"0;35m"+self.A178+" "+self.ESC+"1;37mSaga Of the Red Dragon - "+self.ESC+"0;32mSlaughter Other Players\r\n"
 		thismsg += self.ESC+"1;35m"+self.A219+self.ESC+"0;35m"+self.A219+self.A223+self.ESC+"1;33m"+self.A220+self.A219+self.A219+self.ESC+"43m"+self.A223+self.ESC+"40m"+self.A223+self.ESC+"0;35m"+self.A220+self.A178+self.A221+self.ESC+"37m"+self.A219+self.ESC+"35m"+self.A222+self.A223+self.ESC+"32m"+self.A220+self.ESC+"35m"+self.A223+self.A219+self.A221+self.ESC+"33m"+self.A178+self.A221+" "+self.ESC+"30;45m"+self.A176+self.ESC+"35;40m"+self.A219+self.ESC+"1;30m"+self.A176+"  "+self.ESC+"0;35m"+self.A223+self.A219+self.A254+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A178+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A221+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A178+self.A223+self.A254+"\r\n"
@@ -385,6 +393,7 @@ class sordArtwork():
 		return thismsg
 	
 	def lair(self):
+		""" The Dragon's Lair """
 		thismsg = "\r\n"+self.ESC+"40m"+self.ESC+"1C"+self.ESC+"0;31m"+self.A178+self.A223+self.A223+" "+self.A223+" "+self.A223+self.ESC+"33m"+self.A223+self.ESC+"31m"+self.A223+self.ESC+"33m"+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A219+self.A223+" "+self.ESC+"31m"+self.A223+" "+self.A223+self.ESC+"33m"+self.A223+" "+self.ESC+"31m"+self.A223+self.ESC+"33m"+self.A223+self.A223+" "+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.A223+self.ESC+"31;43m"+self.A223+self.ESC+"33;40m"+self.A223+self.ESC+"31m"+self.A223+self.A223+self.ESC+"33m"+self.A223+self.ESC+"31m"+self.A223+" "+self.A223+self.A223+self.ESC+"30;41m"+self.A176+self.ESC+"40m\r\n"
 		thismsg += self.ESC+"31m"+self.A220+" "+self.ESC+"30;47m"+self.A177+self.A176+self.ESC+"37;40m"+self.A219+self.A219+self.A223+self.A219+self.ESC+"1;47m"+self.A176+self.ESC+"0m"+self.A219+self.A219+self.A219+self.ESC+"30;47m"+self.A177+self.ESC+"37;40m"+self.A219+self.A219+self.A219+self.ESC+"30;47m"+self.A176+self.ESC+"37;40m"+self.A220+" "+self.A220+self.ESC+"30;47m"+self.A176+self.A176+self.ESC+"1C"+self.ESC+"43m "+self.ESC+"1C"+self.ESC+"41m"+self.A177+self.A176+self.ESC+"31;40m"+self.A219+self.A223+self.A219+self.ESC+"30;41m"+self.A176+self.ESC+"31;40m"+self.A220+"   "+self.ESC+"32m-Legend Of the Red Dragon-"+self.ESC+"6C"+self.ESC+"31m"+self.A176+" "+self.A223+self.A178+" "+self.A220+"\r\n"
 		thismsg += self.ESC+"33;41m"+self.A176+self.ESC+"1C"+self.ESC+"30;47m"+self.A176+self.ESC+"37;40m"+self.A219+self.ESC+"30;47m"+self.A176+self.A223+self.ESC+"1C"+self.ESC+"37;40m"+self.A220+self.A219+self.ESC+"31;47m"+self.A176+self.ESC+"37;40m"+self.A219+self.ESC+"30;47m"+self.A176+self.ESC+"1C"+self.ESC+"37;40m"+self.A219+self.A219+self.A219+self.A219+self.A219+self.ESC+"47m  "+self.ESC+"31m"+self.A177+self.ESC+"37;40m"+self.A219+" "+self.ESC+"43m "+self.ESC+"1C"+self.ESC+"30;41m"+self.A176+self.ESC+"33m"+self.A176+self.ESC+"31;40m"+self.A219+"  "+self.A219+self.ESC+"33;41m"+self.A176+self.ESC+"30m"+self.A177+self.ESC+"37C"+self.ESC+"31;40m"+self.A177+" "+self.ESC+"43m"+self.A178+self.ESC+"40m\r\n"
@@ -408,6 +417,7 @@ class sordArtwork():
 		return thismsg
 		
 	def turgon(self):
+		""" Turgon's Warrior Training """
 		thismsg = "\r\n"+self.ESC+"0m"+self.ESC+"34m"+self.A178+self.ESC+"44m "+self.ESC+"30menzo"+self.ESC+"34;40m"+self.A219+self.A219+self.ESC+"1;44m"+self.A176+self.ESC+"0;34m"+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A223+self.A223+self.A223+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.ESC+"1;36;44m"+self.A176+self.A176+self.A176+self.ESC+"0;34m"+self.A219+self.A219+self.A223+" "+self.ESC+"31m"+self.A220+self.A220+" "+self.ESC+"34m"+self.A223+self.A219+self.ESC+"1;44m"+self.A176+self.A176+self.A176+self.A176+self.A176+self.ESC+"0;34m"+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A178+self.A178+self.A178+self.A178+self.A219+self.A219+self.A178+self.A178+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+" "+self.ESC+"31m"+self.A220+self.A220+" "+self.ESC+"34m"+self.A223+self.A219+self.A219+self.ESC+"1;36;44m"+self.A176+self.A176+self.ESC+"0;34m"+self.A219+" "+self.ESC+"1;37m"+self.A222+self.ESC+"47m"+self.A219+"\r\n"
 		thismsg += self.ESC+"0;34m"+self.A178+self.A178+self.A219+self.ESC+"30;44miCE"+self.ESC+"34;40m"+self.A219+self.A219+self.A219+self.A219+self.ESC+"1;44m"+self.A176+self.A176+" "+self.ESC+"0;34m"+self.A219+" "+self.ESC+"1;30m"+self.A220+self.A223+self.A220+" "+self.ESC+"0;34m"+self.A219+self.A219+self.A221+self.A219+self.A219+self.A219+self.ESC+"1;36;44m"+self.A176+" "+self.ESC+"0;34m"+self.A219+self.A219+self.A223+self.A223+" "+self.ESC+"31m"+self.A220+self.ESC+"1m"+self.A220+self.ESC+"47m"+self.A223+self.A223+self.ESC+"41m"+self.A220+self.ESC+"0;37;40m "+self.ESC+"34m"+self.A223+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A221+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.A221+self.A219+self.ESC+"1;44m"+self.A176+self.ESC+"0;34m"+self.A223+" "+self.ESC+"1;31;41m"+self.A222+self.ESC+"47m"+self.A223+self.A223+self.ESC+"40m"+self.A220+self.A220+" "+self.ESC+"0;34m"+self.A223+self.A223+self.A219+self.A220+" "+self.ESC+"37m"+self.A223+"\r\n"
 		thismsg += self.ESC+"0;34m"+self.A219+self.A219+self.A219+self.A219+self.ESC+"1;44m"+self.A176+self.ESC+"0;34m"+self.A219+self.A219+self.ESC+"44m  "+self.ESC+"40m"+self.A219+self.A219+self.ESC+"1;44m"+self.A176+self.A177+self.A177+self.ESC+"0;37;40m "+self.ESC+"1;30m"+self.A222+self.ESC+"47m"+self.A178+self.ESC+"40m"+self.A221+" "+self.ESC+"34;44m"+self.A176+self.A176+self.ESC+"0;37;40m "+self.ESC+"34m"+self.A223+self.A219+self.A219+self.ESC+"1;44m"+self.A176+self.ESC+"0;34m"+self.A219+self.A223+" "+self.ESC+"31m"+self.A220+self.ESC+"1;41m"+self.A223+self.ESC+"0;31m"+self.A223+self.A220+self.ESC+"1;41m"+self.A220+self.A219+self.ESC+"40m"+self.A223+self.A219+self.ESC+"47m"+self.A219+self.ESC+"40m"+self.A220+"  "+self.ESC+"0;34m"+self.A219+self.A219+self.ESC+"1;44m"+self.A176+self.ESC+"0;34m"+self.A219+self.A219+self.A219+self.A219+self.A219+self.ESC+"1;44m"+self.A176+self.A176+self.ESC+"0;34m"+self.A219+" "+self.A219+self.A219+self.A219+self.A219+self.A219+self.A219+self.ESC+"1;44m"+self.A176+self.A176+self.ESC+"0;34m"+self.A219+" "+self.A223+" "+self.ESC+"31m"+self.A220+self.ESC+"1;41m"+self.A220+self.A219+self.ESC+"0;31m"+self.A223+self.ESC+"1;41m"+self.A223+self.ESC+"47m"+self.A219+self.ESC+"40m"+self.A220+self.A223+self.A219+self.A220+" "+self.ESC+"0;34m"+self.A219+self.A219+self.A219+"\r\n"
@@ -430,6 +440,7 @@ class sordArtwork():
 		return thismsg
 		
 	def violet(self):
+		""" Flirt with Violet """
 		thismsg = "\r\n"+self.ESC+"0m"+self.ESC+"36m"+self.A219+self.ESC+"1;37;46m"+self.A176+self.ESC+"0;36m"+self.A219+self.ESC+"46m "+self.ESC+"1;30m"+self.A220+self.ESC+"0;36m"+self.A219+self.ESC+"1;37;46m"+self.A176+self.A176+self.ESC+"0;36m"+self.A219+self.A219+self.A219+self.ESC+"1;30;46m"+self.A220+self.A220+self.A220+self.ESC+"40m"+self.A223+self.ESC+"46m"+self.A220+self.ESC+"0;36m"+self.A219+self.ESC+"1;33;46m"+self.A176+self.A176+self.ESC+"0;36m"+self.A219+self.A219+self.ESC+"1;30;46m"+self.A223+self.ESC+"40m"+self.A220+self.A223+self.ESC+"46m"+self.A220+self.A220+self.ESC+"0;36m"+self.A223+self.ESC+"1;30m"+self.A223+self.A223+self.ESC+"0;37m                     "+self.ESC+"31m"+self.A220+self.A220+self.A220+self.A220+self.A220+"   "+self.ESC+"1;30m"+self.A223+self.A223+self.A220+self.ESC+"0;36m"+self.A220+self.ESC+"1;30;46m"+self.A223+" "+self.ESC+"0;36m"+self.A219+self.A219+self.ESC+"1;30;46m"+self.A220+self.ESC+"0;36m"+self.A223+self.A223+self.ESC+"1;30m"+self.A223+"  "+self.ESC+"0;31m"+self.A220+self.A220+self.A220+self.A220+"  "+self.ESC+"36m"+self.A223+"\r\n"
 		thismsg += self.ESC+"1;37;46m"+self.A176+self.A176+self.ESC+"0;36m"+self.A219+self.ESC+"1;30;46m"+self.A220+self.ESC+"40m"+self.A220+self.A223+self.ESC+"0;36m"+self.A223+self.ESC+"1;30;46m"+self.A220+self.ESC+"0;36m"+self.A223+self.ESC+"1;30m"+self.A223+"   "+self.A223+self.A220+" "+self.A223+self.ESC+"0;36m"+self.A223+self.ESC+"1;30;46m"+self.A220+self.A220+self.A220+self.ESC+"0;36m"+self.A223+self.ESC+"1;30m"+self.A223+"   "+self.A223+self.ESC+"0;37m                  "+self.ESC+"31m"+self.A220+self.A220+self.A219+self.A223+self.A223+self.A219+self.ESC+"1;41m"+self.A176+self.A176+self.A176+" "+self.A220+self.A220+self.A220+self.ESC+"40m"+self.A220+self.ESC+"0;31m"+self.A220+self.A220+" "+self.ESC+"1;30m"+self.A223+self.A223+"  "+self.ESC+"0;31m"+self.A220+self.A220+self.A220+self.A219+self.A219+self.ESC+"41m  "+self.ESC+"1;37m"+self.A220+self.ESC+"47m"+self.A220+self.ESC+"41m"+self.A219+self.A219+self.A220+self.ESC+"0;31m"+self.A219+"\r\n"
 		thismsg += self.ESC+"1;37;46m"+self.A178+self.A178+self.A220+self.ESC+"0;36m"+self.A219+self.A219+self.ESC+"1;30m"+self.A221+"  "+self.ESC+"0;31m"+self.A220+self.ESC+"1m"+self.A220+self.ESC+"41m"+self.A220+self.ESC+"47m"+self.A178+self.ESC+"41m"+self.A220+self.ESC+"0;31m"+self.A220+"  "+self.ESC+"1;33m"+self.A220+"   "+self.ESC+"0;31m"+self.A220+self.A220+self.A220+self.ESC+"37m     "+self.ESC+"1;32mV i o l e t    "+self.ESC+"0;31m"+self.A220+self.A219+self.A223+self.A220+self.A219+self.ESC+"41m "+self.ESC+"40m"+self.A219+self.ESC+"41m  "+self.ESC+"40m"+self.A219+self.A219+self.A219+self.A219+self.ESC+"41m "+self.ESC+"1m"+self.A223+self.A223+self.A178+self.A178+self.ESC+"0;31m"+self.A219+self.A219+self.A220+self.A219+self.A223+self.A223+self.A220+self.A219+self.ESC+"41m "+self.ESC+"40m"+self.A219+self.ESC+"41m   "+self.ESC+"40m"+self.A219+self.A219+self.A219+self.ESC+"41m "+self.ESC+"1;37m"+self.A223+"\r\n"

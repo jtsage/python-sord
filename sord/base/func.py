@@ -1,14 +1,24 @@
 #!/usr/bin/python
-"""
- * General Base Functions.
- * 
- * Contains all low level input/output functions.
- *
-"""
+""" Saga of the Red Dragon
+
+ * A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  
+ * All attempts were made to be as close to the original as possible, 
+ * including some original artwork, the original fight equations, and 
+ * most especially the original spelling and punctuation mistakes.  Enjoy.
+
+ * Contains all misc display functions.
+
+ * (c) 2009 - 2011 J.T.Sage
+ * No Rights Reserved - but don't sell it please."""
+__author__ = "Jonathan T. Sage <jtsage@gmail.com>"
+__date__ = "18 August 2010"
+__version__ = "2.0-pysqlite"
+__credits__ = "Seth Able Robinson, original game concept"
+
 import re, time, random
 
 def slowecho(connection, data, LINESPEED=0, NOISE=0):
-	"""slowecho"""
+	""" Modem speed emulation display routine """
 	if ( LINESPEED == 0 ):
 		pause = 0.001
 	elif ( LINESPEED == 1 ):
@@ -26,7 +36,7 @@ def slowecho(connection, data, LINESPEED=0, NOISE=0):
 		
 
 def pauser(connection):
-	"""Sreen pauser"""
+	""" Sreen pauser """
 	slowecho(connection, casebold("\r\n    :-: Press Any Key :-:", 2))
 	pauser_quit = False
 	while ( not pauser_quit ):
@@ -60,57 +70,48 @@ def getLine(connection, echo, prompt=""):
 	return retval
 
 def caseclr(text, boldcolor, normcolor):
-	""" Color by character case.
-	* Capitals returns in boldcolor, lowercase in normcolor
-	* 
-	* @param string $text Input text to color
-	* @param int $boldcolor Color for capital letters
-	* @param int $normcolor Color for lowercase letters
-	* @return string Colored text. """
+	""" Color by character case. - Capitals returns in boldcolor, lowercase in normcolor
+	 
+	@param string $text Input text to color
+	@param int $boldcolor Color for capital letters
+	@param int $normcolor Color for lowercase letters """
 	bclrstr = "\x1b[1m\x1b[3" + str(boldcolor) + "m"
 	nclrstr = "\x1b[0m\x1b[3" + str(normcolor) + "m"
 	return re.sub("([A-Z:<>])", bclrstr + r"\1" + nclrstr, text) + "\x1b[0m"
 
 def casebold(text, boldcolor):
-	""" Color by character case.
-	* Capitals returns in bold of suplied color, lowercase in suplied color.
-	* 
-	* @param string $text Input text to color
-	* @param int $boldcolor Color for lowercase letters
-	* @return string Colored text."""
+	""" Color by character case. - Capitals returns in bold of suplied color, lowercase in suplied color.
+	 
+	@param string $text Input text to color
+	@param int $boldcolor Color for lowercase letters"""
 	bclrstr = "\x1b[1m\x1b[3" + str(boldcolor) + "m"
 	nclrstr = "\x1b[0m\x1b[3" + str(boldcolor) + "m"
 	return re.sub("([A-Z:*<>])", bclrstr + r"\1" + nclrstr, text) + "\x1b[0m"
 
 def colorcode(text):
-	""" Process user entered color codes.
-	* Uses color codes contained in curly braces.  Standard ANSI codes work.
-	* 
-	* @todo Add error correction and checking.  Could be used to hose other players.
-	* @param string $text Text to convert to escape string
-	* @return string Fully escaped string """
+	""" Process user entered color codes. - Uses color codes contained in curly braces.  Standard ANSI codes work.
+	
+	@todo Add error correction and checking.  Could be used to hose other players.
+	@param string $text Text to convert to escape string """
 	return re.sub("\{(\d+)\}", "\x1b[" + r"\1" + "m" , text) + "\x1b[0m"
 
 
 def normmenu(text):
 	"""Return a standard colored menu entry.
-	* 
-	* @param string $text Text to convert to menu entry
-	* @return string Fully escaped string"""
+	
+	@param string $text Text to convert to menu entry """
 	bclrstr = "  \x1b[0m\x1b[32m(\x1b[1;35m"
 	nclrstr = "\x1b[0m\x1b[32m)"
 	return re.sub("\(([A-Z:<>])\)", bclrstr + r"\1" + nclrstr, text) + "\x1b[0m\r\n"
 
 
 def menu_2col(text1, text2, col1, col2):
-	""" 2 Column Menu
-	* Generate a 2 column menu entry
-	* 
-	* @param string $text1 Menu Option 1
-	* @param string $text2 Menu Option 2
-	* @param int $col1 Option color for menu option 1
-	* @param int $col2 Option color for menu option 2
-	* @return string Formatted menu string"""
+	""" 2 Column Menu -  Generate a 2 column menu entry
+	
+	@param string $text1 Menu Option 1
+	@param string $text2 Menu Option 2
+	@param int $col1 Option color for menu option 1
+	@param int $col2 Option color for menu option 2 """
 	nclrstr = "\x1b[0m\x1b[32m)"
 	bclrstr1 = "\x1b[0m\x1b[32m(\x1b[1;3"+str(col1)+"m"
 	bclrstr2 = "\x1b[0m\x1b[32m(\x1b[1;3"+str(col2)+"m"
@@ -132,10 +133,9 @@ def maketime(user):
 
 def padnumcol(text, col):
 	"""Pad a selection of text to be a specied number of columns wide.
-	* 
-	* @param string $text Text to pad
-	* @param int $col Number of columns to fill
-	* @return string String of spaces to finish column"""
+	
+	@param string $text Text to pad
+	@param int $col Number of columns to fill """
 	col = col - len(text)
 	ittr = 0
 	retval = ""
@@ -146,10 +146,9 @@ def padnumcol(text, col):
 
 def padright(text, col):
 	""" Pad a selection of text to be a specied number of columns wide, right justified.
-	* 
-	* @param string $text Text to pad
-	* @param int $col Number of columns to fill
-	* @return string Fully padded text"""
+	 
+	@param string $text Text to pad
+	@param int $col Number of columns to fill """
 	col = col - len(text)
 	ittr = 0
 	retval = ""
@@ -159,6 +158,7 @@ def padright(text, col):
 	return retval + text
 
 def getclientconfig(connection, log):
+	""" Retrieve client generated line speed / noise configuration for emulation """
 	LINESPEED = 0
 	LINENOISE = 0
 	slowecho(connection, "\r\n"+normmenu('(A) 1200 Baud'))

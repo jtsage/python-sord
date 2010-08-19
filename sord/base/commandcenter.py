@@ -1,18 +1,30 @@
 #!/usr/bin/python
-"""
- * Command Center
- * 
- * Contains command center class
- * 
-"""
+""" Saga of the Red Dragon
+
+ * A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  
+ * All attempts were made to be as close to the original as possible, 
+ * including some original artwork, the original fight equations, and 
+ * most especially the original spelling and punctuation mistakes.  Enjoy.
+
+ * Contains server-side command center display.
+
+ * (c) 2009 - 2011 J.T.Sage
+ * No Rights Reserved - but don't sell it please."""
+__author__ = "Jonathan T. Sage <jtsage@gmail.com>"
+__date__ = "18 August 2010"
+__version__ = "2.0-pysqlite"
+__credits__ = "Seth Able Robinson, original game concept"
 import curses, time
 
 class sordCommandCenter():
+	""" S.O.R.D. Command Center """
 	def __init__(self, config, log):
+		""" Inialize new command center """
 		self.config = config
 		self.log = log
 				
 	def scrnSetup(self):
+		""" Setup local screen """
 		self.mainscrn = curses.initscr()
 		curses.start_color()
 		curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_BLACK)
@@ -78,6 +90,7 @@ class sordCommandCenter():
 			self.mainscrn.addstr(self.totalY-2, item[0], item[1], curses.color_pair(2))
 			
 	def run(self):
+		""" Run command center logic """
 		self.scrnSetup()
 		doCmdCntr = True
 		

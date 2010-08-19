@@ -1,28 +1,40 @@
 #!/usr/bin/python
-"""
- * Static variables used through game.
- * 
- * Contains all non monster data for the game.
- * 
- * @package phpsord
- * @subpackage phpsord-data
- * @author J.T.Sage
- * @staticvar array $armor Names of available armor.
- * @staticvar array $armordef Defence added for each armor type.
- * @staticvar array $armorndef Defence needed for armor purchase.
- * @staticvar array $armorprice Price of each armor type.
- * @staticvar array $classes Types of player classes.
- * @staticvar array $flirts Flirting with violet - Charm needed, Text, Experience gained
- * @staticvar array $thebard Asking the bard to sing - Song text, Song finish, mysql operation
- * @staticvar array $weapon Names of available weapons.
- * @staticvar array $weaponnstr Strength needed for each weapon type.
- * @staticvar array $weaponprice Price of each weapon.
- * @staticvar array $weaponstr Strength added for each weapon type.
- * @staticvar array $enemies Enemies by level - Enemy Name, Enemy Weapon, Strenth, HP, Gold Gain, Experience Gain, Die Message
- * @staticvar array $forestdie Strings for use when dieing in the forest.  Very sad.
- * @staticvar array $master Master by level - Master Name, Master Weapon, Exp Needed, Speech, Ready Speech, Win Speech, HP, Strength, Defense
- * @staticvar array $masterwin Rewards for level up - HP Gain, Strength Gain, Defense Gain
-"""
+""" Saga of the Red Dragon
+
+ * A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  
+ * All attempts were made to be as close to the original as possible, 
+ * including some original artwork, the original fight equations, and 
+ * most especially the original spelling and punctuation mistakes.  Enjoy.
+
+ * Contains game code, artwork, and data.
+
+ * (c) 2009 - 2011 J.T.Sage
+ * No Rights Reserved - but don't sell it please.
+
+	$armor		Names of available armor.
+	$armordef	Defence added for each armor type.
+	$armorndef 	Defence needed for armor purchase.
+	$armorprice 	Price of each armor type.
+	$classes 	Types of player classes.
+	$charmsay	What the peasants say about charm[level]
+	$endstory	Final story, by class
+	$enemies 	Enemies by level - Enemy Name, Enemy Weapon, Strenth, HP, Gold Gain, Experience Gain, Die Message
+	$flirts 	Flirting with violet - Charm needed, Text, Experience gained
+	$forestdie 	Strings for use when dieing in the forest.  Very sad.
+	$fresult	Flirting results - Charm needed, exp gained, Initial text, success text, fail text
+	$killerlose	Lose to another player sayings
+	$killerwin	Win against another player sayings
+	$master 	Master by level - Master Name, Master Weapon, Exp Needed, Speech, Ready Speech, Win Speech, HP, Strength, Defense
+	$masterwin 	Rewards for level up - HP Gain, Strength Gain, Defense Gain
+	$thebard 	Asking the bard to sing - Song text, Song finish, mysql operation
+	$weapon 	Names of available weapons.
+	$weaponnstr 	Strength needed for each weapon type.
+	$weaponprice 	Price of each weapon.
+	$weaponstr 	Strength added for each weapon type."""
+__author__ = "Jonathan T. Sage <jtsage@gmail.com>"
+__date__ = "18 August 2010"
+__version__ = "2.0-pysqlite"
+__credits__ = "Seth Able Robinson, original game concept"
 
 classes = [ "empty", "Death Knight", "Mystical", "Thief" ]
 

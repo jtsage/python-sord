@@ -1,10 +1,19 @@
 #!/usr/bin/python
-"""
- * Fighting Subsystem.
- * Contains forest fights, events, player fights, leveling up
- * @package phpsord
- * @subpackage phpsord-ui
- * @author J.T.Sage """
+""" Saga of the Red Dragon
+
+ * A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  
+ * All attempts were made to be as close to the original as possible, 
+ * including some original artwork, the original fight equations, and 
+ * most especially the original spelling and punctuation mistakes.  Enjoy.
+
+ * Contains forest, dragon fight code
+
+ * (c) 2009 - 2011 J.T.Sage
+ * No Rights Reserved - but don't sell it please."""
+__author__ = "Jonathan T. Sage <jtsage@gmail.com>"
+__date__ = "18 August 2010"
+__version__ = "2.0-pysqlite"
+__credits__ = "Seth Able Robinson, original game concept"
 import random, re, time
 from ..base import func
 from . import data
@@ -13,7 +22,9 @@ from . import menu
 from ..igm import dht
 
 class getenemy():
+	""" Get a new forest enemy """
 	def __init__(self, level):
+		""" Initialize a random enemy """
 		self.level = level
 		topenemy = len(data.enemies[level]) - 1
 		enemynum = random.randint(0, topenemy)
@@ -33,7 +44,9 @@ class getenemy():
 
 
 class ffight():
+	""" S.O.R.D. Forest Interface """
 	def __init__(self, user, healers):
+		""" Initialize Forest Interface """
 		self.user = user
 		self.healers = healers
 	
@@ -622,6 +635,7 @@ class ffight():
 			pass
 
 	def fairies(self):
+		""" Happening - Forest Fairies """
 		user = self.user
 		user.write(user.art.fairies())
 		user.pause()

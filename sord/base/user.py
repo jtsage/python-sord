@@ -1,16 +1,24 @@
 #!/usr/bin/python
-"""
- * User Control Functions and Class.
- * 
- * Controls user statistics and calls
- * 
- * @package phpsord
- * @subpackage phpsord-general
- * @author J.T.Sage
-"""
+""" Saga of the Red Dragon
+
+ * A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  
+ * All attempts were made to be as close to the original as possible, 
+ * including some original artwork, the original fight equations, and 
+ * most especially the original spelling and punctuation mistakes.  Enjoy.
+
+ * Contains all user specific functions
+
+ * (c) 2009 - 2011 J.T.Sage
+ * No Rights Reserved - but don't sell it please."""
+__author__ = "Jonathan T. Sage <jtsage@gmail.com>"
+__date__ = "18 August 2010"
+__version__ = "2.0-pysqlite"
+__credits__ = "Seth Able Robinson, original game concept"
+
 import time, socket, random
 
 class sorduser(object):
+	""" S.O.R.D. User object """
 	expert = False # Expert mode enabled
 	quick = False # No modem pause
 	skills = ['', 'd', 'm', 't' ] # Enumerated skill names (db)
@@ -22,8 +30,8 @@ class sorduser(object):
 		'dragon', 'alive', 'used', 'uset', 'usem',
 		'spcld', 'spclt', 'spclm']
 	
-	def __init__(self, loginname, dbcon, ntcon, art, config, log = 0, speed = 0, noise=0):
-		""" Create a sord user class - all functions through here"""
+	def __init__(self, loginname, dbcon, ntcon, art, config = 0, log = 0, speed = 0, noise=0):
+		""" Initialize S.O.R.D User Object """
 		self.dbcon = dbcon
 		self.ntcon = ntcon
 		self.art = art

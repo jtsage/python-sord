@@ -1,16 +1,27 @@
 #!/usr/bin/python
-"""
- * SORD Database class
- * 
- * Contains specialized sord database routines
- * 
-"""
+""" Saga of the Red Dragon
+
+ * A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  
+ * All attempts were made to be as close to the original as possible, 
+ * including some original artwork, the original fight equations, and 
+ * most especially the original spelling and punctuation mistakes.  Enjoy.
+
+ * Contains all database functions.
+
+ * (c) 2009 - 2011 J.T.Sage
+ * No Rights Reserved - but don't sell it please."""
+ 
+__author__ = "Jonathan T. Sage <jtsage@gmail.com>"
+__date__ = "18 August 2010"
+__version__ = "2.0-pysqlite"
+__credits__ = "Seth Able Robinson, original game concept"
 import sqlite3, time, random
 from os.path import isfile
 from os import unlink
 from shutil import copy
 
 def getDB(config):
+	""" Get an active database connection """
 	sqc = sqlite3.connect(config.sqlitefile)
 	return sqc
 
@@ -95,13 +106,13 @@ def initialTest(config, log):
 		createDB(config, log)
 		
 def updateDB(config, log):
-	""" Update sord datebase - for now, nuke and start over """
+	""" Update S.O.R.D. datebase - for now, nuke and start over """
 	copy(config.sqlitefile, config.sqlitefile+".bak")
 	unlink(config.sqlitefile)
 	createDB(config, log)
 		
 def createDB(config, log):
-	""" Create new sord database """
+	""" Create new S.O.R.D. database """
 	log.add(" === Creating New Database - First Run!")
 	sqc = sqlite3.connect(config.sqlitefile)
 	

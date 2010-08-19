@@ -1,33 +1,45 @@
-"""
- IGM:  The Dark Horse Tavern
+""" Saga of the Red Dragon
+
+ * A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  
+ * All attempts were made to be as close to the original as possible, 
+ * including some original artwork, the original fight equations, and 
+ * most especially the original spelling and punctuation mistakes.  Enjoy.
+
+ * (c) 2009 - 2011 J.T.Sage
+ * No Rights Reserved - but don't sell it please.
  
- This is pretty close to the original dark horse tavern, found
- in the L.O.R.D forest - it has however been converted to a IGM
- cabable format for documentation purposes.  
+ # IGM:  The Dark Horse Tavern
  
- A few notes:
+ # This is pretty close to the original dark horse tavern, found
+ # in the L.O.R.D forest - it has however been converted to a IGM
+ # cabable format for documentation purposes.  
  
-   __init__() is called during server startup - in other words, 
-              far to early to be of much use.
-   run() is called from the main sord code when the user invokes
-         the IGM.  A sord user object is passed as the sole 
-         argument.  See ../base/user.py for details on the 
-         standard API.
+ # ** A few notes:
+ #    __init__() is called during server startup - in other words, 
+ #               far to early to be of much use.
+ #    run() is called from the main sord code when the user invokes
+ #          the IGM.  A sord user object is passed as the sole 
+ #          argument.  See ../base/user.py for details on the 
+ #          standard API.
          
-   The two imports listed allow for standard display functions,
-   plus use of things like daily happenings and user stats view
+ #    The two imports listed allow for standard display functions,
+ #    plus use of things like daily happenings and user stats view
    
- Best practice note:
- 
-   It's a good idea to throw a tracking log entry in the top of
-   your run() method.  Ex:
-   
-      user.log.add("   ** "+user.thisFullname+" entered IGM: IGM Name") 
+ # ** Best practice note:
+ #    It's a good idea to throw a tracking log entry in the top of
+ #    your run() method.  Ex:
+ #       user.log.add("   ** "+user.thisFullname+" entered IGM: IGM Name") 
       
-   Also, see the example to have the module print it's own
-   installation options below:
-      
+ #    Also, see the example to have the module print it's own
+ #    installation options below:   
 """
+__author__ = "Jonathan T. Sage <jtsage@gmail.com>"
+__date__ = "18 August 2010"
+__sordversion__ = "2.0-pysqlite"
+__credits__ = "Seth Able Robinson, original game concept"
+__igmversion__ = "1.0"
+__version__ = __igmversion__
+
 if ( __name__ == '__main__' ) :
 	print "The Dark Horse Tavern IGM"
 	print "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"
@@ -40,11 +52,13 @@ else:
 	from ..base import user
 
 class dht():
+	""" S.O.R.D. IGM :: The Dark Horse Tavern """
 	def __init__(self):
+		""" Initialize Dark Horse Tavern Instance """
 		pass
 	
 	def main_menu(self):
-		"""Dark Cloak Menu"""
+		""" DHT :: Main Menu"""
 		user = self.user
 		thismsg  = "\r\n\r\n\x1b[32m                          Dark Cloak Tavern\r\n"
 		thismsg += user.art.line()
@@ -59,7 +73,7 @@ class dht():
 		return thismsg
 	
 	def prompt(self):
-		""" User Prompt"""
+		""" DHT :: Main User Prompt"""
 		user = self.user
 		ptime = func.maketime(user)
 		thismenu  = "\r\n  \x1b[1;35mThe Dark Cloak Tavern\x1b[0m\x1b[1;30m (? for menu)\x1b[0m\r\n"
@@ -68,7 +82,7 @@ class dht():
 		return thismenu
 
 	def run(self, user):
-		""" Dark Horse Tavern Logic"""
+		""" DHT :: Main Run Logic"""
 		self.user = user
 		user.log.add("   ** "+user.thisFullname+" entered IGM: Dark Horse Tavern") 
 		thisQuit = False
@@ -121,7 +135,7 @@ class dht():
 				skipDisp = True
 
 	def converse(self):
-		""" Converse with patrons (dht)"""
+		""" DHT :: Converse with the patrons """
 		user = self.user
 		output  = "\r\n\r\n  \x1b[1;37mConverse with the Patrons\x1b[22;32m....\x1b[0m\r\n"
 		output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
@@ -143,7 +157,7 @@ class dht():
 			user.pause()
 			
 	def chance_menu(self):
-		""" Chance's Menu """
+		""" DHT :: Chance the Bartender - Menu """
 		user = self.user
 		ptime = func_maketime(user)
 		thismenu = func.normmenu("(C)hange Profession")
@@ -154,7 +168,7 @@ class dht():
 		return thismenu
 	
 	def chance(self):
-		""" Chance, the bartender """
+		""" DHT :: Chance the bartender run logic """
 		user = self.user
 		header = "\r\n\r\n  \x1b[32m              Talking To Chance\x1b[0m\r\n"
 		header += "\x1b[32m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\x1b[0m\r\n"

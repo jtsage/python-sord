@@ -1,26 +1,33 @@
 #!/usr/bin/python
-""" Saga of the Red Dragon - Player Editor
+""" Saga of the Red Dragon
 
-  * A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  
-  * All attempts were made to be as close to the original as possible, 
-  * including some original artwork, the original fight equations, and 
-  * most especially the original spelling and punctuation mistakes.  Enjoy.
+ * A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  
+ * All attempts were made to be as close to the original as possible, 
+ * including some original artwork, the original fight equations, and 
+ * most especially the original spelling and punctuation mistakes.  Enjoy.
 
-  * @author J.T.Sage
-  * @copyright 2009-2011
-  * @license http://sord.jtsage.com/LICENSE Disclaimer's License
-  * @version 2.0"""
+ * Contains all online player editor.
+
+ * (c) 2009 - 2011 J.T.Sage
+ * No Rights Reserved - but don't sell it please."""
+__author__ = "Jonathan T. Sage <jtsage@gmail.com>"
+__date__ = "18 August 2010"
+__version__ = "2.0-pysqlite"
+__credits__ = "Seth Able Robinson, original game concept"
 
 from . import func
 from . import user
 from ..game import data
 
 class editor():
+	""" S.O.R.D. Player editor """
 
 	def __init__(self, user):
+		""" Initialize new editor instance """
 		self.user = user
 	
 	def main_menu(self):
+		""" Main Menu """
 		user = self.user
 		if ( user.sex == 1 ):
 			sexo = "Male"
@@ -48,6 +55,7 @@ class editor():
 		return thismsg
 
 	def skill_menu(self):
+		""" Skills Menu """
 		user = self.user
 		thismsg  = "\r\n" + self.makecenter("** Saga Of The Red Dragon - Skills Editor v."+user.config.version+" **", 1) + "\r\n"
 		thismsg += self.makecenter("Account Number: "+str(user.thisUserID)+" / "+user.thisFullname, 7) + "\r\n\r\n"
@@ -61,6 +69,7 @@ class editor():
 		return thismsg
 
 	def skill_logic(self):
+		""" Skills Run Logic """
 		user = self.user
 		thisQuit = False
 		skipDisp = False
@@ -148,6 +157,7 @@ class editor():
 				skipDisp = True
 
 	def run(self):
+		""" Main run logic """
 		user = self.user
 		thisQuit = False
 		skipDisp = False
@@ -456,6 +466,7 @@ class editor():
 				skipDisp = True
 
 	def makecenter(self, text, color):
+		""" Center a string of text """
 		col = 40 - (len(text) / 2)
 		ittr = 0
 		retval = ""
@@ -465,6 +476,7 @@ class editor():
 		return retval + func.casebold(text, color)
 	
 	def makeentry(self, option, text, col, value, editable = True):
+		""" Make an editor menu entry """
 		thisentry = ""
 		if ( col == 1 ):
 			thisentry += "  "

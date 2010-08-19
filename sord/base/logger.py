@@ -1,15 +1,25 @@
 #!/usr/bin/python
-"""
- * Logging class
- * 
- * Contains specialized sord logging class
- * 
-"""
+""" Saga of the Red Dragon
+
+ * A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  
+ * All attempts were made to be as close to the original as possible, 
+ * including some original artwork, the original fight equations, and 
+ * most especially the original spelling and punctuation mistakes.  Enjoy.
+
+ * Contains all logging functions.
+
+ * (c) 2009 - 2011 J.T.Sage
+ * No Rights Reserved - but don't sell it please."""
+__author__ = "Jonathan T. Sage <jtsage@gmail.com>"
+__date__ = "18 August 2010"
+__version__ = "2.0-pysqlite"
+__credits__ = "Seth Able Robinson, original game concept"
 import time
 
 class sordLogger():
-	""" Logger class """
+	""" S.O.R.D. Logger class """
 	def __init__(self):
+		""" Inialize a new logger """
 		self.__mainLogger = list()
 		self.__activePeers = 0
 		self.__totalPeers = 0

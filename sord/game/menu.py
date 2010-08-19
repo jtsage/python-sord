@@ -1,17 +1,25 @@
-#!/usr/bin/python
-"""
- * Menu Functions.
- * 
- * Contains all menus, and some menu creation functions
- * 
-"""
+""" Saga of the Red Dragon
+
+ * A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  
+ * All attempts were made to be as close to the original as possible, 
+ * including some original artwork, the original fight equations, and 
+ * most especially the original spelling and punctuation mistakes.  Enjoy.
+
+ * Contains all menus.
+
+ * (c) 2009 - 2011 J.T.Sage
+ * No Rights Reserved - but don't sell it please."""
+__author__ = "Jonathan T. Sage <jtsage@gmail.com>"
+__date__ = "18 August 2010"
+__version__ = "2.0-pysqlite"
+__credits__ = "Seth Able Robinson, original game concept"
+
 import time
 from . import data
 from ..base import func
 
 def menu_turgon(user):
-	"""Turgons warrior training
-	* @return string Fully formatted menu """
+	"""Turgons warrior training """
 	ptime = func.maketime(user)
 	try:
 		thismenu = "\r\n  \x1b[32mYour master is \x1b[1;37m"+data.masters[user.level][0]+"\x1b[0m\x1b[32m.\x1b[0m\r\n\r\n"
@@ -22,8 +30,7 @@ def menu_turgon(user):
 	return thismenu
 
 def bank(user):
-	"""Ye olde bank
-	* @return string Fully formatted menu"""
+	"""Ye olde bank """
 	ptime = func.maketime(user)
 	thismenu = "\r\n\r\n\x1b[32m  Gold In Hand: \x1b[1m" + str(user.gold)
 	thismenu += "\x1b[0m\x1b[32m Gold In Bank: \x1b[1m" + str(user.bank) + "\r\n"
@@ -32,8 +39,7 @@ def bank(user):
 	return thismenu
 
 def forest(user):
-	""" Forest fight menu (pre-battle)
-	* @return string Fully formatted menu """
+	""" Forest fight menu (pre-battle) """
 	ptime = func.maketime(user)
 	thismenu = "\r\n  \x1b[32mHitPoints: (\x1b[1m" + str(user.hp) + "\x1b[22m of \x1b[1m" + str(user.hpmax)
 	thismenu += "\x1b[22m)  Fights: \x1b[1m" + str(user.ffight) + "\x1b[22m  Gold: \x1b[1m" + str(user.gold)
@@ -43,14 +49,14 @@ def forest(user):
 	return thismenu
 
 def slaughter(user):
+	""" Slaughter other players """
 	ptime = func.maketime(user)
 	thismenu = "\r\n\x1b[1;35m  Slaughter Other Players\r\n  \x1b[1;30m(S,L,E,W,R) (? for menu)\x1b[0m\r\n\r\n"
 	thismenu += "  \x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
 	return thismenu
 	
 def heal(user):
-	""" Healers Hut
-	* @return string Fully formatted menu """
+	""" Healers Hut """
 	ptime = func.maketime(user)
 	thismenu  = "\r\n\r\n  \x1b[1;37mSaga of the Red Dragon - \x1b[0m\x1b[32mHealers Hut\x1b[0m\r\n"
 	thismenu += user.art.line()
@@ -67,8 +73,8 @@ def heal(user):
 
 def mainlong(user):
 	"""Main Menu - Non-Expert
-	* @todo Married List and Other Places
-	* @return string Fully formatted menu"""
+	* @todo Married List
+	"""
 	thismenu  = "\r\n\r\n\x1b[1;37m  Saga of the Red Dragon - \x1b[0m\x1b[32mTown Square\x1b[0m\r\n"
 	thismenu += user.art.line()
 	thismenu += "\x1b[32m  The streets are crowded, it is difficult to\r\n  push your way through the mob....\r\n\r\n"
@@ -85,8 +91,8 @@ def mainlong(user):
 
 def mainshort(user):
 	""" Main Menu - Expert
-	* Generate short main menu with prompt.  Appended to Non-Expert menu as well.
-	* @return string Fully formatted menu """
+	
+	* Generate short main menu with prompt.  Appended to Non-Expert menu as well. """
 	ptime = func.maketime(user)
 	thismenu  = "\r\n  \x1b[1;35mThe Town Square\x1b[0m\x1b[1;30m (? for menu)\x1b[0m\r\n"
 	thismenu += "  \x1b[1;30m(F,S,K,A,H,V,I,T,Y,L,W,D,P,O,X,M,Q)\x1b[0m\r\n\r\n"
@@ -94,8 +100,7 @@ def mainshort(user):
 	return thismenu
 
 def abdul(user):
-	"""Abdul's Armor
-	* @return string Fully formatted menu"""
+	""" Abdul's Armor """
 	ptime = func.maketime(user)
 	thismenu  = "\r\n  \x1b[32mCurrent armour: \x1b[1m"+data.armor[user.armor]+"\x1b[0m\r\n"
 	thismenu += "  \x1b[1;35mAbduls Armour \x1b[1;30m(B,S,Y,R) (? for menu)\r\n\r\n"
@@ -103,8 +108,7 @@ def abdul(user):
 	return thismenu
  
 def arthur(user):
-	"""King Arthur's Weapons
-	* @return string Fully formatted menu """
+	"""King Arthur's Weapons """
 	ptime = func.maketime(user)
 	thismenu  = "\r\n  \x1b[32mCurrent weapon: \x1b[1m"+data.weapon[user.weapon]+"\x1b[0m\r\n"
 	thismenu += "  \x1b[1;35mKing Arthur's Weapons \x1b[1;30m(B,S,Y,R) (? for menu)\r\n\r\n"

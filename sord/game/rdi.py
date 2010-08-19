@@ -1,9 +1,20 @@
 #!/usr/bin/python
-""" Red Dragon Inn
- * @package phpsord
- * @subpackage phpsord-ui
- * @author J.T.Sage 
- * 11-2-09 :: Added timeouts, silent fail menus."""
+""" Saga of the Red Dragon
+
+ * A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  
+ * All attempts were made to be as close to the original as possible, 
+ * including some original artwork, the original fight equations, and 
+ * most especially the original spelling and punctuation mistakes.  Enjoy.
+
+ * Contains the Red Dragon Inn
+
+ * (c) 2009 - 2011 J.T.Sage
+ * No Rights Reserved - but don't sell it please."""
+__author__ = "Jonathan T. Sage <jtsage@gmail.com>"
+__date__ = "18 August 2010"
+__version__ = "2.0-pysqlite"
+__credits__ = "Seth Able Robinson, original game concept"
+
 import random, time, re
 from ..base import func
 from ..base import user
@@ -11,7 +22,9 @@ from . import data
 from . import util
 
 class rdi():
+	""" S.O.R.D. :: Red Dragon Inn """
 	def __init__(self, user):
+		""" Initialize new RDI instance """
 		self.user = user
 
 	def menu_main(self):
@@ -235,8 +248,7 @@ class rdi():
 			user.write(func.casebold("\r\n  Seth says:  I'm a bit tired, maybe tommorow...\r\n", 2))
 
 	def flirt(self):
-		""" Flirt initiator.  Locked on viloet for now.
-		@todo else should go to seth.  """
+		""" Flirt initiator. """
 		self.user.write(self.menu_flirt())
 		self.user.write("\n  \x1b[32mYour Choice? \x1b[1m: \x1b[0m ")
 		if ( self.user.sex == 1 ):
@@ -245,6 +257,7 @@ class rdi():
 			self.flirt_seth()
 
 	def menu_flirt(self):
+		""" Show appropriate flirting menu per user.sex """
 		thismenu = "\r\n"
 		if (self.user.sex == 1):
 			thismenu = self.user.art.violet()

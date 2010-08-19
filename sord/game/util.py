@@ -1,14 +1,24 @@
 #!/usr/bin/python
-"""
- * Contains utility displays
- *
-"""
+""" Saga of the Red Dragon
+
+ * A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  
+ * All attempts were made to be as close to the original as possible, 
+ * including some original artwork, the original fight equations, and 
+ * most especially the original spelling and punctuation mistakes.  Enjoy.
+
+ * Contains basic player in-game utility displays / functions
+
+ * (c) 2009 - 2011 J.T.Sage
+ * No Rights Reserved - but don't sell it please."""
+__author__ = "Jonathan T. Sage <jtsage@gmail.com>"
+__date__ = "18 August 2010"
+__version__ = "2.0-pysqlite"
+__credits__ = "Seth Able Robinson, original game concept"
 from ..base import func
 from . import data
 
 def readmail(user):
-	""" Read waiting in-game e-mail. Very simple.
-	* @param int $userid User ID to pull in game mail for."""
+	""" Read waiting in-game e-mail. Very simple. """
 	db = user.dbcon.cursor()
 	db.execute("SELECT `id`, `from`, `message`, DATE_FORMAT(sent, '%W %M %Y, %H:%i') as sent FROM mail WHERE `to` = ?", (user.thisUserID,))
 	for (id, sender, message, sent) in db.fetchall():
@@ -65,9 +75,7 @@ def finduser(user, prompter):
 		return 0
 
 def viewstats(user):
-	""" View Player Stats
-	* @param int $userid User ID
-	* @return string Formatted output for display"""
+	""" View Player Stats """
 	output  = "\r\n\r\n\x1b[1m\x1b[37m"+user.thisFullname+"\x1b[0m\x1b[32m's Stats...\r\n"
 	output += user.art.line()
 	output += "\x1b[32m Experience    : \x1b[1m"+str(user.exp)+"\x1b[0m\r\n"
@@ -90,8 +98,7 @@ def viewstats(user):
 	return output
 	
 def who(user):
-	""" Who's Online
-	* @return string Formatted output for display"""
+	""" Who's Online """
 	db = user.dbcon.cursor()
 	db.execute("SELECT o.userid, fullname, whence FROM users u, online o WHERE o.userid = u.userid ORDER BY whence ASC")
 	output  = "\r\n\r\n\x1b[1;37m                     Warriors In The Realm Now\x1b[22;32m\x1b[0m\r\n"
@@ -104,8 +111,8 @@ def who(user):
 
 def dailyhappen(noprmpt, user):
 	""" View Daily Happenings
-	* @param bool $noprmpt Do not prompt for additions.
-	* @return string Formatted output for display """
+	
+	* @param bool $noprmpt Do not prompt for additions. """
 	db = user.dbcon.cursor()
 	db.execute("SELECT data FROM (SELECT * FROM daily ORDER BY id DESC LIMIT 10) AS tbl ORDER BY tbl.id")
 	output  = "\r\n\r\n\x1b[1;37mRecent Happenings\033[22;32m....\x1b[0m\r\n"
@@ -119,8 +126,7 @@ def dailyhappen(noprmpt, user):
 	return output
 
 def list(art, dbc):
-	""" Player List
-	* @return string Formatted output for display """
+	""" Player List """
 	db = dbc.cursor()
 	db.execute("SELECT users.userid, fullname, exp, level, cls, spclm, spcld, spclt, sex, alive FROM users, stats WHERE users.userid = stats.userid ORDER BY exp DESC")
 	output = "\r\n\r\n\x1b[32m    Name                    Experience    Level    Mastered    Status\x1b[0m\r\n";
@@ -210,7 +216,7 @@ def dirt(user):
 	user.pause()
 
 def newuser(user):
-	"""Create a user"""
+	""" Create a user """
 	user.write(func.casebold("\r\nCreating a New Character...\r\n", 2))
 	thisLooper = False
 	while ( not thisLooper ):
