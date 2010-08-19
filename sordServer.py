@@ -43,7 +43,10 @@ def handleClient(connection, config, log):
 		
 		""" Line speed and noise options """
 		sord.base.func.pauser(connection)
-		lineconfig = sord.base.func.getclientconfig(connection, log)
+		if ( not config.fulldebug ):
+			lineconfig = sord.base.func.getclientconfig(connection, log)
+		else:
+			lineconfig = (3,0)
 		
 		if ( not config.fulldebug ):
 			if ( not config.ansiskip ):

@@ -9,6 +9,8 @@ from ..base import peditor
 from . import util
 from . import data
 from . import menu
+from . import rdi
+from . import forest
 from ..sord import igm
 
 class other():
@@ -136,13 +138,17 @@ class mainmenu():
 				self.user.ntcon.send('W')
 				self.user.jennielevel = 0
 				util.sendmail(user)
-			elif ( key[0] == "i" or key[0] == "I" ): #"""RIGHT HERE"""
-				self.user.tcon.send('I')
-				rdi_logic(user)
-			elif ( key[0] == "f" or key[0] == "F" ): #"""RIGHT HERE"""
+			elif ( key[0] == "i" or key[0] == "I" ):
+				self.user.ntcon.send('I')
+				thismod = rdi.rdi(self.user)
+				thismod.run()
+				del thismod
+			elif ( key[0] == "f" or key[0] == "F" ):
 				self.user.ntcon.send('F')
 				self.user.jennielevel = 0
-				module_forest(user)
+				thismod = forest.ffight(self.user, heal(self.user))
+				thismod.run()
+				del thismod
 			elif ( key[0] == 't' or key[0] == 'T' ): #"""RIGHT HERE"""
 				self.user.ntcon.send('T')
 				self.user.jennielevel = 0
@@ -321,6 +327,7 @@ class heal():
 		self.user = user
 	def run(self):
 		""" Healers Hut Logic """
+		user = self.user
 		thisQuit = False
 		skipDisp = False
 		while ( not thisQuit ):

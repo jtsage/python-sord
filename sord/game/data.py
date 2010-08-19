@@ -69,11 +69,6 @@ thebard = [ [['',''],[''],''],
 		'charm = charm + 1']
 	]
 
-flirts = [[],
-	[[1, '(W)ink', 5],[2, '(K)iss Her Hand', 10],[4, '(P)eck Her On The Lips', 20],[8, '(S)it Her On Your Lap', 30],[16, '(G)rab Her Backside', 40],[32, '(C)arry Her Upstairs', 40]],
-	[[1, '(W)ink', 5],[2, '(F)lutter Eyelashes', 10],[4, '(D)rop Hankee', 20],[8, '(A)sk The Bard to Buy You a Drink', 30],[16, '(K)iss The Bard Soundly', 40],[32, '(C)ompletely Seduce The Bard', 40]]
-	]
-
 enemies = [[],
 	[
 		['Small Thief', 'Small Dagger', 6, 9, 56, 2, 'You disembowel the little thieving menace!'],
@@ -329,13 +324,25 @@ forestdie = [
 	'Halder laughs at `g\'s plight.',
 	'The banker is already looking for `g\'s next of kin'];
 
-violet = [
+flirts = [[],
+	[[1, '(W)ink', 5],[2, '(K)iss Her Hand', 10],[4, '(P)eck Her On The Lips', 20],[8, '(S)it Her On Your Lap', 30],[16, '(G)rab Her Backside', 40],[32, '(C)arry Her Upstairs', 40]],
+	[[1, '(W)ink', 5],[2, '(F)lutter Eyelashes', 10],[4, '(D)rop Hankee', 20],[8, '(A)sk The Bard to Buy You a Drink', 30],[16, '(K)iss The Bard Soundly', 40],[32, '(C)ompletely Seduce The Bard', 40]]
+	]
+
+fresult = [ [],
  [0, 5, 'You pluck up your courage, catch Violet\'s eye,\r\n  and seductivly wink...', 'Violet smiles and blushes deeply.\r\n  Your relationship is taking off!' ,'Violet glares back and returns to her work.'],
- [1, 10, 'As Violet delivers your beer, you grab her hand,\n  pucker up and kiss it...', 'Violet giggles and blushes deeply.\n  Your relationship is taking off!', 'Violet pulls her hand back and slaps you across the face.'],
- [3, 20, 'You bolt up as Violet takes your hard earned gold,\n  smile, and plant one on her lips...', 'Violet gasps and hurries away.\n  Your relationship is starting to really move now!', 'Violet knees you right in the family gem stones.'],
- [7, 30, 'You beckon Violet over, and sit her on your lap...', 'Violet snuggles down for a moment, then hurries back to work.\n  Very smooth ex-lax.', 'Violet grabs a fork from the table and embeds it in your knee.'],
- [15, 40, 'As you wander the bar, you spot Violet, and firmly caress\n  her glorious behind...', 'Violet yalps, spins around and gives you a peck on the cheek.\n  Lovely moves son...', 'Violet twists your arm behind your back, dumps a beer on\n  you, and walks away.  Ouch.'],
- [31, 40, 'You slam your beer down, exclaim \'the hell with it\', grab Violet,\n  and head upstairs to the nearest unused room...', 'Violet shifts in your arms, revealing that she\n  \'forgot\' to wear something this morning.\n  Unfortunatally, women\'s personal uh... \'hygiene\' wasn\'t\n  what it is now in the dark ages.', 'Violet tears off your pants, grabs a knife, and only your \'small stature\'\n  prevents a Bobbit incident.  Bummer.']]
+ [1, 10, 'As Violet delivers your beer, you grab her hand,\r\n  pucker up and kiss it...', 'Violet giggles and blushes deeply.\r\n  Your relationship is taking off!', 'Violet pulls her hand back and slaps you across the face.'],
+ [3, 20, 'You bolt up as Violet takes your hard earned gold,\r\n  smile, and plant one on her lips...', 'Violet gasps and hurries away.\r\n  Your relationship is starting to really move now!', 'Violet knees you right in the family gem stones.'],
+ [7, 30, 'You beckon Violet over, and sit her on your lap...', 'Violet snuggles down for a moment, then hurries back to work.\r\n  Very smooth ex-lax.', 'Violet grabs a fork from the table and embeds it in your knee.'],
+ [15, 40, 'As you wander the bar, you spot Violet, and firmly caress\r\n  her glorious behind...', 'Violet yalps, spins around and gives you a peck on the cheek.\r\n  Lovely moves son...', 'Violet twists your arm behind your back, dumps a beer on\r\n  you, and walks away.  Ouch.'],
+ [31, 40, 'You slam your beer down, exclaim \'the hell with it\', grab Violet,\r\n  and head upstairs to the nearest unused room...', 'Violet shifts in your arms, revealing that she\r\n  \'forgot\' to wear something this morning.\r\n  Unfortunatally, women\'s personal uh... \'hygiene\' wasn\'t\r\n  what it is now in the dark ages.', 'Violet tears off your pants, grabs a knife, and only your \'small stature\'\r\n  prevents a Bobbit incident.  Bummer.']
+ ], [
+ [ 0,  5 , 'You pluck up your courage, catch Seth\'s eye,\r\n  and seductivly wink...', 'Seth smiles and nod back\r\n  Your relationship is taking off!' ,'Seth glares back and returns to his drink.'],
+ [ 1,  10, 'You bat your eyes wildly in Seth\'s general direction', 'Seth chuckles lightly, and winks back at you', 'Seth rolls his eyes and goes back to strumming his instrument'],
+ [ 3,  20, 'You wander over near the bard, and \'accidentally\' drop\r\n your hankee near him', 'Seth leans over, picks up the hankee, and gently caresses\r\b your hand while returning it', 'Seth leans over, grabs the hankee, and proceeds to blow his nose,\r\n  chucking the snot-ladden rag in the nearest corner when he finishes' ],
+ [ 7,  30, 'You nod to Seth, and breathlessly ask if he will buy you a drink', 'Seth smiles, and nods to the bartender, caressin\r\n your ass while handing you a pina collada ', 'Seth orders a double whiskey, and while glaring at you,\r\n downs the drink in one big spite-filled gulp'],
+ [ 15, 40, 'As you wander back from the latrine, you spot Seth,\r\n wander over, and plant a firm one on the Bard\'s lips', 'Seth grunts a little,\r\n and returns the kiss with some tounge.', 'Seth grunts a little,\r\n turns his head, and vomits on the floor.\r\n  You go get a mop.'],
+ [ 31, 40, 'You decide action is needed.  You\r\n drop you panties carefully, saunter over to Seth,\r\n drop his pants and begin gyrating.', 'Seth smiles, and allows you to continue, making little\r\n mewling noises the whole time.  You\r\n realize your going to need a mop.', 'Seth goes instantly limp, jumps up from his spot\r\n on the floor, and runs for the forest, yelling something\r\n about \'even a dragon clawing my eyes out won\'t get rid of this image\'']]
 
 charmsay = [[],[
 	'is the ugliest person in the realm. Easily.',

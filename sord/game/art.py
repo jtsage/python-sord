@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-#from functions import func_normmenu
+#from functions import func.normmenu
 #from data import charmsay
 
 """
@@ -27,9 +27,8 @@
  * a223		337		223		9600	2580
  * a254		376		254		9642	25AA
 """
+from ..base import func
 
-
-	
 class sordArtwork():
 	def __init__(self, config, sqc):
 		self.sqc = sqc
@@ -257,9 +256,9 @@ class sordArtwork():
 		thismsg += self.ESC+"34C"+self.A223+"\r\n"
 		thismsg += self.ESC+"2C"+self.ESC+"0;32mThe murky forest stands before you - a giant maw of gloomy darkness\r\n"
 		thismsg += self.ESC+"2Cever beckoning."+self.ESC+"37m              \r\n\r\n"
-		thismsg += func_normmenu("(L)ook for something to kill")
-		thismsg += func_normmenu("(H)ealer's Hut")
-		thismsg += func_normmenu("(R)eturn to town")
+		thismsg += func.normmenu("(L)ook for something to kill")
+		thismsg += func.normmenu("(H)ealer's Hut")
+		thismsg += func.normmenu("(R)eturn to town")
 		return thismsg 
 
 	def tower(self):
