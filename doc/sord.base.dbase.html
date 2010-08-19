@@ -1,14 +1,14 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html><head><title>Python: package sord</title>
+<html><head><title>Python: module sord.base.dbase</title>
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
 <tr bgcolor="#7799ee">
 <td valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>sord</strong></big></big> (version 2.0-pysqlite, 18 August 2010)</font></td
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="sord.html"><font color="#ffffff">sord</font></a>.<a href="sord.base.html"><font color="#ffffff">base</font></a>.dbase</strong></big></big> (version 2.0-pysqlite, 18 August 2010)</font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/jtsage/sord/sord/__init__.py">/home/jtsage/sord/sord/__init__.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/jtsage/sord/sord/base/dbase.py">/home/jtsage/sord/sord/base/dbase.py</a></font></td></tr></table>
     <p><tt>Saga&nbsp;of&nbsp;the&nbsp;Red&nbsp;Dragon<br>
 &nbsp;<br>
 *&nbsp;A&nbsp;blatent&nbsp;rip&nbsp;off&nbsp;of&nbsp;Seth&nbsp;Able&nbsp;Robinson's&nbsp;BBS&nbsp;Door&nbsp;Masterpiece.&nbsp;&nbsp;<br>
@@ -16,10 +16,7 @@
 *&nbsp;including&nbsp;some&nbsp;original&nbsp;artwork,&nbsp;the&nbsp;original&nbsp;fight&nbsp;equations,&nbsp;and&nbsp;<br>
 *&nbsp;most&nbsp;especially&nbsp;the&nbsp;original&nbsp;spelling&nbsp;and&nbsp;punctuation&nbsp;mistakes.&nbsp;&nbsp;Enjoy.<br>
 &nbsp;<br>
-*&nbsp;This&nbsp;package&nbsp;includes&nbsp;all&nbsp;program&nbsp;logic,&nbsp;flow,&nbsp;artwork,&nbsp;menus,&nbsp;etc<br>
-*&nbsp;for&nbsp;the&nbsp;S.O.R.D.&nbsp;server&nbsp;/&nbsp;game.&nbsp;&nbsp;It&nbsp;is&nbsp;intended&nbsp;as&nbsp;a&nbsp;standalone&nbsp;<br>
-*&nbsp;program,&nbsp;but&nbsp;packaged&nbsp;incase&nbsp;anyone&nbsp;finds&nbsp;the&nbsp;means&nbsp;and&nbsp;methods<br>
-*&nbsp;contained&nbsp;herin&nbsp;to&nbsp;be&nbsp;useful&nbsp;in&nbsp;the&nbsp;least<br>
+*&nbsp;Contains&nbsp;all&nbsp;database&nbsp;functions.<br>
 &nbsp;<br>
 *&nbsp;(c)&nbsp;2009&nbsp;-&nbsp;2011&nbsp;J.T.Sage<br>
 *&nbsp;No&nbsp;Rights&nbsp;Reserved&nbsp;-&nbsp;but&nbsp;don't&nbsp;sell&nbsp;it&nbsp;please.</tt></p>
@@ -27,14 +24,28 @@
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial"><big><strong>Package Contents</strong></big></font></td></tr>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="sord.base.html"><strong>base</strong>&nbsp;(package)</a><br>
-</td><td width="25%" valign=top><a href="sord.config.html"><strong>config</strong>&nbsp;(package)</a><br>
-</td><td width="25%" valign=top><a href="sord.game.html"><strong>game</strong>&nbsp;(package)</a><br>
-</td><td width="25%" valign=top><a href="sord.igm.html"><strong>igm</strong>&nbsp;(package)</a><br>
-</td></tr></table></td></tr></table><p>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="random.html">random</a><br>
+</td><td width="25%" valign=top><a href="sqlite3.html">sqlite3</a><br>
+</td><td width="25%" valign=top><a href="time.html">time</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-createDB"><strong>createDB</strong></a>(config, log)</dt><dd><tt>Create&nbsp;new&nbsp;S.O.R.D.&nbsp;database</tt></dd></dl>
+ <dl><dt><a name="-dayRollover"><strong>dayRollover</strong></a>(config, sqc, log)</dt><dd><tt>Daily&nbsp;Update&nbsp;routine</tt></dd></dl>
+ <dl><dt><a name="-getDB"><strong>getDB</strong></a>(config)</dt><dd><tt>Get&nbsp;an&nbsp;active&nbsp;database&nbsp;connection</tt></dd></dl>
+ <dl><dt><a name="-initialTest"><strong>initialTest</strong></a>(config, log)</dt><dd><tt>Check&nbsp;for&nbsp;db&nbsp;existence&nbsp;and&nbsp;check&nbsp;version</tt></dd></dl>
+ <dl><dt><a name="-unlink"><strong>unlink</strong></a>(...)</dt><dd><tt><a href="#-unlink">unlink</a>(path)<br>
+&nbsp;<br>
+Remove&nbsp;a&nbsp;file&nbsp;(same&nbsp;as&nbsp;remove(path)).</tt></dd></dl>
+ <dl><dt><a name="-updateDB"><strong>updateDB</strong></a>(config, log)</dt><dd><tt>Update&nbsp;S.O.R.D.&nbsp;datebase&nbsp;-&nbsp;for&nbsp;now,&nbsp;nuke&nbsp;and&nbsp;start&nbsp;over</tt></dd></dl>
+</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
 <td colspan=3 valign=bottom>&nbsp;<br>

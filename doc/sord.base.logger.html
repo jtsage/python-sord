@@ -1,14 +1,14 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html><head><title>Python: package sord</title>
+<html><head><title>Python: module sord.base.logger</title>
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
 <tr bgcolor="#7799ee">
 <td valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>sord</strong></big></big> (version 2.0-pysqlite, 18 August 2010)</font></td
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="sord.html"><font color="#ffffff">sord</font></a>.<a href="sord.base.html"><font color="#ffffff">base</font></a>.logger</strong></big></big> (version 2.0-pysqlite, 18 August 2010)</font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/jtsage/sord/sord/__init__.py">/home/jtsage/sord/sord/__init__.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/jtsage/sord/sord/base/logger.py">/home/jtsage/sord/sord/base/logger.py</a></font></td></tr></table>
     <p><tt>Saga&nbsp;of&nbsp;the&nbsp;Red&nbsp;Dragon<br>
 &nbsp;<br>
 *&nbsp;A&nbsp;blatent&nbsp;rip&nbsp;off&nbsp;of&nbsp;Seth&nbsp;Able&nbsp;Robinson's&nbsp;BBS&nbsp;Door&nbsp;Masterpiece.&nbsp;&nbsp;<br>
@@ -16,10 +16,7 @@
 *&nbsp;including&nbsp;some&nbsp;original&nbsp;artwork,&nbsp;the&nbsp;original&nbsp;fight&nbsp;equations,&nbsp;and&nbsp;<br>
 *&nbsp;most&nbsp;especially&nbsp;the&nbsp;original&nbsp;spelling&nbsp;and&nbsp;punctuation&nbsp;mistakes.&nbsp;&nbsp;Enjoy.<br>
 &nbsp;<br>
-*&nbsp;This&nbsp;package&nbsp;includes&nbsp;all&nbsp;program&nbsp;logic,&nbsp;flow,&nbsp;artwork,&nbsp;menus,&nbsp;etc<br>
-*&nbsp;for&nbsp;the&nbsp;S.O.R.D.&nbsp;server&nbsp;/&nbsp;game.&nbsp;&nbsp;It&nbsp;is&nbsp;intended&nbsp;as&nbsp;a&nbsp;standalone&nbsp;<br>
-*&nbsp;program,&nbsp;but&nbsp;packaged&nbsp;incase&nbsp;anyone&nbsp;finds&nbsp;the&nbsp;means&nbsp;and&nbsp;methods<br>
-*&nbsp;contained&nbsp;herin&nbsp;to&nbsp;be&nbsp;useful&nbsp;in&nbsp;the&nbsp;least<br>
+*&nbsp;Contains&nbsp;all&nbsp;logging&nbsp;functions.<br>
 &nbsp;<br>
 *&nbsp;(c)&nbsp;2009&nbsp;-&nbsp;2011&nbsp;J.T.Sage<br>
 *&nbsp;No&nbsp;Rights&nbsp;Reserved&nbsp;-&nbsp;but&nbsp;don't&nbsp;sell&nbsp;it&nbsp;please.</tt></p>
@@ -27,13 +24,44 @@
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial"><big><strong>Package Contents</strong></big></font></td></tr>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="sord.base.html"><strong>base</strong>&nbsp;(package)</a><br>
-</td><td width="25%" valign=top><a href="sord.config.html"><strong>config</strong>&nbsp;(package)</a><br>
-</td><td width="25%" valign=top><a href="sord.game.html"><strong>game</strong>&nbsp;(package)</a><br>
-</td><td width="25%" valign=top><a href="sord.igm.html"><strong>igm</strong>&nbsp;(package)</a><br>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="time.html">time</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="sord.base.logger.html#sordLogger">sordLogger</a>
+</font></dt></dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="sordLogger">class <strong>sordLogger</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>S.O.R.D.&nbsp;Logger&nbsp;class<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="sordLogger-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Inialize&nbsp;a&nbsp;new&nbsp;logger</tt></dd></dl>
+
+<dl><dt><a name="sordLogger-add"><strong>add</strong></a>(self, value)</dt><dd><tt>Add&nbsp;*arg&nbsp;to&nbsp;log</tt></dd></dl>
+
+<dl><dt><a name="sordLogger-addcon"><strong>addcon</strong></a>(self)</dt><dd><tt>Increment&nbsp;connection</tt></dd></dl>
+
+<dl><dt><a name="sordLogger-getactive"><strong>getactive</strong></a>(self)</dt><dd><tt>Get&nbsp;active&nbsp;peers</tt></dd></dl>
+
+<dl><dt><a name="sordLogger-gettotal"><strong>gettotal</strong></a>(self)</dt><dd><tt>Get&nbsp;total&nbsp;peers</tt></dd></dl>
+
+<dl><dt><a name="sordLogger-remcon"><strong>remcon</strong></a>(self)</dt><dd><tt>Remove&nbsp;connection&nbsp;from&nbsp;active</tt></dd></dl>
+
+<dl><dt><a name="sordLogger-show"><strong>show</strong></a>(self, value)</dt><dd><tt>Show&nbsp;*arg&nbsp;log&nbsp;items</tt></dd></dl>
+
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
