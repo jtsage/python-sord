@@ -116,7 +116,7 @@ class mainmenu():
 			elif ( key[0] == "l" or key[0] == "L" ):
 				self.user.ntcon.send('L')
 				self.user.jennielevel = 0
-				self.user.write(util.list(self.user.art, self.user.sqcon))
+				self.user.write(util.list(self.user.art, self.user.dbcon))
 				self.user.pause()
 			elif ( key[0] == "o" or key[0] == "O" ):
 				self.user.ntcon.send('O')
