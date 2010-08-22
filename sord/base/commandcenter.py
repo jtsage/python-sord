@@ -23,8 +23,8 @@ class sordCommandCenter():
 		self.config = config
 		self.log = log
 				
-	def scrnSetup(self):
-		""" Setup local screen """
+	def scrnInit(self):
+		""" Init the screen """
 		self.mainscrn = curses.initscr()
 		curses.start_color()
 		curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_BLACK)
@@ -36,6 +36,10 @@ class sordCommandCenter():
 		curses.curs_set(0)
 		self.mainscrn.timeout(1000)
 		
+	def scrnSetup(self):
+		""" Setup local screen """
+		
+		self.mainscrn.clear()
 		self.totalY, self.totalX = self.mainscrn.getmaxyx()
 		self.loglines = self.totalY - 7
 		
@@ -45,7 +49,7 @@ class sordCommandCenter():
 		self.mainscrn.hline(2, 1, curses.ACS_HLINE, (self.totalX-2))
 		self.mainscrn.attroff(curses.color_pair(5) | curses.A_BOLD)
 		
-		self.mainscrn.addstr((self.totalY-3), (self.totalX-13), '(Q,D,A,S,?)')
+		self.mainscrn.addstr((self.totalY-3), (self.totalX-15), '(Q,D,A,S,C,?)')
 		self.mainscrn.addstr(2,7, 'server')
 		self.mainscrn.addstr(2,14, 'log')
 		self.mainscrn.addstr((self.totalY-3),7,'server')
@@ -91,6 +95,7 @@ class sordCommandCenter():
 			
 	def run(self):
 		""" Run command center logic """
+		self.scrnInit()
 		self.scrnSetup()
 		doCmdCntr = True
 		
@@ -124,6 +129,8 @@ class sordCommandCenter():
 				self.mainscrn.refresh()
 				key = self.mainscrn.getch()
 
+				if ( key == ord('C') or key == ord('c') or key == curses.KEY_RESIZE ):
+					self.scrnSetup()
 				if ( key == ord('Q') or key == ord('q') ):
 					f = open(self.config.progpath+"/sord.last.log", 'w')
 					for line in self.log.show(100):
@@ -159,6 +166,7 @@ class sordCommandCenter():
 					self.log.add("(A) Toggle Long ANSI Display")
 					self.log.add("(D) Toggle Debug (autologin / skip intros) Mode")
 					self.log.add("(S) Save Current Log to File")
+					self.log.add("(C) Clear (refresh) Screen")
 
 			except KeyboardInterrupt:
 				curses.endwin()
