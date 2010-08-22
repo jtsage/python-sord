@@ -9,6 +9,7 @@
  * Main Server Program
  
  * Memory Usage:  around 25M base, plus about 11M per client.
+ * Magic Number: 6179 / 6073
  
  * (c) 2009 - 2011 J.T.Sage
  * No Rights Reserved - but don't sell it please."""
@@ -17,14 +18,34 @@ __date__ = "18 August 2010"
 __version__ = "2.0-pysqlite"
 __credits__ = "Seth Able Robinson, original game concept"
 
-import threading, time, sys, traceback, random, socket, sqlite3, os
+import threading, time, sys, traceback, random, socket, sqlite3, os, optparse
 import sord
 from BaseHTTPServer import HTTPServer
 from CGIHTTPServer import CGIHTTPRequestHandler
 
+p = optparse.OptionParser(version=__version__,description="Saga of the Red Dragon :: "+__version__,epilog="A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  All attempts were made to be as close to the original as possible, including some original artwork, the original fight equations, and most especially the original spelling and punctuation mistakes.  Enjoy.")
 
-config = sord.config.config.sordConfig(1)
+p.add_option("-t", "--testing", help="telnet server in testing (random port) mode", action="store_true", dest="testing")
+p.add_option("-d", "--debug", help="put server in debug (auto login) mode", action="store_true", dest="debug")
+p.add_option("-a", "--ansi-skip", help="skip large banner ansi", action="store_true", dest="ansiskip")
+p.add_option("-w", "--web-off", help="do not start web server", action="store_true", dest="weboff")
+p.set_defaults(testing=False, debug=False, ansiskip=False, weboff=False)
+
+if ( __name__ == '__main__' ) :
+	opt, args = p.parse_args()
+	config = sord.config.config.sordConfig(opt.testing)
+else: # Trap for pydoc.
+	config = sord.config.config.sordConfig(1)
+
 log = sord.base.logger.sordLogger()
+
+if ( __name__ == '__main__' ) :
+	if opt.debug:
+		config.fulldebug = True
+	if opt.ansiskip:
+		config.ansiskip = True
+	if opt.weboff:
+		config.webport = 0
 
 try:
 	sockobj = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
@@ -232,13 +253,14 @@ class webServe(threading.Thread):
 		self.config = config
 		self.log = log
 	def run(self):
-		webdir = "./web"
-		self.log.add(" === Starting Web Server ("+webdir+"), port: "+str(self.config.webport))
-		srvaddr = ("", self.config.webport)
-		os.chdir(webdir)
-		sys.stderr = self.log
-		srvobj = HTTPServer(srvaddr, CGIHTTPRequestHandler)
-		srvobj.serve_forever()
+		if ( self.config.webport > 0 ):
+			webdir = "./web"
+			self.log.add(" === Starting Web Server ("+webdir+"), port: "+str(self.config.webport))
+			srvaddr = ("", self.config.webport)
+			os.chdir(webdir)
+			sys.stderr = self.log
+			srvobj = HTTPServer(srvaddr, CGIHTTPRequestHandler)
+			srvobj.serve_forever()
 
 
 		

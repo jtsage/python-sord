@@ -42,7 +42,7 @@ class sordConfig():
 		self.port = 6969
 		self.fulldebug = False
 		self.ansiskip = False
-		self.webport = 6980
+		self.webport = 6980 # Set to False to disable web server.
 		self.progpath = getcwd()
 		
 		if ( testing ):

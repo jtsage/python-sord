@@ -108,7 +108,15 @@ class sordCommandCenter():
 			(' && ',  curses.color_pair(3) | curses.A_BOLD),
 			(' -w- ', curses.color_pair(2)),
 			('-=-',   curses.color_pair(0) | curses.A_BOLD)]
-		
+			
+		if self.config.fulldebug:
+			self.log.add(" !!! DEBUG MODE :: FULL DEBUG ENABLED !!!")
+			self.mainscrn.addstr(self.totalY-3, 2, 'D', curses.A_BOLD)
+			
+		if self.config.ansiskip:
+			self.log.add(" !!! DEBUG MODE :: ANSI SKIP ENABLED !!!")
+			self.mainscrn.addstr(self.totalY-3, 4, 'A', curses.A_BOLD)
+
 		while doCmdCntr:
 			try:
 				lineno = 3
