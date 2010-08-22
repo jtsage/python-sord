@@ -20,15 +20,19 @@ from . import data
 def readmail(user):
 	""" Read waiting in-game e-mail. Very simple. """
 	db = user.dbcon.cursor()
-	db.execute("SELECT `id`, `from`, `message`, DATE_FORMAT(sent, '%W %M %Y, %H:%i') as sent FROM mail WHERE `to` = ?", (user.thisUserID,))
-	for (id, sender, message, sent) in db.fetchall():
-		thismail  = "\r\n  \x1b[1;37mNew Mail...\x1b[0m\r\n"
-		thismail += "\x1b[32m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\x1b[0m\r\n"
-		thismail += "\x1b[32m  From: \x1b[1m" + user.userGetName(sender) + "\x1b[0m\r\n"
-		thismail += "\x1b[32m  Date: \x1b[1m" + sent + "\x1b[0m\r\n"
-		thismail += "\x1b[32m  Message: " + func.colorcode(message) + "\x1b[0m\r\n\r\n"
-		user.write(thismail)
-		user.pause()
+	db.execute("SELECT `id`, `from`, `message`, `sent` FROM mail WHERE `to` = ?", (user.thisUserID,))
+	try:
+		for (id, sender, message, sent) in db.fetchall():
+			thismail  = "\r\n  \x1b[1;37mNew Mail...\x1b[0m\r\n"
+			thismail += "\x1b[32m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\x1b[0m\r\n"
+			thismail += "\x1b[32m  From: \x1b[1m" + user.userGetName(sender) + "\x1b[0m\r\n"
+			thismail += "\x1b[32m  Date: \x1b[1m" + sent + "\x1b[0m\r\n"
+			thismail += "\x1b[32m  Message: " + func.colorcode(message) + "\x1b[0m\r\n\r\n"
+			#if ( not isinstance(thismail, None) ):
+			user.write(thismail)
+			user.pause()
+	except TypeError:
+		pass
 	db.close()
 	user.dbcon.execute("DELETE FROM mail WHERE `to` = ?", (user.thisUserID,))
 	user.dbcon.commit()
@@ -128,7 +132,7 @@ def dailyhappen(noprmpt, user):
 def list(art, dbc):
 	""" Player List """
 	db = dbc.cursor()
-	db.execute("SELECT users.userid, fullname, exp, level, cls, spclm, spcld, spclt, sex, alive FROM users, stats WHERE users.userid = stats.userid ORDER BY exp DESC")
+	db.execute("SELECT userid, fullname, exp, level, cls, spclm, spcld, spclt, sex, alive FROM users WHERE 1 ORDER BY exp DESC")
 	output = "\r\n\r\n\x1b[32m    Name                    Experience    Level    Mastered    Status\x1b[0m\r\n";
 	output += art.line()
 	for line in db.fetchall():
@@ -173,10 +177,10 @@ def list(art, dbc):
 		if ( line[9] == 1 ):
 			lineStatus = "\x1b[1;32mAlive\x1b[0m"
 		else:
-			lineStatus = "\x1b[31mDead\x1b[0m"
+			lineStatus = "\x1b[31m Dead\x1b[0m"
 			
-		output += lineSex + lineClass + "\x1b[32m" + line[1] + func.padnumcol(str(line[1]), 23) + func.padright(str(line[2]), 11)
-		output += func.padright(str(line[3]), 6) + "        " + lineMaster + func.padnumcol(lineMaster, 12) + lineStatus + "\r\n"
+		output += lineSex + lineClass + "\x1b[32m" + line[1] + func.padnumcol(str(line[1]), 24) + func.padright(str(line[2]), 10)
+		output += func.padright(str(line[3]), 9) + "       " + lineMaster + "    " + lineStatus + "\r\n"
 	db.close()
 	return output + "\r\n"
 	
