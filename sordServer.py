@@ -15,8 +15,11 @@ __date__ = "18 August 2010"
 __version__ = "2.0-pysqlite"
 __credits__ = "Seth Able Robinson, original game concept"
 
-import thread, time, sys, traceback, random, socket, sqlite3
+import threading, time, sys, traceback, random, socket, sqlite3, os
 import sord
+from BaseHTTPServer import HTTPServer
+from CGIHTTPServer import CGIHTTPRequestHandler
+
 
 config = sord.config.config.sordConfig(1)
 log = sord.base.logger.sordLogger()
@@ -28,139 +31,148 @@ try:
 except:
 	print "Socket In Use!"
 	sys.exit()
-	
-def handleClient(connection, config, log):
-	""" Actual server->client thread process """
-	try:
-		loggedin = False
-		time.sleep(1)
-		thisClientAddress = connection.getpeername()
-		connection.send(chr(255) + chr(253) + chr(34)) # drop to character mode.
-		connection.send(chr(255) + chr(251) + chr(1))  # no local echo (client side)
-		data = connection.recv(1024) # dump garbage.
 
-		connection.send("Welcome to SORD\r\n")
-		connection.settimeout(120)
-		sqc = sord.base.dbase.getDB(config)
-		art = sord.game.art.sordArtwork(config, sqc)
-		sord.base.dbase.dayRollover(config, sqc, log)
-		
-		""" Line speed and noise options """
-		sord.base.func.pauser(connection)
-		if ( not config.fulldebug ):
-			lineconfig = sord.base.func.getclientconfig(connection, log)
-		else:
-			lineconfig = (3,0)
-		
-		if ( not config.fulldebug ):
-			if ( not config.ansiskip ):
-				sord.base.func.slowecho(connection, art.header(), lineconfig[0], lineconfig[1])
+class eachClient(threading.Thread):
+	""" Actual client->server thread process """
+	def __init__(self, connection, config, log):
+		threading.Thread.__init__(self)
+		self.daemon = True
+		self.connection = connection
+		self.config = config
+		self.log = log
+	def run(self):
+		""" Actual server->client thread process """
+		connection = self.connection
+		config = self.config
+		log = self.log
+		try:
+			loggedin = False
+			time.sleep(1)
+			thisClientAddress = connection.getpeername()
+			connection.send(chr(255) + chr(253) + chr(34)) # drop to character mode.
+			connection.send(chr(255) + chr(251) + chr(1))  # no local echo (client side)
+			data = connection.recv(1024) # dump garbage.
+	
+			connection.send("Welcome to SORD\r\n")
+			connection.settimeout(120)
+			sqc = sord.base.dbase.getDB(config)
+			art = sord.game.art.sordArtwork(config, sqc)
+			sord.base.dbase.dayRollover(config, sqc, log)
+			
+			""" Line speed and noise options """
 			sord.base.func.pauser(connection)
-	
-		intro = sord.game.main.intro(connection, config, art, log, sqc, lineconfig)
-		if ( not config.fulldebug ):
-			intro.run()
-
-		ittr = 0
-		if ( config.fulldebug ):
-			loggedin = True
-			currentUser = sord.base.user.sorduser(config.gameadmin, sqc, connection, art, config, log, lineconfig[0], lineconfig[1])
-	
-		""" Login Code """
-		while ( not loggedin ):
-			username = ""
-			password = ""
-			currentUser = ""
-			ittr += 1
-			if ( ittr > 3 ):
-				sord.base.func.slowecho(connection, sord.base.func.casebold("\r\n\r\nDisconnecting - Too Many Login Attempts\r\n", 1), lineconfig[0], lineconfig[1])
-				log.add('  !!! Too Many Login Attemtps::' + str(thisClientAddress))
-				raise Exception, "Too many bad logins!"
-			sord.base.func.slowecho(connection, sord.base.func.casebold("\r\n\r\nWelcome Warrior!  Enter Your Login Name (OR '\x1b[1m\x1b[31mnew\x1b[32m') :-: ", 2), lineconfig[0], lineconfig[1])
-			username = sord.base.func.getLine(connection, True)
-			currentUser = sord.base.user.sorduser(username, sqc, connection, art, config, log, lineconfig[0], lineconfig[1])
-			if ( currentUser.thisUserID > 0 ):
-				sord.base.func.slowecho(connection, sord.base.func.casebold("\r\nPassword :-: ",2), lineconfig[0], lineconfig[1]);  
-				password = sord.base.func.getLine(connection, False)
-				password = password.strip()
-				if ( password == currentUser.thisPassword ):
-					loggedin = True
-				else:
-					sord.base.func.slowecho(connection, sord.base.func.casebold("\r\nIncorrect Password\r\n", 1), lineconfig[0], lineconfig[1])
+			if ( not config.fulldebug ):
+				lineconfig = sord.base.func.getclientconfig(connection, log)
 			else:
-				if ( username == "new" ):
-					log.add('   ** New User! ' + str(thisClientAddress))
-					newusername = sord.game.util.newuser(currentUser)
-					currentUser = sorduser(newusername, sqc, connection, art, config, log, lineconfig[0], lineconfig[1])
-					newclass = currentUser.cls
-					currentUser.updateSkillUse(newclass, 1)
-					currentUser.updateSkillPoint(newclass, 1)
-					loggedin = True
-					log.add('   ** User Created: ' + newusername)
-				else:
-					sord.base.func.slowecho(connection, sord.base.func.casebold("\r\nUser Name Not Found!\r\n",2), lineconfig[0], lineconfig[1])
-				
-		currentUser.login()
-		log.add('   ** User Logged in::' + currentUser.thisFullname + ' ' + str(thisClientAddress))
-
-		if not currentUser.alive :
-			currentUser.write(sord.base.func.casebold("\r\nI'm Afraid You Are DEAD Right Now.  Sorry\r\n", 1))
-			raise Exception('normal', "User is DOA.  Bummer for them.")
+				lineconfig = (3,0)
+			
+			if ( not config.fulldebug ):
+				if ( not config.ansiskip ):
+					sord.base.func.slowecho(connection, art.header(), lineconfig[0], lineconfig[1])
+				sord.base.func.pauser(connection)
 		
-		if ( not config.fulldebug ):
-			currentUser.write(sord.game.util.dailyhappen(True, currentUser))
-			currentUser.pause()
-			currentUser.write(sord.game.util.who(currentUser))
-			currentUser.pause()
-			currentUser.write(sord.game.util.viewstats(currentUser))
-			currentUser.pause()
-			currentUser.write(sord.game.util.readmail(currentUser))
+			intro = sord.game.main.intro(connection, config, art, log, sqc, lineconfig)
+			if ( not config.fulldebug ):
+				intro.run()
 	
-		townSquare = sord.game.main.mainmenu(currentUser)
-		townSquare.run()
-
-		exitQuote = ['The black thing inside rejoices at your departure.', 'The very earth groans at your depature.', 'The very trees seem to moan as you leave.', 'Echoing screams fill the wastelands as you close your eyes.', 'Your very soul aches as you wake up from your favorite dream.']
-		exitTop = len(exitQuote) - 1
-		exitThis = exitQuote[random.randint(0, exitTop)]
-		connection.send(sord.base.func.casebold("\r\n\r\n   "+exitThis+"\r\n\r\n", 7))
-		connection.send("NO CARRIER\r\n\r\n")
-		if ( loggedin ):
-			currentUser.logout()
-		connection.shutdown(socket.SHUT_RD)
-		connection.close()
-		sqc.close()
-		log.add('  *** Thread Disconnected:' + str(thisClientAddress))
-		log.remcon()
-		thread.exit()
+			ittr = 0
+			if ( config.fulldebug ):
+				loggedin = True
+				currentUser = sord.base.user.sorduser(config.gameadmin, sqc, connection, art, config, log, lineconfig[0], lineconfig[1])
 		
-	except Exception as e:
-		skipClose = False
-		if ( e[0] == "timed out" ):
-			log.add("  *** Network Timeout: " + str(thisClientAddress))
-			connection.send("\r\n\r\n\x1b[0mNetwork Connection has timed out.  120sec of inactivity.\r\n\r\n")
+			""" Login Code """
+			while ( not loggedin ):
+				username = ""
+				password = ""
+				currentUser = ""
+				ittr += 1
+				if ( ittr > 3 ):
+					sord.base.func.slowecho(connection, sord.base.func.casebold("\r\n\r\nDisconnecting - Too Many Login Attempts\r\n", 1), lineconfig[0], lineconfig[1])
+					log.add('  !!! Too Many Login Attemtps::' + str(thisClientAddress))
+					raise Exception, "Too many bad logins!"
+				sord.base.func.slowecho(connection, sord.base.func.casebold("\r\n\r\nWelcome Warrior!  Enter Your Login Name (OR '\x1b[1m\x1b[31mnew\x1b[32m') :-: ", 2), lineconfig[0], lineconfig[1])
+				username = sord.base.func.getLine(connection, True)
+				currentUser = sord.base.user.sorduser(username, sqc, connection, art, config, log, lineconfig[0], lineconfig[1])
+				if ( currentUser.thisUserID > 0 ):
+					sord.base.func.slowecho(connection, sord.base.func.casebold("\r\nPassword :-: ",2), lineconfig[0], lineconfig[1]);  
+					password = sord.base.func.getLine(connection, False)
+					password = password.strip()
+					if ( password == currentUser.thisPassword ):
+						loggedin = True
+					else:
+						sord.base.func.slowecho(connection, sord.base.func.casebold("\r\nIncorrect Password\r\n", 1), lineconfig[0], lineconfig[1])
+				else:
+					if ( username == "new" ):
+						log.add('   ** New User! ' + str(thisClientAddress))
+						newusername = sord.game.util.newuser(currentUser)
+						currentUser = sorduser(newusername, sqc, connection, art, config, log, lineconfig[0], lineconfig[1])
+						newclass = currentUser.cls
+						currentUser.updateSkillUse(newclass, 1)
+						currentUser.updateSkillPoint(newclass, 1)
+						loggedin = True
+						log.add('   ** User Created: ' + newusername)
+					else:
+						sord.base.func.slowecho(connection, sord.base.func.casebold("\r\nUser Name Not Found!\r\n",2), lineconfig[0], lineconfig[1])
+					
+			currentUser.login()
+			log.add('   ** User Logged in::' + currentUser.thisFullname + ' ' + str(thisClientAddress))
+	
+			if not currentUser.alive :
+				currentUser.write(sord.base.func.casebold("\r\nI'm Afraid You Are DEAD Right Now.  Sorry\r\n", 1))
+				raise Exception('normal', "User is DOA.  Bummer for them.")
+			
+			if ( not config.fulldebug ):
+				currentUser.write(sord.game.util.dailyhappen(True, currentUser))
+				currentUser.pause()
+				currentUser.write(sord.game.util.who(currentUser))
+				currentUser.pause()
+				currentUser.write(sord.game.util.viewstats(currentUser))
+				currentUser.pause()
+				sord.game.util.readmail(currentUser)
+		
+			townSquare = sord.game.main.mainmenu(currentUser)
+			townSquare.run()
+	
+			exitQuote = ['The black thing inside rejoices at your departure.', 'The very earth groans at your depature.', 'The very trees seem to moan as you leave.', 'Echoing screams fill the wastelands as you close your eyes.', 'Your very soul aches as you wake up from your favorite dream.']
+			exitTop = len(exitQuote) - 1
+			exitThis = exitQuote[random.randint(0, exitTop)]
+			connection.send(sord.base.func.casebold("\r\n\r\n   "+exitThis+"\r\n\r\n", 7))
 			connection.send("NO CARRIER\r\n\r\n")
-		elif ( e[0] == "normal" ):
-			log.add("  *** Normal Exit ("+e[1]+"): " + str(thisClientAddress))
-		elif type(e) is socket.error:
-			log.add("  *** Remote Closed Host: " + str(thisClientAddress))
-			skipClose = True
-		else:
-			log.add("  !!! Program Error Encountered("+ str(e) + "): " + str(thisClientAddress))
-			try:
-				connection.send("\r\n\x1b[0mProgram Error Encountered ( "+str(e)+" ), Closing Connection.\r\n")
-				connection.send("NO CARRIER\r\n\r\n")
-			except:
-				log.add("   && No message to client")
-			formatted = traceback.format_exc().splitlines()
-			for formattedline in formatted:
-				log.add("    ~~~ " + formattedline)
-		if ( loggedin ):
-			currentUser.logout()
-		log.remcon()
-		if ( not skipClose ):
+			if ( loggedin ):
+				currentUser.logout()
 			connection.shutdown(socket.SHUT_RD)
 			connection.close()
-		thread.exit()
+			sqc.close()
+			log.add('  *** Thread Disconnected:' + str(thisClientAddress))
+			log.remcon()
+			
+		except Exception as e:
+			skipClose = False
+			if ( e[0] == "timed out" ):
+				log.add("  *** Network Timeout: " + str(thisClientAddress))
+				connection.send("\r\n\r\n\x1b[0mNetwork Connection has timed out.  120sec of inactivity.\r\n\r\n")
+				connection.send("NO CARRIER\r\n\r\n")
+			elif ( e[0] == "normal" ):
+				log.add("  *** Normal Exit ("+e[1]+"): " + str(thisClientAddress))
+			elif type(e) is socket.error:
+				log.add("  *** Remote Closed Host: " + str(thisClientAddress))
+				skipClose = True
+			else:
+				log.add("  !!! Program Error Encountered("+ str(e) + "): " + str(thisClientAddress))
+				try:
+					connection.send("\r\n\x1b[0mProgram Error Encountered ( "+str(e)+" ), Closing Connection.\r\n")
+					connection.send("NO CARRIER\r\n\r\n")
+				except:
+					log.add("   && No message to client")
+				formatted = traceback.format_exc().splitlines()
+				for formattedline in formatted:
+					log.add("    ~~~ " + formattedline)
+			if ( loggedin ):
+				currentUser.logout()
+			log.remcon()
+			if ( not skipClose ):
+				connection.shutdown(socket.SHUT_RD)
+				connection.close()
 	
 def sordLoop(config, log):
 	""" Main program loop, spawn telnetServe thread """
@@ -172,11 +184,15 @@ def sordLoop(config, log):
 		igms.append(item[2])
 	log.add(" === Found IGMs: "+str(igms))
 	
-	thread.start_new(telnetServe, (config, log))
+	wServer = webServe(config, log)
+	wServer.start()
+	
+	tServer = telnetServe(sockobj, config, log)
+	tServer.start()
 	
 	display = sord.base.commandcenter.sordCommandCenter(config, log)
 	display.run()
-	
+
 	try:
 		sockobj.shutdown(2)
 	except:
@@ -184,18 +200,39 @@ def sordLoop(config, log):
 	sockobj.close()
 	sys.exit()
 
-def telnetServe(config, log):
-	""" Telnet server listening thread """
-	try:
+class telnetServe(threading.Thread):
+	""" Telnet Server Thread Object """
+	def __init__(self, sockobj, config, log):
+		threading.Thread.__init__(self)
+		self.daemon = True
+		self.config = config
+		self.log = log
+		self.sockobj = sockobj
+	def run(self):
 		while True:
-			connection, address = sockobj.accept()
+			connection, address = self.sockobj.accept()
 			log.add('  *** Server connected by'+str(address))
-			thread.start_new(handleClient, (connection,config,log))
-			log.addcon()
-	except Exception as e:
-		print str(e)
-		
+			thisClient = eachClient(connection,self.config,self.log)
+			thisClient.start()
+			self.log.addcon()
 
+class webServe(threading.Thread):
+	def __init__(self, config, log):
+		threading.Thread.__init__(self)
+		self.daemon = True
+		self.config = config
+		self.log = log
+	def run(self):
+		webdir = "./web"
+		self.log.add(" === Starting Web Server ("+webdir+"), port: "+str(self.config.webport))
+		srvaddr = ("", self.config.webport)
+		os.chdir(webdir)
+		sys.stderr = self.log
+		srvobj = HTTPServer(srvaddr, CGIHTTPRequestHandler)
+		srvobj.serve_forever()
+
+
+		
 if ( __name__ == '__main__' ) :
 	sordLoop(config, log) # MAIN PROGRAM LOOP!
 
