@@ -8,6 +8,8 @@
 
  * Main Server Program
  
+ * Memory Usage:  around 25M base, plus about 11M per client.
+ 
  * (c) 2009 - 2011 J.T.Sage
  * No Rights Reserved - but don't sell it please."""
 __author__ = "Jonathan T. Sage <jtsage@gmail.com>"
@@ -140,9 +142,12 @@ class eachClient(threading.Thread):
 			connection.send("NO CARRIER\r\n\r\n")
 			if ( loggedin ):
 				currentUser.logout()
+				del currentUser
 			connection.shutdown(socket.SHUT_RD)
 			connection.close()
 			sqc.close()
+			del sqc
+			del art
 			log.add('  *** Thread Disconnected:' + str(thisClientAddress))
 			log.remcon()
 			
@@ -169,7 +174,11 @@ class eachClient(threading.Thread):
 					log.add("    ~~~ " + formattedline)
 			if ( loggedin ):
 				currentUser.logout()
+				del currentUser
 			log.remcon()
+			sqc.close()
+			del sqc
+			del art
 			if ( not skipClose ):
 				connection.shutdown(socket.SHUT_RD)
 				connection.close()
