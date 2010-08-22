@@ -31,6 +31,7 @@ __date__ = "18 August 2010"
 __version__ = "2.0-pysqlite"
 __credits__ = "Seth Able Robinson, original game concept"
 
+import re
 from ..base import func
 
 class sordArtwork():
@@ -58,6 +59,17 @@ class sordArtwork():
 	def blueline(self): 
 		""" Dark Blue Horizontal Rule """
 		return self.ESC+"34m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"+self.ESC+"0m\r\n"
+		
+	def cntransi(self, text):
+		cleantext = re.sub("\x1b\[\d+m", "", text)
+		col = 39 - (len(cleantext) / 2)
+		ittr = 0
+		retval = ""
+		while ( ittr < col ):
+			retval += " "
+			ittr += 1
+		return retval + text
+		
 
 	def info(self, user, charmsay):
 		""" Game System Information Banner"""
@@ -67,20 +79,20 @@ class sordArtwork():
 		for value in db.fetchone():
 			rundays = value
 		db.close()
-		thismsg  = "\r\n"+self.ESC+"32m                           Saga Of The Red Dragon"+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m                           "+user.config.host+"\r\n\r\n"+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m                    Compiled June 25, 2009: Version "+self.ESC+"1;37m"+user.config.version+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"22;32m                        (c) pre-2009 by Someone Else\r\n\r\n"+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m                           "+self.ESC+"1;37mREGISTERED TO "+self.ESC+"0m"+self.ESC+"1;34m"+user.config.admin+self.ESC+"0m\r\n\r\n"
-		thismsg += self.ESC+"32m             The current game has been running for "+self.ESC+"1m"+str(rundays)+self.ESC+"22m game days.\r\n"+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m            Players are deleted after "+self.ESC+"1m"+str(user.config.delinactive)+self.ESC+"22m real days of inactivity."+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m               Players are enjoying "+self.ESC+"1m"+str(user.config.ffights)+self.ESC+"22m forest fights per day."+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m               Players are enjoying "+self.ESC+"1m"+str(user.config.pfights)+self.ESC+"22m player fights per day."+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m            Players are enjoying "+self.ESC+"1m"+str(user.config.bankinterest)+"%"+self.ESC+"22m interest at the bank per day."+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m                   The current game day is "+self.ESC+"1m"+str(user.config.daylength)+self.ESC+"22m real hours long.\r\n"+self.ESC+"0m\r\n"
+		thismsg  = "\r\n"+self.cntransi(self.ESC+"32mSaga Of The Red Dragon"+self.ESC+"0m")+"\r\n"
+		thismsg += self.cntransi(self.ESC+"32m"+self.ESC+"1m"+self.config.host)+"\r\n\r\n"+self.ESC+"0m\r\n"
+		thismsg += self.cntransi(self.ESC+"32mCompiled June 25, 2009: Version "+self.ESC+"1m"+self.ESC+"37m"+self.config.version+self.ESC+"0m")+"\r\n"
+		thismsg += self.cntransi(self.ESC+"22m"+self.ESC+"32m(c) pre-2009 by Someone Else\r\n\r\n"+self.ESC+"0m")+"\r\n"
+		thismsg += self.cntransi(self.ESC+"32m"+self.ESC+"1m"+self.ESC+"37mREGISTERED TO "+self.ESC+"0m"+self.ESC+"1m"+self.ESC+"34m"+self.config.admin+self.ESC+"0m")+"\r\n\r\n"
+		thismsg += self.cntransi(self.ESC+"32mThe current game has been running for "+self.ESC+"1m"+str(rundays)+self.ESC+"22m game days.\r\n"+self.ESC+"0m")+"\r\n"
+		thismsg += self.cntransi(self.ESC+"32mPlayers are deleted after "+self.ESC+"1m"+str(self.config.delinactive)+self.ESC+"22m real days of inactivity."+self.ESC+"0m")+"\r\n"
+		thismsg += self.cntransi(self.ESC+"32mPlayers are enjoying "+self.ESC+"1m"+str(self.config.ffight)+self.ESC+"22m forest fights per day."+self.ESC+"0m")+"\r\n"
+		thismsg += self.cntransi(self.ESC+"32mPlayers are enjoying "+self.ESC+"1m"+str(self.config.pfight)+self.ESC+"22m player fights per day."+self.ESC+"0m")+"\r\n"
+		thismsg += self.cntransi(self.ESC+"32mPlayers are enjoying "+self.ESC+"1m"+str(self.config.bankinterest)+"%"+self.ESC+"22m interest at the bank per day."+self.ESC+"0m")+"\r\n"
+		thismsg += self.cntransi(self.ESC+"32mThe current game day is "+self.ESC+"1m"+str(self.config.daylength)+self.ESC+"22m real hours long.\r\n"+self.ESC+"0m")+"\r\n"
 		thismsg += "\r\n"+self.ESC+"32m  The peasants say this about you : \r\n    "
 		try: 
-			thismsg += charmsay[user.sex][user.charm]
+			thismsg += user.thisFullname + " " + charmsay[user.sex][user.charm]
 		except IndexError:
 			thismsg += "nothing at all."
 		thismsg += "\x1b[0m\r\n"
@@ -93,17 +105,17 @@ class sordArtwork():
 		sqr.execute("SELECT value FROM sord WHERE name = 'gdays'")
 		for value in sqr.fetchall():
 			rundays = value[0]
-		thismsg  = "\r\n"+self.ESC+"32m                           Saga Of The Red Dragon"+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m                           "+self.config.host+"\r\n\r\n"+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m                    Compiled June 25, 2009: Version "+self.ESC+"1;37m"+self.config.version+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"22;32m                        (c) pre-2009 by Someone Else\r\n\r\n"+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m                           "+self.ESC+"1;37mREGISTERED TO "+self.ESC+"0m"+self.ESC+"1;34m"+self.config.admin+self.ESC+"0m\r\n\r\n"
-		thismsg += self.ESC+"32m             The current game has been running for "+self.ESC+"1m"+str(rundays)+self.ESC+"22m game days.\r\n"+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m            Players are deleted after "+self.ESC+"1m"+str(self.config.delinactive)+self.ESC+"22m real days of inactivity."+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m               Players are enjoying "+self.ESC+"1m"+str(self.config.ffight)+self.ESC+"22m forest fights per day."+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m               Players are enjoying "+self.ESC+"1m"+str(self.config.pfight)+self.ESC+"22m player fights per day."+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m            Players are enjoying "+self.ESC+"1m"+str(self.config.bankinterest)+"%"+self.ESC+"22m interest at the bank per day."+self.ESC+"0m\r\n"
-		thismsg += self.ESC+"32m                   The current game day is "+self.ESC+"1m"+str(self.config.daylength)+self.ESC+"22m real hours long.\r\n"+self.ESC+"0m\r\n"
+		thismsg  = "\r\n"+self.cntransi(self.ESC+"32mSaga Of The Red Dragon"+self.ESC+"0m")+"\r\n"
+		thismsg += self.cntransi(self.ESC+"32m"+self.ESC+"1m"+self.config.host)+"\r\n\r\n"+self.ESC+"0m\r\n"
+		thismsg += self.cntransi(self.ESC+"32mCompiled June 25, 2009: Version "+self.ESC+"1m"+self.ESC+"37m"+self.config.version+self.ESC+"0m")+"\r\n"
+		thismsg += self.cntransi(self.ESC+"22m"+self.ESC+"32m(c) pre-2009 by Someone Else\r\n\r\n"+self.ESC+"0m")+"\r\n"
+		thismsg += self.cntransi(self.ESC+"32m"+self.ESC+"1m"+self.ESC+"37mREGISTERED TO "+self.ESC+"0m"+self.ESC+"1m"+self.ESC+"34m"+self.config.admin+self.ESC+"0m")+"\r\n\r\n"
+		thismsg += self.cntransi(self.ESC+"32mThe current game has been running for "+self.ESC+"1m"+str(rundays)+self.ESC+"22m game days.\r\n"+self.ESC+"0m")+"\r\n"
+		thismsg += self.cntransi(self.ESC+"32mPlayers are deleted after "+self.ESC+"1m"+str(self.config.delinactive)+self.ESC+"22m real days of inactivity."+self.ESC+"0m")+"\r\n"
+		thismsg += self.cntransi(self.ESC+"32mPlayers are enjoying "+self.ESC+"1m"+str(self.config.ffight)+self.ESC+"22m forest fights per day."+self.ESC+"0m")+"\r\n"
+		thismsg += self.cntransi(self.ESC+"32mPlayers are enjoying "+self.ESC+"1m"+str(self.config.pfight)+self.ESC+"22m player fights per day."+self.ESC+"0m")+"\r\n"
+		thismsg += self.cntransi(self.ESC+"32mPlayers are enjoying "+self.ESC+"1m"+str(self.config.bankinterest)+"%"+self.ESC+"22m interest at the bank per day."+self.ESC+"0m")+"\r\n"
+		thismsg += self.cntransi(self.ESC+"32mThe current game day is "+self.ESC+"1m"+str(self.config.daylength)+self.ESC+"22m real hours long.\r\n"+self.ESC+"0m")+"\r\n"
 		thismsg += self.ESC+"32m                         ("+self.ESC+"1mE"+self.ESC+"22m)nter the realm of the Dragon"+self.ESC+"0m\r\n"
 		thismsg += self.ESC+"32m                         ("+self.ESC+"1mL"+self.ESC+"22m)ist Warriors"+self.ESC+"0m\r\n"
 		thismsg += self.ESC+"32m                         ("+self.ESC+"1mQ"+self.ESC+"22m)uit the game server\r\n"+self.ESC+"0m\r\n"
