@@ -30,6 +30,16 @@ class sordLogger():
 		self.__mainLogger.append(tmptime+" :: "+value)
 		self.__mainLogger = self.__mainLogger[-100:]
 		
+	def write(self, value):
+		lines = value.splitlines()
+		for line in lines:
+			if ( line.find("favicon") > -1 ):
+				pass
+			elif ( line.find("code ") > -1 ):
+				pass
+			else:
+				self.add(" -w- "+line)
+		
 	def show(self, value):
 		""" Show *arg log items """
 		return self.__mainLogger[(value * -1):]

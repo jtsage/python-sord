@@ -22,7 +22,7 @@ from shutil import copy
 
 def getDB(config):
 	""" Get an active database connection """
-	sqc = sqlite3.connect(config.sqlitefile)
+	sqc = sqlite3.connect(config.progpath+"/"+config.sqlitefile)
 	return sqc
 
 def dayRollover(config, sqc, log):
@@ -81,14 +81,14 @@ def dayRollover(config, sqc, log):
 			sqc.execute("UPDATE users set bank = bank + ( bank * ("+str(config.bankinterest)+"/100) ) WHERE bank > 0")
 			sqc.execute("INSERT INTO daily ( 'data' ) VALUES ( ? )", ( "{31}"+rsaying, ))
 			sqc.execute("DELETE from users WHERE last < ?", (laster,))
-			sqc.execute("UPDATE sord set value = value + 1 WHERE 'name' = 'gdays'")
+			sqc.execute("UPDATE sord set value = value + 1 WHERE name = 'gdays'")
 			sqc.execute("UPDATE sord set value = ? WHERE name = 'lastday'", (time.strftime(timestr, time.localtime()),))
 			sqc.commit()
 	
 def initialTest(config, log):
 	""" Check for db existence and check version """
 	if ( isfile(config.sqlitefile) ):
-		sqc = sqlite3.connect(config.sqlitefile)
+		sqc = sqlite3.connect(config.progpath+"/"+config.sqlitefile)
 		sqr = sqc.cursor()
 		
 		sqc.execute("vacuum")
@@ -114,7 +114,7 @@ def updateDB(config, log):
 def createDB(config, log):
 	""" Create new S.O.R.D. database """
 	log.add(" === Creating New Database - First Run!")
-	sqc = sqlite3.connect(config.sqlitefile)
+	sqc = sqlite3.connect(config.progpath+"/"+config.sqlitefile)
 	
 	statstable = [ # (name, default value)
 		('cls' , 1) , ('sex', 1), ('flirt', 0), ('sung', 0), ('master', 0),

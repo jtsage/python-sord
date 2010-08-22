@@ -101,6 +101,7 @@ class sordCommandCenter():
 			(' !!! ', curses.color_pair(3)),
 			(' ~~~ ', curses.color_pair(3) | curses.A_BOLD),
 			(' && ',  curses.color_pair(3) | curses.A_BOLD),
+			(' -w- ', curses.color_pair(2)),
 			('-=-',   curses.color_pair(0) | curses.A_BOLD)]
 		
 		while doCmdCntr:
@@ -124,17 +125,17 @@ class sordCommandCenter():
 				key = self.mainscrn.getch()
 
 				if ( key == ord('Q') or key == ord('q') ):
-					f = open("sord.last.log", 'w')
+					f = open(self.config.progpath+"/sord.last.log", 'w')
 					for line in self.log.show(100):
 						f.write(line+"\n")
 					f.close()
 					raise KeyboardInterrupt
 				if ( key == ord('S') or key == ord('s') ):
-					f = open("sord.log", 'w')
+					f = open(self.config.progpath+"/sord.log", 'w')
 					for line in self.log.show(100):
 						f.write(line+"\n")
 					f.close()
-					self.log.add("  && Log File Written to sord.log")
+					self.log.add("  && Log File Written to "+self.config.progpath+"/sord.log")
 				if ( key == ord('D') or key == ord('d') ):
 					if ( self.config.fulldebug ):
 						self.config.fulldebug = False

@@ -16,6 +16,7 @@ __version__ = "2.0-pysqlite"
 __credits__ = "Seth Able Robinson, original game concept"
 
 from random import randint
+from os import getcwd
 
 class sordConfig():
 	""" Master S.O.R.D. Config Class """
@@ -41,6 +42,8 @@ class sordConfig():
 		self.port = 6969
 		self.fulldebug = False
 		self.ansiskip = False
+		self.webport = 6980
+		self.progpath = getcwd()
 		
 		if ( testing ):
 			self.port += randint(1, 10)
