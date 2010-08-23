@@ -26,6 +26,16 @@ class sordWebserver(BaseHTTPRequestHandler):
 			self.send_header('content-type', 'text/html')
 			self.end_headers()
 			self.wfile.write(self.stats())
+		elif ( key == "conf" or key == "conf/" ):
+			self.send_response(200)
+			self.send_header('content-type', 'text/html')
+			self.end_headers()
+			self.wfile.write(self.conf())
+		elif ( key == "play" or key == "play/" ):
+			self.send_response(200)
+			self.send_header('content-type', 'text/html')
+			self.end_headers()
+			self.wfile.write(self.play())
 		else:
 			self.send_error(404, "Page not found")
 		
@@ -67,9 +77,29 @@ class sordWebserver(BaseHTTPRequestHandler):
 <span style="color: darkgreen">-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-</span>
 
     <a href="/stats"><span style="color: darkgreen">(</span><span style="color: magenta">L</span><span style="color: darkgreen">)ist Players</span></a>
+    <a href="/conf"><span style="color: darkgreen">(</span><span style="color: magenta">C</span><span style="color: darkgreen">)onfiguration of this Server</span></a>
+    <a href="/play"><span style="color: darkgreen">(</span><span style="color: magenta">P</span><span style="color: darkgreen">)lay the game</span></a>
 </pre></font></body></html>"""
 		return ret
 		
+	def play(self):
+		ret = """<html><head><title>Saga of the Red Dragon</title><style>a { color: #ccc; text-decoration: none; } a:hover { text-decoration: underline; }</style></head><body style="background-color: black; color: white; background-image: url(drag.png); background-repeat: no-repeat; background-position: top right;"><h1><span style="color: #F77">S</span><span style="color: #F00">aga of the</span> <span style="color: #F77">R</span><span style="color: #F00">ed</span> <span style="color: #F77">D</span><span style="color: #F00">ragon</span></h1><font size="+2"><pre>"""		
+		ret += "   <span style=\"color: darkgreen\">To play the game, simply telnet to host: \n\n     "+self.config.host+"\n\n   on port # \n\n     "+str(self.config.port)+"</span>\n"
+		ret += """</pre></font></body></html>"""
+		return ret
+		
+	def conf(self):
+		ret = """<html><head><title>Saga of the Red Dragon</title><style>a { color: #ccc; text-decoration: none; } a:hover { text-decoration: underline; }</style></head><body style="background-color: black; color: white; background-image: url(drag.png); background-repeat: no-repeat; background-position: top right;"><h1><span style="color: #F77">S</span><span style="color: #F00">aga of the</span> <span style="color: #F77">R</span><span style="color: #F00">ed</span> <span style="color: #F77">D</span><span style="color: #F00">ragon</span></h1><font size="+1"><pre>"""		
+		ret += "   <span style=\"color: darkgreen\">telnet://"+self.config.host+":"+str(self.config.port)+"</span>\n"
+		ret += "\n   <span style=\"color: darkgreen\">Compiled June 25, 2009: Version </span><span style=\"color: white\">"+self.config.version+"</span>"
+		ret += "\n   <span style=\"color: darkgreen\">(c) pre-2009 by Someone Else</span>\n\n   <span style=\"color: white\">REGISTERED TO</span><span style=\"color: blue\"> "+self.config.admin+"</span>\n"
+		ret += "\n   <span style=\"color: darkgreen\">Players are deleted after <strong>"+str(self.config.delinactive)+"</strong> real days of inactivity.</span>"
+		ret += "\n   <span style=\"color: darkgreen\">Players are enjoying <strong>"+str(self.config.ffight)+"</strong> forest fights per day.</span>"
+		ret += "\n   <span style=\"color: darkgreen\">Players are enjoying <strong>"+str(self.config.pfight)+"</strong> player fights per day.</span>"
+		ret += "\n   <span style=\"color: darkgreen\">Players are enjoying <strong>"+str(self.config.bankinterest)+"%</strong> interest at the bank per day.</span>"
+		ret += "\n   <span style=\"color: darkgreen\">The current game day is <strong>"+str(self.config.daylength)+"</strong> real hours long.</span>"
+		ret += """</pre></font></body></html>"""
+		return ret
 		
 	def stats(self):
 		output  = "<html><head><title>Saga of the Red Dragon - Player Standings</title></head>"
