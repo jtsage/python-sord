@@ -37,6 +37,8 @@ class sordLogger():
 				pass
 			elif ( line.find("code ") > -1 ):
 				pass
+			elif ( line.find("drag.png") > -1 ):
+				pass
 			else:
 				self.add(" -w- "+line)
 		

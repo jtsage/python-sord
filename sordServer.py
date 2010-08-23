@@ -20,8 +20,8 @@ __credits__ = "Seth Able Robinson, original game concept"
 
 import threading, time, sys, traceback, random, socket, sqlite3, os, optparse
 import sord
+from functools import partial
 from BaseHTTPServer import HTTPServer
-from CGIHTTPServer import CGIHTTPRequestHandler
 
 p = optparse.OptionParser(version=__version__,description="Saga of the Red Dragon :: "+__version__,epilog="A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  All attempts were made to be as close to the original as possible, including some original artwork, the original fight equations, and most especially the original spelling and punctuation mistakes.  Enjoy.")
 
@@ -257,9 +257,8 @@ class webServe(threading.Thread):
 			webdir = "./web"
 			self.log.add(" === Starting Web Server ("+webdir+"), port: "+str(self.config.webport))
 			srvaddr = ("", self.config.webport)
-			os.chdir(webdir)
 			sys.stderr = self.log
-			srvobj = HTTPServer(srvaddr, CGIHTTPRequestHandler)
+			srvobj = HTTPServer(srvaddr, partial(sord.base.webserve.sordWebserver, self.config))
 			srvobj.serve_forever()
 
 
