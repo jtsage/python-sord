@@ -1,15 +1,36 @@
 #!/usr/bin/python
+""" Saga of the Red Dragon
+
+ * A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  
+ * All attempts were made to be as close to the original as possible, 
+ * including some original artwork, the original fight equations, and 
+ * most especially the original spelling and punctuation mistakes.  Enjoy.
+
+ * Contains embedded webserver.
+
+ * (c) 2009 - 2011 J.T.Sage
+ * No Rights Reserved - but don't sell it please."""
+ 
+__author__ = "Jonathan T. Sage <jtsage@gmail.com>"
+__date__ = "18 August 2010"
+__version__ = "2.0-pysqlite"
+__credits__ = "Seth Able Robinson, original game concept"
 
 from BaseHTTPServer import BaseHTTPRequestHandler
 
 import binascii, sqlite3
 
 class sordWebserver(BaseHTTPRequestHandler):
+	""" S.O.R.D. Embedded webserver """
 	def __init__(self,config,*args,**kwargs):
+		""" Initialize new server based on BaseHTTPRequestHandler """
 		self.config = config
 		BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
 		
 	def do_GET(self):
+		""" Override typical GET behavior of server.
+		
+		Note: this server does not support POST at all.  Very small subset of options"""
 		key = self.path[1:]
 		if ( key == "drag.png" ):
 			self.send_response(200)
@@ -83,12 +104,14 @@ class sordWebserver(BaseHTTPRequestHandler):
 		return ret
 		
 	def play(self):
+		""" Show instructions for connecting to the server """
 		ret = """<html><head><title>Saga of the Red Dragon</title><style>a { color: #ccc; text-decoration: none; } a:hover { text-decoration: underline; }</style></head><body style="background-color: black; color: white; background-image: url(drag.png); background-repeat: no-repeat; background-position: top right;"><h1><span style="color: #F77">S</span><span style="color: #F00">aga of the</span> <span style="color: #F77">R</span><span style="color: #F00">ed</span> <span style="color: #F77">D</span><span style="color: #F00">ragon</span></h1><font size="+2"><pre>"""		
 		ret += "   <span style=\"color: darkgreen\">To play the game, simply telnet to host: \n\n     "+self.config.host+"\n\n   on port # \n\n     "+str(self.config.port)+"</span>\n"
 		ret += """</pre></font></body></html>"""
 		return ret
 		
 	def conf(self):
+		""" Show current server configuration """
 		ret = """<html><head><title>Saga of the Red Dragon</title><style>a { color: #ccc; text-decoration: none; } a:hover { text-decoration: underline; }</style></head><body style="background-color: black; color: white; background-image: url(drag.png); background-repeat: no-repeat; background-position: top right;"><h1><span style="color: #F77">S</span><span style="color: #F00">aga of the</span> <span style="color: #F77">R</span><span style="color: #F00">ed</span> <span style="color: #F77">D</span><span style="color: #F00">ragon</span></h1><font size="+1"><pre>"""		
 		ret += "   <span style=\"color: darkgreen\">telnet://"+self.config.host+":"+str(self.config.port)+"</span>\n"
 		ret += "\n   <span style=\"color: darkgreen\">Compiled June 25, 2009: Version </span><span style=\"color: white\">"+self.config.version+"</span>"
@@ -102,6 +125,7 @@ class sordWebserver(BaseHTTPRequestHandler):
 		return ret
 		
 	def stats(self):
+		""" Show player standings """
 		output  = "<html><head><title>Saga of the Red Dragon - Player Standings</title></head>"
 		output += """<body style="background-color: black; color: white; background-image: url(drag.png); background-repeat: no-repeat; background-position: top right;">"""
 		output += """<h1><span style="color: #F77">S</span><span style="color: #F00">aga of the</span> <span style="color: #F77">R</span><span style="color: #F00">ed</span> <span style="color: #F77">D</span><span style="color: #F00">ragon</span></h1>"""

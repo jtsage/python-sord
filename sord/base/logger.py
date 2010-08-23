@@ -31,6 +31,7 @@ class sordLogger():
 		self.__mainLogger = self.__mainLogger[-100:]
 		
 	def write(self, value):
+		""" Intercept for webserver stderr logging """
 		lines = value.splitlines()
 		for line in lines:
 			if ( line.find("favicon") > -1 ):
