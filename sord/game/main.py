@@ -143,7 +143,7 @@ class mainmenu():
 				thismod.run()
 				del thismod
 			elif ( key[0] == "h" or key[0] == "H" ):
-				ntcon.send('H')
+				self.user.ntcon.send('H')
 				self.user.jennielevel = 0
 				thismod = heal(self.user)
 				thismod.run()
@@ -363,12 +363,12 @@ class heal():
 			if ( not skipDisp ):
 				user.write(menu.heal(user))
 			skipDisp = False
-			data = user.ntcon.recv(2)
-			if not data: break
-			elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
+			key = user.ntcon.recv(2)
+			if not key: break
+			elif ( key[0] == 'q' or key[0] == 'Q' or key[0] == 'r' or key[0] == 'R' ):
 				user.write('R')
 				thisQuit = True
-			elif ( data[0] == 'h' or data[0] == 'H' ):
+			elif ( key[0] == 'h' or key[0] == 'H' ):
 				user.write('H')
 				hptoheal = user.hpmax - user.hp
 				if ( hptoheal < 1 ):
@@ -386,7 +386,7 @@ class heal():
 						user.hp += canaffordtoheal
 						user.write("\r\n  \x1b[32m\x1b[1m"+str(canaffordtoheal)+" \x1b[22mHitPoints are healed and you feel much better!\x1b[0m\r\n")
 						user.pause()
-			elif ( data[0] == 'c' or data[0] == 'C' ):
+			elif ( key[0] == 'c' or key[0] == 'C' ):
 				user.write('C')
 				hptoheal = user.hpmax - user.hp
 				if ( hptoheal < 1 ):
@@ -419,6 +419,7 @@ class arthurs():
 		self.user = user
 	def run(self):
 		""" King Arthur's Weapons Run Logic """
+		user = self.user
 		thisQuit = False
 		skipDisp = False
 		while ( not thisQuit ):
@@ -427,9 +428,9 @@ class arthurs():
 					user.write(user.art.arthur())
 				user.write(menu.arthur(user))
 			skipDisp = False
-			data = user.ntcon.recv(2)
-			if not data: break
-			elif ( data[0] == 'b' or data[0] == 'B' ):
+			key = user.ntcon.recv(2)
+			if not key: break
+			elif ( key[0] == 'b' or key[0] == 'B' ):
 				user.write('B')
 				user.write(user.art.wepbuy())
 				user.write("\r\n\r\n\x1b[32mYour choice? \x1b[1m:\x1b[22m-\x1b[1m:\x1b[0m ")
@@ -463,7 +464,7 @@ class arthurs():
 								else:
 									user.write(func.casebold("\r\nFine then...\r\n", 2))
 									user.pause()
-			elif ( data[0] == 's' or data[0] == 'S' ):
+			elif ( key[0] == 's' or key[0] == 'S' ):
 				user.write('S')
 				sellpercent = 50 + random.randint(1, 10)
 				sellweapon = user.weapon
@@ -485,15 +486,15 @@ class arthurs():
 				else:
 					user.write(func.casebold("\r\nYou have nothing I want!\r\n", 1))
 					user.pause()
-			elif ( data[0] == "?" ):
+			elif ( key[0] == "?" ):
 				user.write('?')
 				if ( user.expert ):
 					user.write(user.art.arthur())
-			elif ( data[0] == 'Y' or data[0] == 'y' ):
+			elif ( key[0] == 'Y' or key[0] == 'y' ):
 				user.write('Y')
 				user.write(util.viewstats(user))
 				user.pause()
-			elif ( data[0] == 'Q' or data[0] == 'q' or data[0] == 'R' or data[0] == 'r' ):
+			elif ( key[0] == 'Q' or key[0] == 'q' or key[0] == 'R' or key[0] == 'r' ):
 				user.write('R')
 				thisQuit = True
 			else:
@@ -506,6 +507,7 @@ class bank():
 		self.user = user
 	def run(self):
 		""" Ye Olde Bank Run Logic """
+		user = self.user
 		thisQuit = False
 		skipDisp = False
 		while ( not thisQuit ):
@@ -514,12 +516,12 @@ class bank():
 					user.write(user.art.bank())
 				user.write(menu.bank(user))
 			skipDisp = False
-			data = user.ntcon.recv(2)
-			if not data: break
-			elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
+			key = user.ntcon.recv(2)
+			if not key: break
+			elif ( key[0] == 'q' or key[0] == 'Q' or key[0] == 'r' or key[0] == 'R' ):
 				user.write('Q')
 				thisQuit = True
-			elif ( data[0] == 'd' or data[0] == 'D' ):
+			elif ( key[0] == 'd' or key[0] == 'D' ):
 				user.write('D')
 				user.write("\r\n  \x1b[32mDeposit how much? \x1b[1;30m(1 for all) \x1b[1;32m:\x1b[0m ")
 				try:
@@ -538,7 +540,7 @@ class bank():
 					user.pause()
 				else:
 					pass
-			elif ( data[0] == 'w' or data[0] == 'W' ):
+			elif ( key[0] == 'w' or key[0] == 'W' ):
 				user.write('W')
 				user.write("\r\n  \x1b[32mWithdraw how much? \x1b[1;30m(1 for all) \x1b[1;32m:\x1b[0m ")
 				try:
@@ -557,7 +559,7 @@ class bank():
 					user.pause()
 				else:
 					pass
-			elif ( data[0] == 't' or data[0] == 'T' ):
+			elif ( key[0] == 't' or key[0] == 'T' ):
 				user.write('T')
 				touser = module_finduser(user, "\r\n  \x1b[32mTransfer to which player? \x1b[1;32m:\x1b[0m ")
 				if ( touser > 0 ):

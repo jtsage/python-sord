@@ -53,18 +53,18 @@ def getLine(connection, echo, prompt=""):
 	if ( not prompt == "" ):
 		connection.send("  "+prompt)
 	while ( not getterquit ):
-		data = connection.recv(2)
-		if not data: break
-		if ( data[0] == "\n" or data[0] == "\r" ):
+		key = connection.recv(2)
+		if not key: break
+		if ( key[0] == "\n" or key[0] == "\r" ):
 			getterquit = True
 		else:
-			if ( data[0] == chr(127) ):
+			if ( key[0] == chr(127) ):
 				retval = retval[:-1]
 				connection.send("\x1b[1D \x1b[1D")
 			else:
-				retval += data
+				retval += key
 				if ( echo ):
-					connection.send(data)
+					connection.send(key)
 				else:
 					connection.send('*')
 	return retval

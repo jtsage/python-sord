@@ -252,14 +252,14 @@ def newuser(user):
 	thisLooper = False
 	while ( not thisLooper ):
 		user.write(func.casebold("\r\nYour Sex (M/F) :-: ", 2))
-		data = user.ntcon.recv(2)
-		if not data: break
-		if ( data[0] == 'm' or data[0] == 'M' ):
+		key = user.ntcon.recv(2)
+		if not key: break
+		if ( key[0] == 'm' or key[0] == 'M' ):
 			user.write('M')
 			newsexnum = 1
 			thisLooper = True
 			user.write(func.casebold("\r\nMy, what a girly man you are...\r\n", 2))
-		if ( data[0] == 'f' or data[0] == 'F' ):
+		if ( key[0] == 'f' or key[0] == 'F' ):
 			user.write('F')
 			newsexnum = 2
 			thisLooper = True
@@ -271,19 +271,19 @@ def newuser(user):
 	thisLooper = False
 	while ( not thisLooper ):
 		user.write(func.casebold("\r\nYour Choice (D/K/L) :-: ", 2))
-		data = user.ntcon.recv(2)
-		if not data: break
-		if ( data[0] == 'k' or data[0] == 'K' ):
+		key = user.ntcon.recv(2)
+		if not key: break
+		if ( key[0] == 'k' or key[0] == 'K' ):
 			user.write('K')
 			newclassnum = 1
 			thisLooper = True
 			user.write(func.casebold("\r\nWelcome warrior to the ranks of the Death Knights!\n", 2))
-		if ( data[0] == 'd' or data[0] == 'D' ):
+		if ( key[0] == 'd' or key[0] == 'D' ):
 			user.write('D')
 			newclassnum = 2
 			thisLooper = True
 			user.write(func.casebold("\r\nFeel the force young jedi.!\n", 2))
-		if ( data[0] == 'l' or data[0] == 'L' ):
+		if ( key[0] == 'l' or key[0] == 'L' ):
 			user.write('L')
 			newclassnum = 3
 			thisLooper = True

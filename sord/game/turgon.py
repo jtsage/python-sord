@@ -124,12 +124,12 @@ class turgon():
 			if ( not skipDisp ):
 				user.write(self.menu(user, thisEnemyHP, thisEnemyName))
 			skipDisp = False
-			data = user.ntcon.recv(2)
-			if not data: break
-			elif ( data[0] == 's' or data[0] == 'S' ):
+			key = user.ntcon.recv(2)
+			if not key: break
+			elif ( key[0] == 's' or key[0] == 'S' ):
 				user.write('S')
 				user.write(util.viewstats(user))
-			elif ( data[0] == 'a' or data[0] == 'A' ): # Attack!
+			elif ( key[0] == 'a' or key[0] == 'A' ): # Attack!
 				user.write("A\r\n")
 				hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
 				myAttack  = ( thisUserHit + random.randint(0, thisUserHit)) - thisEnemyDefense
@@ -150,14 +150,14 @@ class turgon():
 					if ( thisEnemyHP < 1 ): # We Win!
 						ctrlWin = True
 						user.write("\r\n  \x1b[31m"+data.masters[thisUserLevel][5]+"\x1b[0m\r\n")
-			elif ( data[0] == 'r' or data[0] == 'R' ): # Run Away
+			elif ( key[0] == 'r' or key[0] == 'R' ): # Run Away
 				user.write("\r\n  \x1b[32mYou retire from the field before getting yourself killed.\x1b[0m\r\n")
 				user.hp = user.hpmax
 				user.master = 1
 				ctrlRan = True
-			elif ( data[0] == 'q' or data[0] == 'Q' ):
+			elif ( key[0] == 'q' or key[0] == 'Q' ):
 				user.write("\r\n  \x1b[31mYou are in Combat!  Try Running!\x1b[0m\r\n")
-			elif ( data[0] == 'h' or data[0] == 'H' ):
+			elif ( key[0] == 'h' or key[0] == 'H' ):
 				user.write("\r\n  \x1b[32mYou are in combat, and they don't make house calls!\x1b[0m\r\n")
 			else:
 				skipDisp = True

@@ -66,46 +66,46 @@ class rdi():
 					user.write(self.menu_main())
 				user.write(self.prompt())
 			skipDisp = False
-			data = user.ntcon.recv(2)
-			if not data: break
-			elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
+			key = user.ntcon.recv(2)
+			if not key: break
+			elif ( key[0] == 'q' or key[0] == 'Q' or key[0] == 'r' or key[0] == 'R' ):
 				user.write('R')
 				thisQuit = True
-			elif ( data[0] == '?' ):
+			elif ( key[0] == '?' ):
 				user.write('?')
 				if ( user.expert ):
 					user.write(self.menu_main())
-			elif ( data[0] == 'd' or data[0] == 'D' ):
+			elif ( key[0] == 'd' or key[0] == 'D' ):
 				user.write('D')
 				user.write(util.dailyhappen(True, user))
 				user.pause()
-			elif ( data[0] == 't' or data[0] == 'T' ):
+			elif ( key[0] == 't' or key[0] == 'T' ):
 				user.write('T')
 				self.bartend()
-			elif ( data[0] == 'v' or data[0] == 'V' ):
+			elif ( key[0] == 'v' or key[0] == 'V' ):
 				user.write('V')
 				user.write(util.viewstats(user))
 				user.pause()
-			elif ( data[0] == 'm' or data[0] == 'M' ):
+			elif ( key[0] == 'm' or key[0] == 'M' ):
 				user.write('M')
 				util.announce(user)
-			elif ( data[0] == 'f' or data[0] == 'F' ):
+			elif ( key[0] == 'f' or key[0] == 'F' ):
 				user.write('F')
 				if ( user.flirt ):
 					user.write(func.casebold("\r\n  You have already flirted once today\r\n", 2))
 				else:
 					self.flirt()
 				user.pause()
-			elif ( data[0] == 'c' or data[0] == 'C' ):
+			elif ( key[0] == 'c' or key[0] == 'C' ):
 				user.write('C')
 				self.converse()
-			elif ( data[0] == 'h' or data[0] == 'H' ):
+			elif ( key[0] == 'h' or key[0] == 'H' ):
 				user.write('H')
 				self.menu_bard()
-			elif ( data[0] == 'g' or data[0] == 'G' ):
+			elif ( key[0] == 'g' or key[0] == 'G' ):
 				user.write('G')
 				self.getroom()
-			elif ( data[0] == 'e' or data[0] == 'E' ):
+			elif ( key[0] == 'e' or key[0] == 'E' ):
 				if ( user.jennielevel == 4 and not user.jennieused ):
 					user.jennielevel = 0
 					user.jennieused = True
@@ -215,12 +215,12 @@ class rdi():
 			if ( not skipDisp ):
 				user.write(thismenu)
 			skipDisp = False
-			data = user.ntcon.recv(2)
-			if not data: break
-			if ( data[0] == 'r' or data[0] == 'R' or data[0] == 'q' or data[0] == 'Q' ):
+			key = user.ntcon.recv(2)
+			if not key: break
+			if ( key[0] == 'r' or key[0] == 'R' or key[0] == 'q' or key[0] == 'Q' ):
 				user.write('R')
 				thisQuit = True
-			elif ( data[0] == 'a' or data[0] == 'A' ):
+			elif ( key[0] == 'a' or key[0] == 'A' ):
 				user.write('A')
 				self.bard_listen()
 			else:
@@ -273,40 +273,40 @@ class rdi():
 		thisScrew = False
 		thisQuit = False
 		while ( not thisQuit ):
-			data = user.ntcon.recv(2)
-			if not data: break
-			elif ( data[0] == 'w' or data[0] == 'W' ):
+			key = user.ntcon.recv(2)
+			if not key: break
+			elif ( key[0] == 'w' or key[0] == 'W' ):
 				user.write('W')
 				thisRun = 0
 				thisQuit = True
 				thisTry = True
-			elif ( data[0] == 'f' or data[0] == 'F' ):
+			elif ( key[0] == 'f' or key[0] == 'F' ):
 				user.write('F')
 				thisRun = 1
 				thisQuit = True
 				thisTry = True
-			elif ( data[0] == 'd' or data[0] == 'D' ):
+			elif ( key[0] == 'd' or key[0] == 'D' ):
 				user.write('D')
 				thisRun = 2
 				thisQuit = True
 				thisTry = True
-			elif ( data[0] == 'a' or data[0] == 'A' ):
+			elif ( key[0] == 'a' or key[0] == 'A' ):
 				user.write('A')
 				thisRun = 3
 				thisQuit = True
 				thisTry = True
-			elif ( data[0] == 'k' or data[0] == 'K' ):
+			elif ( key[0] == 'k' or key[0] == 'K' ):
 				user.write('K')
 				thisRun = 4
 				thisQuit = True
 				thisTry = True
-			elif ( data[0] == 'c' or data[0] == 'C' ):
+			elif ( key[0] == 'c' or key[0] == 'C' ):
 				user.write('C')
 				thisRun = 5
 				thisQuit = True
 				thisTry = True
 				thisScrew = True
-			elif ( data[0] == 'r' or data[0] == 'R' or data[0] == 'n' or data[0] == 'N' or data[0] == 'q' or data[0] == 'Q' ):
+			elif ( key[0] == 'r' or key[0] == 'R' or key[0] == 'n' or key[0] == 'N' or key[0] == 'q' or key[0] == 'Q' ):
 				user.write('N')
 				thisQuit = True
 			else:
@@ -343,40 +343,40 @@ class rdi():
 		thisScrew = False
 		thisQuit = False
 		while ( not thisQuit ):
-			data = user.ntcon.recv(2)
-			if not data: break
-			elif ( data[0] == 'w' or data[0] == 'W' ):
+			key = user.ntcon.recv(2)
+			if not key: break
+			elif ( key[0] == 'w' or key[0] == 'W' ):
 				user.write('W')
 				thisRun = 0
 				thisQuit = True
 				thisTry = True
-			elif ( data[0] == 'k' or data[0] == 'K' ):
+			elif ( key[0] == 'k' or key[0] == 'K' ):
 				user.write('K')
 				thisRun = 1
 				thisQuit = True
 				thisTry = True
-			elif ( data[0] == 'p' or data[0] == 'P' ):
+			elif ( key[0] == 'p' or key[0] == 'P' ):
 				user.write('P')
 				thisRun = 2
 				thisQuit = True
 				thisTry = True
-			elif ( data[0] == 's' or data[0] == 'S' ):
+			elif ( key[0] == 's' or key[0] == 'S' ):
 				user.write('S')
 				thisRun = 3
 				thisQuit = True
 				thisTry = True
-			elif ( data[0] == 'g' or data[0] == 'G' ):
+			elif ( key[0] == 'g' or key[0] == 'G' ):
 				user.write('G')
 				thisRun = 4
 				thisQuit = True
 				thisTry = True
-			elif ( data[0] == 'c' or data[0] == 'C' ):
+			elif ( key[0] == 'c' or key[0] == 'C' ):
 				user.write('C')
 				thisRun = 5
 				thisQuit = True
 				thisTry = True
 				thisScrew = True
-			elif ( data[0] == 'r' or data[0] == 'R' or data[0] == 'n' or data[0] == 'N' or data[0] == 'q' or data[0] == 'Q' ):
+			elif ( key[0] == 'r' or key[0] == 'R' or key[0] == 'n' or key[0] == 'N' or key[0] == 'q' or key[0] == 'Q' ):
 				user.write('N')
 				thisQuit = True
 			else:
@@ -436,18 +436,18 @@ class rdi():
 			if ( not dispSkip ):
 				user.write(self.menu_bartend())
 			dispSkip = False
-			data = user.ntcon.recv(2)
-			if not data: break
-			if ( data[0] == 'r' or data[0] == 'R' or data[0] == 'q' or data[0] == 'Q' ):
+			key = user.ntcon.recv(2)
+			if not key: break
+			if ( key[0] == 'r' or key[0] == 'R' or key[0] == 'q' or key[0] == 'Q' ):
 				user.write('R')
 				thisQuit = True
-			elif ( data[0] == 'v' or data[0] == 'V' ):
+			elif ( key[0] == 'v' or key[0] == 'V' ):
 				user.write('V')
 				user.write("\r\n\r\n  \x1b[35m\"Ya want to know about \x1b[1mViolet\x1b[22m do ya?  She is every warrior's\x1b[0m")
 				user.write("\r\n  \x1b[35mwet dream...But forget it, Lad, she only goes for the type\x1b[0m")
 				user.write("\r\n  \x1b[35mof guy who would help old peple...\"\x1b[0m\r\n")
 				user.pause()
-			elif ( data[0] == 'c' or data[0] == 'C' ):
+			elif ( key[0] == 'c' or key[0] == 'C' ):
 				user.write('C')
 				user.write("\r\n\r\n  \x1b[35m\"Ya wanna change your name, eh?  Yeah..\x1b[0m")
 				if ( user.cls == 1 ):
@@ -498,14 +498,14 @@ class rdi():
 				else:
 					user.write("\r\n\r\n  \x1b[35m\"Fine...Keep your stupid name...See if I care...\"\x1b[0m\r\n")
 				user.pause()
-			elif ( data[0] == 'd' or data[0] == 'D' ):
+			elif ( key[0] == 'd' or key[0] == 'D' ):
 				if ( user.level == 12 ):
 					user.write('D')
 					user.write("\r\n\r\n  \x1b[32mA \x1b[1;31mRed Dragon\x1b[0m\x1b[32m eh?  Have you tried to \x1b[1mS\x1b[22mearch?\r\n")
 					user.pause()
 				else:
 					dispSkip = True
-			elif ( data[0] == 'g' or data[0] == 'G' ):
+			elif ( key[0] == 'g' or key[0] == 'G' ):
 				user.write('G')
 				user.write("\r\n\r\n  \x1b[35m\"You have \x1b[1;37mGems\x1b[0m\x1b[35m, eh?  I'll give ya a pint of magic elixer for two.\"\x1b[0m\r\n")
 				user.write("  \x1b[32mBuy how many elixers? : ")
@@ -549,7 +549,7 @@ class rdi():
 								user.write("\r\n  \x1b[32mYou feel as if your vitality is greater\r\n")
 								tinyQuit = True
 						user.write("\r\n  \x1b[32mPleasure doing business with you\x1b[0m\r\n")
-			elif ( data[0] == 'b' or data[0] == 'B' ):
+			elif ( key[0] == 'b' or key[0] == 'B' ):
 				user.write('B')
 				user.write("\r\n\r\n  \x1b[32mBribe me to kick someone out of thier room, eh?\x1b[0m\r\n")
 				kickID = util.finduser(user, "\r\n  \x1b[32mWho will it be?")

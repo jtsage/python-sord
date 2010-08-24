@@ -185,7 +185,7 @@ class ffight():
 				ctrlWin = True
 				user.horse = 0
 			else:
-				hisAttack = ( enemy.hit + random.randint(0, ememy.hit)) - udef
+				hisAttack = ( enemy.hit + random.randint(0, enemy.hit)) - udef
 				if ( hisAttack > 0 ):
 					if ( hisAttack >= user.hp ):
 						ctrlDead = True
@@ -481,8 +481,8 @@ class ffight():
 			user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
 			miniQuit = False
 			while ( not miniQuit ):
-				data = user.ntcon.recv(2)
-				if ( data[0] == 'h' or data[0] == 'H' ):
+				key = user.ntcon.recv(2)
+				if ( key[0] == 'h' or key[0] == 'H' ):
 					user.write('H')
 					goldtoadd = user.level * 500
 					user.write("\r\n\r\n  \x1b[32mYou help the old gentleman home.\r\n  \x1b[1mHe gives you "+str(goldtoadd)+" gold and 1 charm!.\x1b[0m\r\n")
@@ -490,7 +490,7 @@ class ffight():
 					user.charm += 1
 					user.ffight -= 1
 					miniQuit = True
-				elif ( data[0] == 'i' or data[0] == 'I' ):
+				elif ( key[0] == 'i' or key[0] == 'I' ):
 					user.write('I')
 					user.write("\r\n  \x1b[31mYou just really \x1b[1mSUCK\x1b[0;31m, don't you?\x1b[0m\r\n")
 					miniQuit = True
@@ -524,13 +524,13 @@ class ffight():
 			miniQuit = False
 			while ( not miniQuit ):
 				user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
-				data = user.ntcon.recv(2)
-				if ( data[0] == 'l' or data[0] == 'L' ):
+				key = user.ntcon.recv(2)
+				if ( key[0] == 'l' or key[0] == 'L' ):
 					user.write("L\r\n\r\n  \x1b[32mThe old hag begins following you like a lost puppy.\x1b[0m\r\n")
-				elif ( data[0] == 'k' or data[0] == 'K' ):
+				elif ( key[0] == 'k' or key[0] == 'K' ):
 					user.write("K\r\n\r\n  \x1b[32mYou hate to be rude to your elders, but sometimes deperate times call for\r\n  deperate measures.  You which the old hag in the shin and run for it.\x1b[0m\r\n")
 					miniQuit = True
-				elif ( data[0] == 'g' or data[0] == 'G' ):
+				elif ( key[0] == 'g' or key[0] == 'G' ):
 					user.write('G')
 					if ( user.gems > 0 ):
 						user.write("\r\n\r\n  \x1b[1;32m\"Thank you\"\x1b[0;32m she cackles.\r\n  \x1b[1mYou feel refreshed and renewed\x1b[0m\r\n")
@@ -559,11 +559,11 @@ class ffight():
 			user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
 			miniQuit = False
 			while ( not miniQuit ):
-				data = user.ntcon.recv(2)
-				if ( data[0] == 'i' or data[0] == 'I' ):
+				key = user.ntcon.recv(2)
+				if ( key[0] == 'i' or key[0] == 'I' ):
 					user.write('I')
 					miniQuit = True
-				elif ( data[0] == 's' or data[0] == 'S' ):
+				elif ( key[0] == 's' or key[0] == 'S' ):
 					user.write('S')
 					user.ffight -= 1
 					thisMiniQuit = False
@@ -691,14 +691,14 @@ class ffight():
 		user.write("\r\n  \x1b[0m\x1b[32mYour choice, \x1b[1m"+user.thisFullname+"\x1b[22m? (K,F) \x1b[0m\x1b[32m:-: \x1b[0m")
 		miniQuit = False
 		while ( not miniQuit ):
-			data = user.ntcon.recv(2)
-			if not data: break
-			elif ( data[0] == 'k' or data[0] == 'K' ):
+			key = user.ntcon.recv(2)
+			if not key: break
+			elif ( key[0] == 'k' or key[0] == 'K' ):
 				user.write('K')
 				user.write("\r\n  \x1b[32mYou draw your weapon, and ram it as hard as you can through his midsection.\x1b[0m\r\n")
 				thisChoice = 1
 				miniQuit = True
-			elif ( data[0] == 'f' or data[0] == 'F' ):
+			elif ( key[0] == 'f' or key[0] == 'F' ):
 				user.write('F')
 				user.write("\r\n  \x1b[32mYou consider a moment, and shout \"Let him live!  He's done nothing wrong!\"\x1b[0m\r\n")
 				thisChoice = 2
@@ -734,15 +734,15 @@ class ffight():
 		user.write("\r\n  \x1b[0m\x1b[32mYour choice, \x1b[1m"+user.thisFullname+"\x1b[22m? (G,S,M) \x1b[0m\x1b[32m:-: \x1b[0m")
 		miniQuit = False
 		while ( not miniQuit ):
-			data = user.ntcon.recv(2)
+			key = user.ntcon.recv(2)
 			if not data: break
-			elif ( data[0] == 's' or data[0] == 'S' ):
+			elif ( key[0] == 's' or key[0] == 'S' ):
 				user.write("S\r\n  \x1b[32mAs you spit on him, the thief looks at you closely.  He almost looks proud.\x1b[0m\r\n")
 				miniQuit = True
-			elif ( data[0] == 'm' or data[0] == 'M' ):
+			elif ( key[0] == 'm' or key[0] == 'M' ):
 				user.write("M\r\n  \x1b[32mAs the thief leaves, you distincly hear the words \"nutjob\" and \"jackass\".  Oh well.\x1b[0m\r\n")
 				miniQuit = True
-			elif ( data[0] == 'g' or data[0] == 'G' ):
+			elif ( key[0] == 'g' or key[0] == 'G' ):
 				user.write('G')
 				if ( user.gems > 0 ):
 					user.updateSkillUse(3, 1)
@@ -769,17 +769,18 @@ class ffight():
 		miniQuit2 = False
 		
 		while ( not miniQuit1 ):
-			data = user.ntcon.recv(2)
-			if not data: break
-			elif ( data[0] == 'k' or data[0] == 'K' ):
-				user.write(data[0])
+			key = user.ntcon.recv(2)
+			if not key: break
+			elif ( key[0] == 'k' or key[0] == 'K' ):
+				user.write('K')
 				user.write("\r\n  \x1b[32mYou knock polietly on the door.\x1b[0m\n")
 				miniQuit1 = True
-			elif ( data[0] == 'b' or data[0] == 'B' ):
-				user.write(data[0])
+			elif ( key[0] == 'b' or key[0] == 'B' ):
+				user.write('B')
 				user.write("\r\n  \x1b[32mYou bang wildly on the door.\x1b[0m\n")
 				miniQuit1 = True
-			elif ( data[0] == 'l' or data[0] == 'L' ):
+			elif ( key[0] == 'l' or key[0] == 'L' ):
+				user.write('L')
 				user.write("\n  \x1b[32mYou leave, confident in finding better things to do.\x1b[0m\n")
 				miniQuit1 = True
 				miniQuit2 = True
@@ -857,12 +858,12 @@ class ffight():
 				thisEnemyWeapon = "Flaming Breath"
 				thisEnemyHit = 3000
 			skipDisp = False
-			data = user.ntcon.recv(2)
-			if not data: break
-			elif ( data[0] == 's' or data[0] == 'S' ):
+			key = user.ntcon.recv(2)
+			if not key: break
+			elif ( key[0] == 's' or key[0] == 'S' ):
 				user.write('S')
 				user.write(util.viewstats(user))
-			elif ( data[0] == 'a' or data[0] == 'A' ): # Attack!
+			elif ( key[0] == 'a' or key[0] == 'A' ): # Attack!
 				user.write("A\r\n")
 				hisAttack = ( thisEnemyHit + random.randint(500, thisEnemyHit)) - thisUserDefense
 				myAttack  = ( thisUserHit + random.randint(0, thisUserHit))
@@ -882,7 +883,7 @@ class ffight():
 					thisEnemyHP = thisEnemyHP - myAttack
 					if ( thisEnemyHP < 1 ): # We Win!
 						ctrlWin = True
-			elif ( data[0] == 'd' or data[0] == 'D' ): # Attack!
+			elif ( key[0] == 'd' or key[0] == 'D' ): # Attack!
 				user.write("D\r\n")
 				if ( user.getSkillUse(1) > 0 ):
 					user.updateSkillUse(1, -1)
@@ -906,7 +907,7 @@ class ffight():
 							ctrlWin = True
 				else:
 					user.write("\r\n  \x1b[32mYou have no Death Knight Skill Use Points!\x1b[0m\r\n\r\n")
-			elif ( data[0] == 't' or data[0] == 'T' ): # Attack!
+			elif ( key[0] == 't' or key[0] == 'T' ): # Attack!
 				user.write("T\r\n")
 				if ( user.getSkillUse(3) > 0 ):
 					user.updateSkillUse(3, -1)
@@ -930,7 +931,7 @@ class ffight():
 							ctrlWin = True
 				else:
 					user.write("\r\n  \x1b[32mYou have no Thief Skill Use Points!\x1b[0m\r\n\r\n")
-			elif ( data[0] == 'r' or data[0] == 'R' ): # Run Away
+			elif ( key[0] == 'r' or key[0] == 'R' ): # Run Away
 				if ( random.randint(1, 10) == 4 ): # Hit in the back.
 					hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
 					if ( hisAttack >= user.hp ): # We are dead.  Bummer.
@@ -943,13 +944,13 @@ class ffight():
 				else:
 					user.write("\r\n  \x1b[32mYou narrowly escape harm.\x1b[0m\r\n")
 					ctrlRan = True
-			elif ( data[0] == 'q' or data[0] == 'Q' ):
+			elif ( key[0] == 'q' or key[0] == 'Q' ):
 				user.write("\r\n  \x1b[31mYou are in Combat!  Try Running!\x1b[0m\r\n")
-			elif ( data[0] == 'h' or data[0] == 'H' ):
+			elif ( key[0] == 'h' or key[0] == 'H' ):
 				user.write("\r\n  \x1b[32mYou are in combat, and they don't make house calls!\x1b[0m\r\n")
-			elif ( data[0] == 'l' or data[0] == 'L' ):
+			elif ( key[0] == 'l' or key[0] == 'L' ):
 				user.write("\r\n  \x1b[32mWhat?!  You want to fight two at once?\x1b[0m\r\n")
-			elif ( data[0] == 'm' or data[0] == 'M' ): #Magic!
+			elif ( key[0] == 'm' or key[0] == 'M' ): #Magic!
 				if ( user.getSkillUse(2) < 1 ):
 					user.write("\r\n  \x1b[32mYou have no Magical Use Points!\x1b[0m\r\n\r\n")
 				else:

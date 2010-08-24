@@ -93,27 +93,27 @@ class dht():
 					user.write(self.main_menu())
 				user.write(self.prompt())
 			skipDisp = False
-			data = user.ntcon.recv(2)
-			if not data: break
-			elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
+			key = user.ntcon.recv(2)
+			if not key: break
+			elif ( key[0] == 'q' or key[0] == 'Q' or key[0] == 'r' or key[0] == 'R' ):
 				user.write('R')
 				thisQuit = True
-			elif ( data[0] == '?' ):
+			elif ( key[0] == '?' ):
 				user.write('?')
 				user.write(self.main_menu(user))
 				skipDisp = True
-			elif ( data[0] == 'y' or data[0] == 'Y' ):
+			elif ( key[0] == 'y' or key[0] == 'Y' ):
 				user.write('Y')
 				user.write(util.viewstats(user))
 				user.pause()
-			elif ( data[0] == 'd' or data[0] == 'D' ):
+			elif ( key[0] == 'd' or key[0] == 'D' ):
 				user.write('D')
 				user.write(util.dailyhappen(True, user))
 				user.pause()
-			elif ( data[0] == 'c' or data[0] == 'C' ):
+			elif ( key[0] == 'c' or key[0] == 'C' ):
 				user.write('C')
 				self.converse()
-			elif ( data[0] == 'e' or data[0] == 'E' ):
+			elif ( key[0] == 'e' or key[0] == 'E' ):
 				user.write('E')
 				db = user.dbcon.cursor()
 				db.execute("SELECT fullname, fuck FROM users u, stats s WHERE s.userid = u.userid AND s.fuck > 0 ORDER by s.fuck DESC")
@@ -128,7 +128,7 @@ class dht():
 				user.write("\r\n")
 				db.close()
 				user.pause()
-			elif ( data[0] == 't' or data[0] == 'T' ):
+			elif ( key[0] == 't' or key[0] == 'T' ):
 				user.write('T')
 				self.chance(user)
 			else:
@@ -181,16 +181,16 @@ class dht():
 				user.write(header)
 				user.write(self.chance_menu())
 			skipDisp = False
-			data = user.ntcon.recv(2)
-			if not data: break
-			elif ( data[0] == 'q' or data[0] == 'Q' or data[0] == 'r' or data[0] == 'R' ):
+			key = user.ntcon.recv(2)
+			if not key: break
+			elif ( key[0] == 'q' or key[0] == 'Q' or key[0] == 'r' or key[0] == 'R' ):
 				user.write('R')
 				thisQuit = True
-			elif ( data[0] == 't' or data[0] == 'T' ):
+			elif ( key[0] == 't' or key[0] == 'T' ):
 				user.write('T')
 				user.write("\r\n\r\n  \x1b[32mColors are easy my friend!  Just enclose single ANSI codes in braces\r\n  like this {32} - that would turn the text green you can learn\r\n  more at:\r\n    http://en.wikipedia.org/wiki/ANSI_escape_code\x1b[0m\r\n")
 				user.pause()
-			elif ( data[0] == 'l' or data[0] == 'L' ):
+			elif ( key[0] == 'l' or key[0] == 'L' ):
 				user.write('L')
 				whoid = util.finduser(user, "\r\n  \x1b[32mGet information on who?")
 				if ( whoid > 0 ):
@@ -213,7 +213,7 @@ class dht():
 						user.write("\r\n  \x1b[32mOk.  You got it.\x1b[0m\r\n")
 				else: 
 					user.write("\r\n  \x1b[32mOk.  Nevermind.\x1b[0m\r\n")
-			elif ( data[0] == 'c' or data[0] == 'C' ):
+			elif ( key[0] == 'c' or key[0] == 'C' ):
 				user.write('C')
 				user.write(func.casebold("\r\n  Pick that which best describes your childhood.\r\n  From an early age, you remember:\r\n\r\n", 2))
 				user.write(func.normmenu("(D)abbling in the mystical forces"))
@@ -222,19 +222,19 @@ class dht():
 				thisLooper = False
 				while ( not thisLooper ):
 					user.write(func.casebold("\r\n  Your Choice (D/K/L) :-: ", 2))
-					data = user.ntcon.recv(2)
-					if not data: break
-					if ( data[0] == 'k' or data[0] == 'K' ):
+					key = user.ntcon.recv(2)
+					if not key: break
+					if ( key[0] == 'k' or key[0] == 'K' ):
 						user.write('K')
 						user.cls = 1
 						thisLooper = True
 						user.write(func.casebold("\r\n  Welcome warrior to the ranks of the Death Knights!\r\n", 2))
-					if ( data[0] == 'd' or data[0] == 'D' ):
+					if ( key[0] == 'd' or key[0] == 'D' ):
 						user.write('D')
 						user.cls = 2
 						thisLooper = True
 						user.write(func.casebold("\r\n  Feel the force young jedi.!\r\n", 2))
-					if ( data[0] == 'l' or data[0] == 'L' ):
+					if ( key[0] == 'l' or key[0] == 'L' ):
 						user.write('L')
 						user.cls = 3
 						thisLooper = True
