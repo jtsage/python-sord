@@ -50,11 +50,11 @@ class killer():
 			elif ( key[0] == 'w' or key[0] == 'W' ):
 				user.write('W')
 				if ( user.pkill > 0 ):
-					user.write(func_casebold("\r\n  Carve what in the soft dirt? :-: ", 2))
+					user.write(func.casebold("\r\n  Carve what in the soft dirt? :-: ", 2))
 					ann = func.getLine(user.ntcon, True)
 					user.dbcon.execute("INSERT INTO dirt ( `data`, `nombre` ) VALUES ( ?, ? )", (ann, user.thisFullname))
 					user.dbcon.commit()
-					user.write(func_casebold("\r\n  Carving Added!\r\n", 2))
+					user.write(func.casebold("\r\n  Carving Added!\r\n", 2))
 					user.pause()
 				else:
 					user.write("\r\n  \x1b[32mYou have to accomplish something here before you can trash talk!\x1b[0m\r\n")
@@ -85,7 +85,7 @@ class killer():
 		""" Player List """
 		user = self.user
 		db = user.dbcon.cursor()
-		db.execute("SELECT u.userid, fullname, exp, level, cls, sex, alive FROM users u, stats s WHERE u.userid = s.userid AND s.atinn = 0 AND u.userid <> ? AND u.userid NOT IN ( SELECT userid FROM online ) ORDER BY exp DESC", (user.thisUserID,))
+		db.execute("SELECT userid, fullname, exp, level, cls, sex, alive FROM users WHERE atinn = 0 AND userid <> ? AND userid NOT IN ( SELECT userid FROM online ) ORDER BY exp DESC", (user.thisUserID,))
 		output = "\r\n\r\n\x1b[32m    Name                    Experience    Level     Status\x1b[0m\r\n";
 		output += user.art.line()
 		for line in db.fetchall():
@@ -240,7 +240,7 @@ class killer():
 			lamentThis = re.sub("`e", usertokill.thisFullname, lamentThis)
 			user.dbcon.execute("INSERT INTO daily ( `data` ) VALUES ( ? )", (lamentThis,))
 			user.dbcon.commit()
-			user.write(func_casebold("  Tragically, you died.  Returning to the mundane world for the day...\n", 1))
+			user.write(func.casebold("  Tragically, you died.  Returning to the mundane world for the day...\n", 1))
 			raise Exception('normal', "User is DOA.  Bummer.")
 
 

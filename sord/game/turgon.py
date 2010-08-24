@@ -64,15 +64,15 @@ class turgon():
 			elif ( key[0] == 'v' or key[0] == 'V' ):
 				user.write('V')
 				db = user.dbcon.cursor()
-				db.execute("SELECT fullname, dkill FROM users u, stats s WHERE s.userid = u.userid AND s.dkill > 0 ORDER by s.dkill DESC")
+				db.execute("SELECT fullname, dkill FROM users WHERE dkill > 0 ORDER by dkill DESC")
 				user.write("\r\n\r\n  \x1b[32mUsers who have slain the dragon:\x1b[0m\r\n")
 				for row in db.fetchall():
 					if not row:
 						user.write("\r\n\r\n  \x1b[32mWhat a sad thing - there are no heroes in this realm.\x1b[0m\r\n")
 						break
 					else:
-						for (nombre, data) in row:
-							user.write("  \x1b[32m"+nombre+func.padnumcol(nombre, 25)+"\x1b[1m"+str(data)+"\x1b[0m\r\n")
+						for (nombre, xdata) in row:
+							user.write("  \x1b[32m"+nombre+func.padnumcol(nombre, 25)+"\x1b[1m"+str(xdata)+"\x1b[0m\r\n")
 				user.write("\r\n")
 				db.close()
 				user.pause()

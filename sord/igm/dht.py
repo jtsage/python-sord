@@ -116,7 +116,7 @@ class dht():
 			elif ( key[0] == 'e' or key[0] == 'E' ):
 				user.write('E')
 				db = user.dbcon.cursor()
-				db.execute("SELECT fullname, fuck FROM users u, stats s WHERE s.userid = u.userid AND s.fuck > 0 ORDER by s.fuck DESC")
+				db.execute("SELECT fullname, fuck FROM users WHERE fuck > 0 ORDER by fuck DESC")
 				user.write("\r\n\r\n  \x1b[32mUsers who have gotten lucky:\x1b[0m\r\n")
 				
 				for row in db.fetchall():
@@ -159,7 +159,7 @@ class dht():
 	def chance_menu(self):
 		""" DHT :: Chance the Bartender - Menu """
 		user = self.user
-		ptime = func_maketime(user)
+		ptime = func.maketime(user)
 		thismenu = func.normmenu("(C)hange Profession")
 		thismenu += func.normmenu("(L)earn About Your Enemies")
 		thismenu += func.normmenu("(T)alk About Colors")

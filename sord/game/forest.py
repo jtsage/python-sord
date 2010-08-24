@@ -249,7 +249,7 @@ class ffight():
 					if ( myAttack > 0 and not ctrlDead ): # We hit him!
 						user.write("\r\n  \x1b[1;32mUltra Powerful Move!\x1b[0m\r\n  \x1b[32mYou hit "+enemy.name+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
 						enemy.hp -= myAttack
-						if ( thisEnemyHP < 1 ): # We Win!
+						if ( enemy.hp < 1 ): # We Win!
 							ctrlWin = True
 							user.write("\r\n  \x1b[31m"+enemy.win+"\x1b[0m\r\n")
 				else:

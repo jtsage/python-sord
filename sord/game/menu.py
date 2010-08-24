@@ -18,7 +18,7 @@ import time
 from . import data
 from ..base import func
 
-def menu_turgon(user):
+def turgon(user):
 	"""Turgons warrior training """
 	ptime = func.maketime(user)
 	try:

@@ -15,6 +15,7 @@ __date__ = "18 August 2010"
 __version__ = "2.0-pysqlite"
 __credits__ = "Seth Able Robinson, original game concept"
 from ..base import func
+from ..base import user
 from . import data
 
 def readmail(user):

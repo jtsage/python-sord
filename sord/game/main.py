@@ -151,11 +151,11 @@ class mainmenu():
 			elif ( key[0] == "m" or key[0] == "M" ): 
 				self.user.ntcon.send('M')
 				self.user.jennielevel = 0
-				util.announce(user)
+				util.announce(self.user)
 			elif ( key[0] == "w" or key[0] == "W" ): 
 				self.user.ntcon.send('W')
 				self.user.jennielevel = 0
-				util.sendmail(user)
+				util.sendmail(self.user)
 			elif ( key[0] == "i" or key[0] == "I" ):
 				self.user.ntcon.send('I')
 				thismod = rdi.rdi(self.user)
@@ -170,7 +170,7 @@ class mainmenu():
 			elif ( key[0] == 't' or key[0] == 'T' ):
 				self.user.ntcon.send('T')
 				self.user.jennielevel = 0
-				thismod = turgon.turgon(user)
+				thismod = turgon.turgon(self.user)
 				thismod.run()
 				del thismod
 			elif ( key[0] == "1" ):
@@ -308,10 +308,10 @@ class abduls():
 									self.user.armor = number
 									self.user.gold -= data.armorprice[number]
 									self.user.defence += data.armordef[number]
-									self.user.write(func_casebold("\r\nPleasure doing business with you!\r\n", 2))
+									self.user.write(func.casebold("\r\nPleasure doing business with you!\r\n", 2))
 									self.user.pause()
 								else:
-									self.user.write(func_casebold("\r\nFine then...\r\n", 2))
+									self.user.write(func.casebold("\r\nFine then...\r\n", 2))
 									self.user.pause()
 			elif ( key[0] == 's' or key[0] == 'S' ):
 				self.user.write('S')
@@ -572,7 +572,7 @@ class bank():
 						user.write(func.casebold("\r\n  You don't have that much gold!\r\n", 1))
 						user.pause()
 					elif ( number > 0 ):
-						user.dbcon.execute("UPDATE stats SET gold = (gold + ?) WHERE userid = ?", (number, touser))
+						user.dbcon.execute("UPDATE users SET gold = (gold + ?) WHERE userid = ?", (number, touser))
 						user.dbcon.commit()
 						user.gold -= number
 						user.write(func.casebold("\r\n  Gold transfered\r\n", 2))

@@ -128,7 +128,7 @@ class eachClient(threading.Thread):
 					if ( username == "new" ):
 						log.add('   ** New User! ' + str(thisClientAddress))
 						newusername = sord.game.util.newuser(currentUser)
-						currentUser = sorduser(newusername, sqc, connection, art, config, log, lineconfig[0], lineconfig[1])
+						currentUser = sord.base.user.sorduser(newusername, sqc, connection, art, config, log, lineconfig[0], lineconfig[1])
 						newclass = currentUser.cls
 						currentUser.updateSkillUse(newclass, 1)
 						currentUser.updateSkillPoint(newclass, 1)
