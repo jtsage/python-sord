@@ -180,7 +180,7 @@ def list(art, dbc):
 		else:
 			lineStatus = "\x1b[31m Dead\x1b[0m"
 			
-		output += lineSex + lineClass + "\x1b[32m" + line[1] + func.padnumcol(str(line[1]), 24) + func.padright(str(line[2]), 10)
+		output += lineSex + lineClass + "\x1b[32m" + line[1] + func.padnumcol(str(line[1]), 24) + "\x1b[0;32m" + func.padright(str(line[2]), 10)
 		output += func.padright(str(line[3]), 9) + "       " + lineMaster + "    " + lineStatus + "\r\n"
 	db.close()
 	return output + "\r\n"

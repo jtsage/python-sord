@@ -19,6 +19,11 @@ import re, time, random
 
 def slowecho(connection, data, LINESPEED=0, NOISE=0):
 	""" Modem speed emulation display routine """
+	ldcolors = [
+		( '`1', '\x1b[31m'), ( '`2', '\x1b[32m'), ( '`3', '\x1b[33m'), ( '`4', '\x1b[34m'),
+		( '`5', '\x1b[35m'), ( '`6', '\x1b[36m'), ( '`7', '\x1b[37m'), ( '`8', '\x1b[1;30m'),
+		( '`9', '\x1b[1;31m'), ( '`0', '\x1b[1;32m'), ( '`!', '\x1b[1;33m'), ( '`@', '\x1b[1;34m'), 
+		( '`#', '\x1b[1;35m'), ( '`\$', '\x1b[1;36m'), ( '`%', '\x1b[1;37m')]
 	if ( LINESPEED == 0 ):
 		pause = 0.001
 	elif ( LINESPEED == 1 ):
@@ -27,6 +32,9 @@ def slowecho(connection, data, LINESPEED=0, NOISE=0):
 		pause = 0.0005
 	elif ( LINESPEED == 3 ):
 		pause = 0.00001
+	for cpair in ldcolors:
+		data = re.sub(cpair[0], '\x1b[0m'+cpair[1], data)
+		
 	for thisData in list(data):
 		if ( NOISE ):
 			if ( random.randint(1, 2000) == 3 ):
@@ -136,7 +144,8 @@ def padnumcol(text, col):
 	
 	@param string $text Text to pad
 	@param int $col Number of columns to fill """
-	col = col - len(text)
+	ltext = re.sub('`.', '', text)
+	col = col - len(ltext)
 	ittr = 0
 	retval = ""
 	while ( ittr < col ):

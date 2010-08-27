@@ -259,6 +259,17 @@ class intro():
 				for storyitem in data.story:
 					func.slowecho(self.connection, func.casebold("  \x1b[37m" + storyitem + "\r\n", 7), self.lineconfig[0], self.lineconfig[1])
 				func.pauser(self.connection)
+			elif ( key == 'I' or key == 'i' ):
+				instr = self.art.instruct().splitlines(1)
+				x = 1
+				for iline in instr:
+					if ( x == 22 ):
+						func.pauser(self.connection)
+						x = 1
+						self.connection.send("\r\n")
+					func.slowecho(self.connection, iline, self.lineconfig[0], self.lineconfig[1])
+					x += 1
+				func.pauser(self.connection)
 			else:
 				skipDisp = True
 

@@ -14,7 +14,7 @@ __author__ = "Jonathan T. Sage <jtsage@gmail.com>"
 __date__ = "18 August 2010"
 __version__ = "2.0-pysqlite"
 __credits__ = "Seth Able Robinson, original game concept"
-import time
+import time, re
 
 class sordLogger():
 	""" S.O.R.D. Logger class """
@@ -27,6 +27,7 @@ class sordLogger():
 	def add(self, value):
 		"""Add *arg to log"""
 		tmptime = time.strftime('%Y-%m-%d %H:%M', time.localtime())
+		value = re.sub('`.', '', value)
 		self.__mainLogger.append(tmptime+" :: "+value)
 		self.__mainLogger = self.__mainLogger[-100:]
 		

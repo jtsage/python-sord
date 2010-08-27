@@ -75,9 +75,9 @@ def mainlong(user):
 	"""Main Menu - Non-Expert
 	* @todo Married List
 	"""
-	thismenu  = "\r\n\r\n\x1b[1;37m  Saga of the Red Dragon - \x1b[0m\x1b[32mTown Square\x1b[0m\r\n"
+	thismenu  = "\r\n\r\n`%  Saga of the Red Dragon - `2Town Square\r\n"
 	thismenu += user.art.line()
-	thismenu += "\x1b[32m  The streets are crowded, it is difficult to\r\n  push your way through the mob....\r\n\r\n"
+	thismenu += "`2  The streets are crowded, it is difficult to\r\n  push your way through the mob....\r\n\r\n"
 	thismenu += func.menu_2col("(F)orest", "(S)laughter other players", 5, 5)
 	thismenu += func.menu_2col("(K)ing Arthurs Weapons", "(A)bduls Armour", 5, 5)
 	thismenu += func.menu_2col("(H)ealers Hut", "(V)iew your stats", 5, 5)

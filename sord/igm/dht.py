@@ -130,7 +130,7 @@ class dht():
 				user.pause()
 			elif ( key[0] == 't' or key[0] == 'T' ):
 				user.write('T')
-				self.chance(user)
+				self.chance()
 			else:
 				skipDisp = True
 
@@ -188,7 +188,7 @@ class dht():
 				thisQuit = True
 			elif ( key[0] == 't' or key[0] == 'T' ):
 				user.write('T')
-				user.write("\r\n\r\n  \x1b[32mColors are easy my friend!  Just enclose single ANSI codes in braces\r\n  like this {32} - that would turn the text green you can learn\r\n  more at:\r\n    http://en.wikipedia.org/wiki/ANSI_escape_code\x1b[0m\r\n")
+				user.write("\r\n\r\n  \x1b[32mColors are easy my friend!\r\n\r\n  Just use a ` character followed by one\r\n  of the following:\r\n    `11`22`33`44`55`66`77`88`99`00`!!`@@`##`$$`%%\x1b[0m\r\n")
 				user.pause()
 			elif ( key[0] == 'l' or key[0] == 'L' ):
 				user.write('L')

@@ -15,7 +15,7 @@ __date__ = "18 August 2010"
 __version__ = "2.0-pysqlite"
 __credits__ = "Seth Able Robinson, original game concept"
 
-import time, socket, random
+import time, socket, random, re
 
 class sorduser(object):
 	""" S.O.R.D. User object """
@@ -131,6 +131,8 @@ class sorduser(object):
 			
 	def write(self, data):
 		""" Send data to connected client """
+		for cpair in self.config.ldcolors:
+			data = re.sub(cpair[0], '\x1b[0m'+cpair[1], data)
 		if ( self.quick ): 
 			self.ntcon.send(data)
 		else:

@@ -9,7 +9,7 @@
  * Main Server Program
  
  * Memory Usage:  around 25M base, plus about 11M per client.
- * Magic Number: 6179 / 6073
+ * Magic Number: 6342 / 7507 (-1165)
  
  * (c) 2009 - 2011 J.T.Sage
  * No Rights Reserved - but don't sell it please."""
@@ -140,9 +140,12 @@ class eachClient(threading.Thread):
 			currentUser.login()
 			log.add('   ** User Logged in::' + currentUser.thisFullname + ' ' + str(thisClientAddress))
 	
-			if not currentUser.alive :
+			if ( currentUser.alive == 0 ) :
 				currentUser.write(sord.base.func.casebold("\r\nI'm Afraid You Are DEAD Right Now.  Sorry\r\n", 1))
 				raise Exception('normal', "User is DOA.  Bummer for them.")
+			elif ( currentUser.alive == 2 ) :
+				currentUser.write(sord.base.func.casebold("\r\nYou feel like shit! (you were dead - much better not though\r\n", 1))
+				currentUser.alive = 1
 			
 			if ( not config.fulldebug ):
 				currentUser.write(sord.game.util.dailyhappen(True, currentUser))
@@ -254,8 +257,7 @@ class webServe(threading.Thread):
 		self.log = log
 	def run(self):
 		if ( self.config.webport > 0 ):
-			webdir = "./web"
-			self.log.add(" === Starting Web Server ("+webdir+"), port: "+str(self.config.webport))
+			self.log.add(" === Starting Embedded Web Server, port: "+str(self.config.webport))
 			srvaddr = ("", self.config.webport)
 			sys.stderr = self.log
 			srvobj = HTTPServer(srvaddr, partial(sord.base.webserve.sordWebserver, self.config))

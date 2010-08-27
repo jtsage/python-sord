@@ -32,7 +32,7 @@ class sordConfig():
 		self.admin = "J.T.Sage"
 		
 		self.daylength = 24
-		self.bankinterest = 2
+		self.bankinterest = 10
 		self.delinactive = 256
 		self.ffight = 30
 		self.pfight = 5
@@ -48,8 +48,15 @@ class sordConfig():
 		if ( testing ):
 			self.port += randint(1, 10)
 			
+		self.ldcolors = [
+			( '`1', '\x1b[31m'), ( '`2', '\x1b[32m'), ( '`3', '\x1b[33m'), ( '`4', '\x1b[34m'),
+			( '`5', '\x1b[35m'), ( '`6', '\x1b[36m'), ( '`7', '\x1b[37m'), ( '`8', '\x1b[1;30m'),
+			( '`9', '\x1b[1;31m'), ( '`0', '\x1b[1;32m'), ( '`!', '\x1b[1;33m'), ( '`@', '\x1b[1;34m'), 
+			( '`#', '\x1b[1;35m'), ( '`\$', '\x1b[1;36m'), ( '`%', '\x1b[1;37m')]
+
+			
 if ( __name__ == "__main__" ):
-	cc = config()
+	cc = sordConfig()
 	print "SORD Version: ", cc.version
 	print "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"
 	print cc.host, " :: ", cc.port

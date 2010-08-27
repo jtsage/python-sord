@@ -75,7 +75,9 @@ def dayRollover(config, sqc, log):
 			rsaying = randdaily[random.randint(0, 9)]
 			laster = time.strftime('%Y%j', time.localtime(time.mktime(time.localtime()) - (config.delinactive*24*60*60)))
 			sqc.execute("UPDATE users set ffight = ?, pfight = ? WHERE 1", (config.ffight, config.pfight))
-			sqc.execute("UPDATE users set flirt = 0, sung = 0, master = 0, alive = 1, usem = spclm, hp = hpmax WHERE 1")			
+			sqc.execute("UPDATE users set flirt = 0, sung = 0, master = 0, usem = spclm, hp = hpmax WHERE 1")
+			sqc.execute("UPDATE users set alive = 1 WHERE alive = 2")
+			sqc.execute("UPDATE users set alive = 2 WHERE alive = 0")
 			sqc.execute("UPDATE users set used = (spcld / 5 ) + 1 WHERE spcld > 0")
 			sqc.execute("UPDATE users set uset = (spclt / 5 ) + 1 WHERE spclt > 0")
 			sqc.execute("UPDATE users set bank = bank + ( bank * ("+str(config.bankinterest)+"/100) ) WHERE bank > 0")
