@@ -49,7 +49,7 @@ if ( __name__ == '__main__' ) :
 else:
 	from ..base import func
 	from ..game import util
-	from ..base import user
+	from ..base import userlib
 
 class dht():
 	""" S.O.R.D. IGM :: The Dark Horse Tavern """
@@ -203,7 +203,7 @@ class dht():
 						if ( user.gold < whoCost ):
 							user.write("\r\n  \x1b[32mYou don't have enough gold jackass!\x1b[0m\r\n")
 						else:
-							usertoSee = user.sorduser(whoName, user.dbcon, user.ntcon, user.art)
+							usertoSee = userlib.sorduser(whoName, user.dbcon, user.ntcon, user.art)
 							user.gold -= whoCost
 							user.write(util.viewstats(usertoSee))
 							del usertoSee

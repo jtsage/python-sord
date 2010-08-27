@@ -17,7 +17,7 @@ __credits__ = "Seth Able Robinson, original game concept"
 
 import random, time, re
 from ..base import func
-from ..base import user
+from ..base import userlib
 from . import data
 from . import util
 
@@ -555,8 +555,8 @@ class rdi():
 				kickID = util.finduser(user, "\r\n  \x1b[32mWho will it be?")
 				if ( kickID > 0 ):
 					kickName = user.userGetLogin(kickID)
-					kickCost = user.level * 5000
-					usertoKick = user.sorduser(kickName, user.dbcon, user.ntcon, user.art)
+					kickCost = user.level * 1500
+					usertoKick = userlib.sorduser(kickName, user.dbcon, user.ntcon, user.art)
 					if ( usertoKick.atinn == True ):
 						user.write("\r\n  \x1b[32mThat will be \x1b[1m"+str(kickCost)+"\x1b[0;32m gold.  Ok? ")
 						yesno = user.ntcon.recv(2)

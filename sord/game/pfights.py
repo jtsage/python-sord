@@ -17,7 +17,7 @@ __credits__ = "Seth Able Robinson, original game concept"
 
 import random, re
 from ..base import func
-from ..base import user
+from ..base import userlib
 from . import menu
 from . import data
 from . import util
@@ -67,7 +67,7 @@ class killer():
 				tokillID = util.finduser(user, "\r\n  \x1b[32mKill Who ?")
 				if ( tokillID > 0 ):
 					tokillName = user.userGetLogin(tokillID)
-					usertoKill = sorduser(tokillName, user.dbcon, user.ntcon, user.art)
+					usertoKill = userlib.sorduser(tokillName, user.dbcon, user.ntcon, user.art)
 					if ( not usertoKill.alive ):
 						user.write("\r\n  \x1b[31mAlready dead your holiness...\x1b[0m\r\n")
 						user.pause()
@@ -75,7 +75,7 @@ class killer():
 						user.write("\r\n  \x1b[32mThey are online right now!  (and real time player fights are not yet supported.  sorry)\x1b[0m\r\n")
 						user.pause()
 					else:
-						fight(user, usertoKill)
+						self.fight(user, usertoKill)
 				else:
 					user.write("\r\n  \x1b[32mNo user by that name found.\x1b[0m\r\n")
 			else:

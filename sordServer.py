@@ -101,7 +101,7 @@ class eachClient(threading.Thread):
 			ittr = 0
 			if ( config.fulldebug ):
 				loggedin = True
-				currentUser = sord.base.user.sorduser(config.gameadmin, sqc, connection, art, config, log, lineconfig[0], lineconfig[1])
+				currentUser = sord.base.userlib.sorduser(config.gameadmin, sqc, connection, art, config, log, lineconfig[0], lineconfig[1])
 		
 			""" Login Code """
 			while ( not loggedin ):
@@ -115,7 +115,7 @@ class eachClient(threading.Thread):
 					raise Exception, "Too many bad logins!"
 				sord.base.func.slowecho(connection, sord.base.func.casebold("\r\n\r\nWelcome Warrior!  Enter Your Login Name (OR '\x1b[1m\x1b[31mnew\x1b[32m') :-: ", 2), lineconfig[0], lineconfig[1])
 				username = sord.base.func.getLine(connection, True)
-				currentUser = sord.base.user.sorduser(username, sqc, connection, art, config, log, lineconfig[0], lineconfig[1])
+				currentUser = sord.base.userlib.sorduser(username, sqc, connection, art, config, log, lineconfig[0], lineconfig[1])
 				if ( currentUser.thisUserID > 0 ):
 					sord.base.func.slowecho(connection, sord.base.func.casebold("\r\nPassword :-: ",2), lineconfig[0], lineconfig[1]);  
 					password = sord.base.func.getLine(connection, False)
@@ -128,7 +128,7 @@ class eachClient(threading.Thread):
 					if ( username == "new" ):
 						log.add('   ** New User! ' + str(thisClientAddress))
 						newusername = sord.game.util.newuser(currentUser)
-						currentUser = sord.base.user.sorduser(newusername, sqc, connection, art, config, log, lineconfig[0], lineconfig[1])
+						currentUser = sord.base.userlib.sorduser(newusername, sqc, connection, art, config, log, lineconfig[0], lineconfig[1])
 						newclass = currentUser.cls
 						currentUser.updateSkillUse(newclass, 1)
 						currentUser.updateSkillPoint(newclass, 1)
