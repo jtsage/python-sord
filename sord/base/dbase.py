@@ -73,10 +73,12 @@ def dayRollover(config, sqc, log):
 		if ( int(lday) < int(checklast) or config.forcenewday ):
 			if config.forcenewday:
 				config.forcenewday = False
+				log.add(" === DAY ROLLOVER (FORCED)")
+			else:
+				log.add(" === DAY ROLLOVER (NORMAL)")
 			db = sqc.cursor()
 			db.execute("SELECT value FROM sord WHERE name = ?", ('gdays',))
 			gday = int(db.fetchone()[0]) + 1
-			log.add(" === DAY ROLLOVER")
 			rsaying = randdaily[random.randint(0, 9)]
 			laster = time.strftime('%Y%j', time.localtime(time.mktime(time.localtime()) - (config.delinactive*24*60*60)))
 			sqc.execute("UPDATE users set ffight = ?, pfight = ? WHERE 1", (config.ffight, config.pfight))

@@ -14,6 +14,7 @@ __author__ = "Jonathan T. Sage <jtsage@gmail.com>"
 __date__ = "18 August 2010"
 __version__ = "2.0-pysqlite"
 __credits__ = "Seth Able Robinson, original game concept"
+import re
 from ..base import func
 from ..base import userlib
 from . import data
@@ -68,20 +69,28 @@ def finduser(user, prompter):
 	"""Find a user"""
 	user.write(prompter + " \x1b[1;32m:\x1b[0;32m-\x1b[1;32m:\x1b[0m ")
 	name = func.getLine(user.ntcon, True)
-	returnID = user.userExist(name)
-	if ( returnID > 0 ) :
-		if ( returnID == user.thisUserID ):
-			user.write(func.casebold("\r\n  Masturbation is gross...\r\n", 1))
+	db = user.dbcon.cursor()
+	db.execute("select userid, fullname FROM users WHERE 1")
+	possible = []
+	for row in db.fetchall():
+		dbname = re.sub('`.', '', row[1])
+		dbname = dbname.lower()
+		if ( dbname.find(name.lower()) > -1 ):
+			possible.append((row[0], row[1]))
+			
+	for thisoption in possible :
+		if not thisoption:
 			return 0
+		elif ( thisoption[0] == user.thisUserID ):
+			pass
 		else:
-			user.write("\r\n  \x1b[32mDid you mean \x1b[1m" + user.userGetName(returnID) +"\x1b[0m \x1b[1;30m(Y/N)\x1b[0m\x1b[32m ?\x1b[0m ")
+			user.write("\r\n  \x1b[32mDid you mean \x1b[1m" + thisoption[1] +"\x1b[0m \x1b[1;30m(Y/N)\x1b[0m\x1b[32m ?\x1b[0m ")
 			yesno = user.ntcon.recv(2)
 			if ( yesno[0] == "Y" or yesno[0] == "y" ):
-				return returnID
+				return thisoption[0]
 			else:
-				return 0
-	else:
-		return 0
+				pass
+	return 0
 
 def viewstats(user):
 	""" View Player Stats """
@@ -91,8 +100,8 @@ def viewstats(user):
 	output += "\x1b[32m Level         : \x1b[1m"+str(user.level)+"\x1b[0m" + func.padnumcol(str(user.level), 20) + "\x1b[32mHitPoints          : \x1b[1m"+str(user.hp)+" \x1b[22mof\x1b[1m "+str(user.hpmax)+"\x1b[0m\r\n"
 	output += "\x1b[32m Forest Fights : \x1b[1m"+str(user.ffight)+"\x1b[0m" + func.padnumcol(str(user.ffight), 20) + "\x1b[32mPlayer Fights Left : \x1b[1m"+str(user.pfight)+"\x1b[0m\r\n"
 	output += "\x1b[32m Gold In Hand  : \x1b[1m"+str(user.gold)+"\x1b[0m" + func.padnumcol(str(user.gold), 20) + "\x1b[32mGold In Bank       : \x1b[1m"+str(user.bank)+"\x1b[0m\r\n"
-	output += "\x1b[32m Weapon        : \x1b[1m"+data.weapon[user.weapon]+"\x1b[0m" + func.padnumcol(data.weapon[user.weapon], 20) + "\x1b[32mAttack Strength    : \x1b[1m"+str(user.str)+"\x1b[0m\r\n"
-	output += "\x1b[32m Armor         : \x1b[1m"+data.armor[user.armor]+"\x1b[0m" + func.padnumcol(data.armor[user.armor], 20) + "\x1b[32mDefensive Strength : \x1b[1m"+str(user.defence)+"\x1b[0m\r\n"
+	output += "\x1b[32m Weapon        : \x1b[1m"+data.weapon[user.weapon]+" ("+str(user.weapon)+")\x1b[0m" + func.padnumcol(data.weapon[user.weapon]+" ("+str(user.weapon)+")", 20) + "\x1b[32mAttack Strength    : \x1b[1m"+str(user.str)+"\x1b[0m\r\n"
+	output += "\x1b[32m Armor         : \x1b[1m"+data.armor[user.armor]+" ("+str(user.armor)+")\x1b[0m" + func.padnumcol(data.armor[user.armor]+" ("+str(user.weapon)+")", 20) + "\x1b[32mDefensive Strength : \x1b[1m"+str(user.defence)+"\x1b[0m\r\n"
 	output += "\x1b[32m Charm         : \x1b[1m"+str(user.charm)+"\x1b[0m" + func.padnumcol(str(user.charm), 20) + "\x1b[32mGems               : \x1b[1m"+str(user.gems)+"\x1b[0m\r\n\r\n"
 	for skillnum in [1,2,3]:
 		if ( user.cls == skillnum or user.getSkillPoint(skillnum) > 0 ):

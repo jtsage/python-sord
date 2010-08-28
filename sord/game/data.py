@@ -341,7 +341,7 @@ flirts = [[],
 	[[1, '(W)ink', 5],[2, '(F)lutter Eyelashes', 10],[4, '(D)rop Hankee', 20],[8, '(A)sk The Bard to Buy You a Drink', 30],[16, '(K)iss The Bard Soundly', 40],[32, '(C)ompletely Seduce The Bard', 40]]
 	]
 
-fresult = [ [],
+fresult = [],[
  [0, 5, 'You pluck up your courage, catch Violet\'s eye,\r\n  and seductivly wink...', 'Violet smiles and blushes deeply.\r\n  Your relationship is taking off!' ,'Violet glares back and returns to her work.'],
  [1, 10, 'As Violet delivers your beer, you grab her hand,\r\n  pucker up and kiss it...', 'Violet giggles and blushes deeply.\r\n  Your relationship is taking off!', 'Violet pulls her hand back and slaps you across the face.'],
  [3, 20, 'You bolt up as Violet takes your hard earned gold,\r\n  smile, and plant one on her lips...', 'Violet gasps and hurries away.\r\n  Your relationship is starting to really move now!', 'Violet knees you right in the family gem stones.'],

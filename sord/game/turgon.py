@@ -87,7 +87,7 @@ class turgon():
 				elif ( user.master ):
 					user.write("\r\n\r\n  \x1b[32mI'm sorry my son, you may only fight me once per game-day\x1b[0m\r\n")
 				else:
-					fight()
+					self.fight()
 			else:
 				skipDisp = True
 

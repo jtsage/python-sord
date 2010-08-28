@@ -95,7 +95,7 @@ class ffight():
 			elif ( key[0] == 'l' or key[0] == 'l' ):
 				user.write("L\r\n")
 				if ( user.ffight > 0 ):
-					if ( random.randint(1, 8) == 3 ):
+					if ( random.randint(1, 7) == 3 ):
 						self.special()
 					else:
 						self.fight()
@@ -425,6 +425,7 @@ class ffight():
 				user.write(func.casebold("  Miraculously, your fairy saves you from the edge of defeat.  You escape with your life.\r\n", 2))
 			else:
 				user.alive = 0
+				user.gold = 0
 				#exception handles, do it later. user.logout()
 				lamentTop = len(data.forestdie) - 1
 				lamentThis = data.forestdie[random.randint(0, lamentTop)]
@@ -442,11 +443,10 @@ class ffight():
 		if ( preset ):
 			happening = option
 		else:
-			if ( user.horse == True ):
-				happening = random.randint(1, 11)
-			else:
-				happening = random.randint(1, 12)
-				
+			happening = random.randint(1, 16)
+			if ( user.horse == True and happening == 12 ):
+				happening = 10
+					
 		if ( happening == 1 ):   # Find Gems GOOD!
 			thisfind = random.randint(1, 4)
 			user.write(user.art.line())
@@ -616,7 +616,7 @@ class ffight():
 							user.write("  \x1b[32mYou run like hell before anything bad happens.\x1b[0m\r\n")
 					miniQuit = True
 			user.pause()
-		elif ( happening == 10 ): # lessons DKNIGHT GOOD, 
+		elif ( happening == 10 or happening > 12 ): # lessons DKNIGHT GOOD, 
 			if ( user.cls == 1 ):
 				self.lesson_d()
 			elif ( user.cls == 2 ):

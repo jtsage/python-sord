@@ -236,7 +236,7 @@ class rdi():
 				lyrics = re.sub("\.\.\.\"", "\x1b[37m...\"\x1b[32m", lyrics)
 				lyrics = re.sub("\"\.\.\.", "\x1b[37m\"...\x1b[0m", lyrics)
 				lyrics = re.sub("XX", "\x1b[1m"+user.thisFullname+"\x1b[22m", lyrics)
-				user.write(lyrics+"\r\n")
+				user.write("    "+lyrics+"\r\n")
 			user.write("\r\n  \x1b[1;32m"+data.thebard[songnum][1][0]+"\x1b[0m\r\n")
 			user.write("\r\n  \x1b[1;34m"+data.thebard[songnum][1][1]+"\x1b[0m\r\n\r\n")
 			user.dbcon.execute("UPDATE users SET "+data.thebard[songnum][2]+" WHERE userid = ?", (user.thisUserID, ))
