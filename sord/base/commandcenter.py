@@ -49,7 +49,7 @@ class sordCommandCenter():
 		self.mainscrn.hline(2, 1, curses.ACS_HLINE, (self.totalX-2))
 		self.mainscrn.attroff(curses.color_pair(5) | curses.A_BOLD)
 		
-		self.mainscrn.addstr((self.totalY-3), (self.totalX-15), '(Q,D,A,S,C,?)')
+		self.mainscrn.addstr((self.totalY-3), (self.totalX-17), '(Q,N,D,A,S,C,?)')
 		self.mainscrn.addstr(2,7, 'server')
 		self.mainscrn.addstr(2,14, 'log')
 		self.mainscrn.addstr((self.totalY-3),7,'server')
@@ -111,11 +111,15 @@ class sordCommandCenter():
 			
 		if self.config.fulldebug:
 			self.log.add(" !!! DEBUG MODE :: FULL DEBUG ENABLED !!!")
-			self.mainscrn.addstr(self.totalY-3, 2, 'D', curses.A_BOLD)
+			self.mainscrn.addstr(self.totalY-3, 3, 'D', curses.A_BOLD)
 			
 		if self.config.ansiskip:
 			self.log.add(" !!! DEBUG MODE :: ANSI SKIP ENABLED !!!")
-			self.mainscrn.addstr(self.totalY-3, 4, 'A', curses.A_BOLD)
+			self.mainscrn.addstr(self.totalY-3, 5, 'A', curses.A_BOLD)
+			
+		if self.config.forcenewday:
+			self.log.add(" !!! DEBUG MODE :: NEW DAY FORCE !!!")
+			self.mainscrn.addstr(self.totalY-3, 1, 'N', curses.A_BOLD)
 
 		while doCmdCntr:
 			try:
@@ -134,6 +138,10 @@ class sordCommandCenter():
 				self.mainscrn.addstr(self.totalY-2, 39, str(self.log.gettotal()), curses.color_pair(4))
 				self.mainscrn.addstr(self.totalY-2, 52, str(self.config.port), curses.color_pair(4) | curses.A_BOLD)
 				self.mainscrn.addstr(self.totalY-2, 68, time.strftime('%H:%M:%S', time.localtime()), curses.color_pair(4))
+				
+				if ( not self.config.forcenewday ):
+					self.mainscrn.addch(self.totalY-3, 1, curses.ACS_HLINE, curses.color_pair(5) | curses.A_BOLD)
+					
 				self.mainscrn.refresh()
 				key = self.mainscrn.getch()
 
@@ -155,26 +163,36 @@ class sordCommandCenter():
 					if ( self.config.fulldebug ):
 						self.config.fulldebug = False
 						self.log.add(" !!! DEBUG MODE :: FULL DEBUG DISABLED !!!")
-						self.mainscrn.addch(self.totalY-3, 2, curses.ACS_HLINE, curses.color_pair(5) | curses.A_BOLD)
+						self.mainscrn.addch(self.totalY-3, 3, curses.ACS_HLINE, curses.color_pair(5) | curses.A_BOLD)
 					else:
 						self.config.fulldebug = True
 						self.log.add(" !!! DEBUG MODE :: FULL DEBUG ENABLED !!!")
-						self.mainscrn.addstr(self.totalY-3, 2, 'D', curses.A_BOLD)
+						self.mainscrn.addstr(self.totalY-3, 3, 'D', curses.A_BOLD)
 				if ( key == ord('A') or key == ord('a') ):
 					if ( self.config.ansiskip ):
 						self.config.ansiskip = False
 						self.log.add(" !!! DEBUG MODE :: ANSI SKIP DISABLED !!!")
-						self.mainscrn.addch(self.totalY-3, 4, curses.ACS_HLINE, curses.color_pair(5) | curses.A_BOLD)
+						self.mainscrn.addch(self.totalY-3, 5, curses.ACS_HLINE, curses.color_pair(5) | curses.A_BOLD)
 					else:
 						self.config.ansiskip = True
 						self.log.add(" !!! DEBUG MODE :: ANSI SKIP ENABLED !!!")
-						self.mainscrn.addstr(self.totalY-3, 4, 'A', curses.A_BOLD)
+						self.mainscrn.addstr(self.totalY-3, 5, 'A', curses.A_BOLD)
+				if ( key == ord('N') or key == ord('n') ):
+					if ( self.config.forcenewday ):
+						self.config.forcenewday = False
+						self.log.add(" !!! DEBUG MODE :: NEW DAY FORCE DISABLED !!!")
+						self.mainscrn.addch(self.totalY-3, 1, curses.ACS_HLINE, curses.color_pair(5) | curses.A_BOLD)
+					else:
+						self.config.forcenewday = True
+						self.log.add(" !!! DEBUG MODE :: FORCE NEW DAY ENABLED !!!")
+						self.mainscrn.addstr(self.totalY-3, 1, 'N', curses.A_BOLD)
 				if ( key == ord('?') or key == ord('h') or key == ord('H') ):
 					self.log.add("(Q) Quit to shell")
 					self.log.add("(A) Toggle Long ANSI Display")
 					self.log.add("(D) Toggle Debug (autologin / skip intros) Mode")
 					self.log.add("(S) Save Current Log to File")
 					self.log.add("(C) Clear (refresh) Screen")
+					self.log.add("(N) Force New Day on Next Login")
 
 			except KeyboardInterrupt:
 				curses.endwin()

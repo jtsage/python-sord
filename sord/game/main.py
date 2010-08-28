@@ -101,8 +101,7 @@ class mainmenu():
 			elif ( key[0] == "d" or key[0] == "D" ):
 				self.user.ntcon.send('D')
 				self.user.jennielevel = 0
-				self.user.write(util.dailyhappen(True, self.user))
-				self.user.pause()
+				util.dailyhappen(False, self.user)
 			elif ( key[0] == "?" ):
 				self.user.ntcon.send('?')
 				self.user.jennielevel = 0

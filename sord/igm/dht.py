@@ -108,8 +108,7 @@ class dht():
 				user.pause()
 			elif ( key[0] == 'd' or key[0] == 'D' ):
 				user.write('D')
-				user.write(util.dailyhappen(True, user))
-				user.pause()
+				util.dailyhappen(False, user)
 			elif ( key[0] == 'c' or key[0] == 'C' ):
 				user.write('C')
 				self.converse()

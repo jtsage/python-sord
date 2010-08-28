@@ -70,7 +70,12 @@ def dayRollover(config, sqc, log):
 	
 	for row in sqr.execute("select value from sord where name=?", ('lastday',)):
 		lday, = row
-		if ( int(lday) < int(checklast) ):
+		if ( int(lday) < int(checklast) or config.forcenewday ):
+			if config.forcenewday:
+				config.forcenewday = False
+			db = sqc.cursor()
+			db.execute("SELECT value FROM sord WHERE name = ?", ('gdays',))
+			gday = int(db.fetchone()[0]) + 1
 			log.add(" === DAY ROLLOVER")
 			rsaying = randdaily[random.randint(0, 9)]
 			laster = time.strftime('%Y%j', time.localtime(time.mktime(time.localtime()) - (config.delinactive*24*60*60)))
@@ -81,11 +86,14 @@ def dayRollover(config, sqc, log):
 			sqc.execute("UPDATE users set used = (spcld / 5 ) + 1 WHERE spcld > 0")
 			sqc.execute("UPDATE users set uset = (spclt / 5 ) + 1 WHERE spclt > 0")
 			sqc.execute("UPDATE users set bank = bank + ( bank * ("+str(config.bankinterest)+"/100) ) WHERE bank > 0")
-			sqc.execute("INSERT INTO daily ( 'data' ) VALUES ( ? )", ( "{31}"+rsaying, ))
+			if ( gday > 1 ):
+				sqc.execute("INSERT INTO daily ( 'data', 'gday' ) VALUES ( ?, ? )", ( "{31}"+rsaying, gday))
 			sqc.execute("DELETE from users WHERE last < ?", (laster,))
 			sqc.execute("UPDATE sord set value = value + 1 WHERE name = 'gdays'")
 			sqc.execute("UPDATE sord set value = ? WHERE name = 'lastday'", (time.strftime(timestr, time.localtime()),))
+			db.close()
 			sqc.commit()
+	sqr.close()
 	
 def initialTest(config, log):
 	""" Check for db existence and check version """
@@ -137,9 +145,9 @@ def createDB(config, log):
 		sqc.execute("insert into sord values (?,?)", ('gdays', '0'))
 		sqc.execute("insert into sord values (?,?)", ('lastday', '201000101'))
 		
-		sqc.execute("create table daily ( id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT )")
-		sqc.execute("insert into daily (data) values (?)", ('{31}Welcome to {1}{37}S{0}{32}.{1}{37}O{0}{32}.{1}{37}R{0}{32}.{1}{37}D{0}{32}.', ))
-		sqc.execute("insert into daily (data) values (?)", ('{31}Despair covers the land - more bloody remains have been found today.',))
+		sqc.execute("create table daily ( id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT, gday INTEGER )")
+		sqc.execute("insert into daily (data, gday) values (?,?)", ('{31}Welcome to {1}{37}S{0}{32}.{1}{37}O{0}{32}.{1}{37}R{0}{32}.{1}{37}D{0}{32}.', 1))
+		sqc.execute("insert into daily (data, gday) values (?,?)", ('{31}Despair covers the land - more bloody remains have been found today.', 1))
 		
 		sqc.execute("create table dhtpatrons (id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT, nombre TEXT)")
 		sqc.execute("insert into dhtpatrons (data, nombre) values (?, ?)", ('{34}Welcome to the {31}Dark Horse Tavern', 'Chance'))

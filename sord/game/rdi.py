@@ -77,8 +77,7 @@ class rdi():
 					user.write(self.menu_main())
 			elif ( key[0] == 'd' or key[0] == 'D' ):
 				user.write('D')
-				user.write(util.dailyhappen(True, user))
-				user.pause()
+				util.dailyhappen(False, user)
 			elif ( key[0] == 't' or key[0] == 'T' ):
 				user.write('T')
 				self.bartend()

@@ -42,8 +42,12 @@ def announce(user):
 	""" Make announcment """
 	user.write(func.casebold("\r\n  Your announcment? :-: ", 2))
 	ann = func.getLine(user.ntcon, True)
-	user.dbcon.execute("INSERT INTO daily ( `data` ) VALUES ( ? )", (ann, ))
+	db = user.dbcon.cursor()
+	db.execute("SELECT value FROM sord WHERE name = ?", ('gdays',))
+	gday = db.fetchone()[0]
+	user.dbcon.execute("INSERT INTO daily ( `data`, `gday` ) VALUES ( ?, ? )", (ann, gday))
 	user.dbcon.commit()
+	db.close()
 	user.write(func.casebold("\r\n  Announcment Made!\r\n", 2))
 	user.pause()
 
@@ -119,16 +123,43 @@ def dailyhappen(noprmpt, user):
 	
 	* @param bool $noprmpt Do not prompt for additions. """
 	db = user.dbcon.cursor()
-	db.execute("SELECT data FROM (SELECT * FROM daily ORDER BY id DESC LIMIT 10) AS tbl ORDER BY tbl.id")
-	output  = "\r\n\r\n\x1b[1;37mRecent Happenings\033[22;32m....\x1b[0m\r\n"
+	db.execute("SELECT value FROM sord WHERE name = ?", ('gdays',))
+	gday = db.fetchone()[0]
+	db.execute("SELECT data FROM (SELECT * FROM daily WHERE gday = "+str(gday)+" ORDER BY id DESC LIMIT 10) AS tbl ORDER BY tbl.id")
+	output  = "\r\n\r\n\x1b[1;37mToday's Happenings\033[22;32m....\x1b[0m\r\n"
 	output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
 	for line in db.fetchall():
 		output += "    " + func.colorcode(line[0])
 		output += "\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+	user.write(output)
 	if ( not noprmpt ) :
-		output +=  "\n\x1b[32m(\x1b[1;35mC\x1b[22;32m)ontinue  \x1b[32m(\x1b[1;35mT\x1b[22;32m)odays happenings again  \x1b[1;32m[\x1b[35mC\x1b[32m] \x1b[22m:-: "
+		miniQuit = False
+		while ( not miniQuit ):
+			user.write("\r\n  \x1b[32m(\x1b[1;35mC\x1b[22;32m)ontinue  \x1b[32m(\x1b[1;35mT\x1b[22;32m)odays happenings again  \x1b[32m(\x1b[1;35mY\x1b[22;32m)esterdays happenings  \x1b[1;32m[\x1b[35mC\x1b[32m] \x1b[22m:-: ")
+			key = user.ntcon.recv(2)
+			if not key: break
+			elif ( key[0] == 't' or key[0] == 'T' ):
+				user.write('T')
+				db.execute("SELECT data FROM (SELECT * FROM daily WHERE gday = "+str(gday)+" ORDER BY id DESC LIMIT 10) AS tbl ORDER BY tbl.id")
+				output  = "\r\n\r\n\x1b[1;37mToday's Happenings\033[22;32m....\x1b[0m\r\n"
+				output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+				for line in db.fetchall():
+					output += "    " + func.colorcode(line[0])
+					output += "\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+				user.write(output)
+			elif ( key[0] == 'y' or key[0] == 'Y' ):
+				user.write('Y')
+				db.execute("SELECT data FROM (SELECT * FROM daily WHERE gday = "+str(gday-1)+" ORDER BY id DESC LIMIT 10) AS tbl ORDER BY tbl.id")
+				output  = "\r\n\r\n\x1b[1;37mYesterday's Happenings\033[22;32m....\x1b[0m\r\n"
+				output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+				for line in db.fetchall():
+					output += "    " + func.colorcode(line[0])
+					output += "\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+				user.write(output)
+			else:
+				user.write('C')
+				miniQuit = True
 	db.close()
-	return output
 
 def list(art, dbc):
 	""" Player List """

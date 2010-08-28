@@ -40,9 +40,12 @@ class sordConfig():
 		self.version = "2.0-pysqlite"
 
 		self.port = 6969
+		self.webport = 6980 # Set to False to disable web server.
+		
 		self.fulldebug = False
 		self.ansiskip = False
-		self.webport = 6980 # Set to False to disable web server.
+		self.forcenewday = False
+		
 		self.progpath = getcwd()
 		
 		if ( testing ):

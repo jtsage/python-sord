@@ -29,7 +29,8 @@ p.add_option("-t", "--testing", help="telnet server in testing (random port) mod
 p.add_option("-d", "--debug", help="put server in debug (auto login) mode", action="store_true", dest="debug")
 p.add_option("-a", "--ansi-skip", help="skip large banner ansi", action="store_true", dest="ansiskip")
 p.add_option("-w", "--web-off", help="do not start web server", action="store_true", dest="weboff")
-p.set_defaults(testing=False, debug=False, ansiskip=False, weboff=False)
+p.add_option("-n", "--force-new-day", help="force new day on next login", action="store_true", dest="newday")
+p.set_defaults(testing=False, debug=False, ansiskip=False, weboff=False, newday=False)
 
 if ( __name__ == '__main__' ) :
 	opt, args = p.parse_args()
@@ -46,6 +47,8 @@ if ( __name__ == '__main__' ) :
 		config.ansiskip = True
 	if opt.weboff:
 		config.webport = 0
+	if opt.newday:
+		config.forcenewday = True
 
 try:
 	sockobj = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
@@ -148,7 +151,7 @@ class eachClient(threading.Thread):
 				currentUser.alive = 1
 			
 			if ( not config.fulldebug ):
-				currentUser.write(sord.game.util.dailyhappen(True, currentUser))
+				sord.game.util.dailyhappen(True, currentUser)
 				currentUser.pause()
 				currentUser.write(sord.game.util.who(currentUser))
 				currentUser.pause()
