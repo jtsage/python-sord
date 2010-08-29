@@ -87,8 +87,10 @@ def finduser(user, prompter):
 			user.write("\r\n  \x1b[32mDid you mean \x1b[1m" + thisoption[1] +"\x1b[0m \x1b[1;30m(Y/N)\x1b[0m\x1b[32m ?\x1b[0m ")
 			yesno = user.ntcon.recv(2)
 			if ( yesno[0] == "Y" or yesno[0] == "y" ):
+				user.write('Y')
 				return thisoption[0]
 			else:
+				user.write('N')
 				pass
 	return 0
 

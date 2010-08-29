@@ -456,7 +456,7 @@ class rdi():
 				else:
 					thisTitle = "the Thief"
 				thisPrice = user.level * 500
-				user.write("\r\n  \x1b[35m"+user.thisFullname+" "+thisTitle+" does sound kinda funny..\x1b[0m")
+				user.write("\r\n  \x1b[35m"+user.thisFullname+"`2 "+thisTitle+" does sound kinda funny..\x1b[0m")
 				user.write("\r\n  \x1b[35mit would cost ya "+str(thisPrice)+" gold... Deal?\"\x1b[0m")
 				user.write("\r\n  \x1b[32mChange your name? [\x1b[1mN\x1b[22m]\x1b[0m ")
 				yesno = user.ntcon.recv(2)

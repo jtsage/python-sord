@@ -114,7 +114,7 @@ class killer():
 	def menu(self, user, ehp, ename) : 
 		""" Forest Fight Menu """
 		thismenu  = "\r\n  \x1b[32mYour Hitpoints : \x1b[1m"+str(user.hp)+"\x1b[0m\r\n"
-		thismenu += "  \x1b[32m"+ename+"'s Hitpoints : \x1b[1m"+str(ehp)+"\x1b[0m\r\n\r\n"
+		thismenu += "  \x1b[32m"+ename+"`2's Hitpoints : \x1b[1m"+str(ehp)+"\x1b[0m\r\n\r\n"
 		thismenu += func.normmenu("(A)ttack")
 		thismenu += func.normmenu("(S)tats")
 		thismenu += func.normmenu("(R)un")
@@ -158,16 +158,16 @@ class killer():
 					ctrlDead = True
 					hisAttack = user.hp # No insult to injury
 				if ( hisAttack > 0 ): # He hit us
-					user.write("\r\n  \x1b[32m"+usertokill.thisFullname+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+					user.write("\r\n  \x1b[32m"+usertokill.thisFullname+" `2hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
 					user.hp -= hisAttack
 				else: 
-					user.write("\r\n  \x1b[32m"+usertokill.thisFullname+" misses you completely\x1b[0m\r\n")
+					user.write("\r\n  \x1b[32m"+usertokill.thisFullname+" `2misses you completely\x1b[0m\r\n")
 				if ( myAttack > 0 and not ctrlDead ): # We hit him!
-					user.write("\r\n  \x1b[32mYou hit "+usertokill.thisFullname+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+					user.write("\r\n  \x1b[32mYou hit "+usertokill.thisFullname+" `2for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
 					usertokill.hp -= myAttack
 					if ( usertokill.hp < 1 ): # We Win!
 						ctrlWin = True
-						user.write("\r\n  \x1b[31m"+usertokill.thisFullname+" lies dead at your feet!\x1b[0m\r\n")
+						user.write("\r\n  \x1b[31m"+usertokill.thisFullname+" `2lies dead at your feet!\x1b[0m\r\n")
 			elif ( key[0] == 'r' or key[0] == 'R' ): # Run Away
 				user.write('R')
 				if ( random.randint(1, 10) == 4 ): # Hit in the back.
@@ -176,7 +176,7 @@ class killer():
 						ctrlDead = True
 						hisAttack = user.hp # No insult to injury
 					if ( hisAttack > 0 ): # He hit us
-						user.write("\r\n  \x1b[32m"+usertokill.thisFullname+" hits you in the back with it's "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\r\n")
+						user.write("\r\n  \x1b[32m"+usertokill.thisFullname+" `2hits you in the back with it's "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\r\n")
 						user.hp -= hisAttack
 				else:
 					user.write("\r\n  \x1b[32mYou narrowly escape harm.\x1b[0m\r\n")

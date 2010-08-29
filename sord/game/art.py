@@ -135,7 +135,7 @@ class sordArtwork():
 		thismsg += self.cntransi(self.ESC+"32mThe current game day is "+self.ESC+"1m"+str(self.config.daylength)+self.ESC+"22m real hours long.\r\n"+self.ESC+"0m")+"\r\n"
 		thismsg += "\r\n"+self.ESC+"32m  The peasants say this about you : \r\n    "
 		try: 
-			thismsg += user.thisFullname + " " + charmsay[user.sex][user.charm]
+			thismsg += user.thisFullname + " `2" + charmsay[user.sex][user.charm]
 		except IndexError:
 			thismsg += "nothing at all."
 		thismsg += "\x1b[0m\r\n"
