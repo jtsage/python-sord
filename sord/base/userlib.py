@@ -145,12 +145,14 @@ class sorduser(object):
 
 	def pause(self):
 		""" Send pause string and wait for input """
-		self.write("\r\n    \x1b[1m\x1b[32m:\x1b[0m\x1b[32m-\x1b[1m\x1b[32m: P\x1b[0m\x1b[32mress \x1b[1m\x1b[32mA\x1b[0m\x1b[32mny \x1b[1m\x1b[32mK\x1b[0m\x1b[32mey \x1b[1m\x1b[32m:\x1b[0m\x1b[32m-\x1b[1m\x1b[32m:")
+		self.write("\r\n    `0:`2-`0: P`2ress `0A`2mny `0K`2ey `0:`2-`0:")
 		pauser_quit = False
 		while ( not pauser_quit ):
 			data = self.ntcon.recv(5)
 			if not data: break
 			pauser_quit = True
+			for i in xrange(1, 23):
+				self.write("\x1b[1D \x1b[1D")
 			self.ntcon.send("\r\n")
 			
 	def login(self):

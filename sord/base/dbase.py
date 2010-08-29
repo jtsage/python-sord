@@ -89,7 +89,7 @@ def dayRollover(config, sqc, log):
 			sqc.execute("UPDATE users set uset = (spclt / 5 ) + 1 WHERE spclt > 0")
 			sqc.execute("UPDATE users set bank = bank + ( bank * ("+str(config.bankinterest)+"/100) ) WHERE bank > 0")
 			if ( gday > 1 ):
-				sqc.execute("INSERT INTO daily ( 'data', 'gday' ) VALUES ( ?, ? )", ( "{31}"+rsaying, gday))
+				sqc.execute("INSERT INTO daily ( 'data', 'gday' ) VALUES ( ?, ? )", ( "`1"+rsaying, gday))
 			sqc.execute("DELETE from users WHERE last < ?", (laster,))
 			sqc.execute("UPDATE sord set value = value + 1 WHERE name = 'gdays'")
 			sqc.execute("UPDATE sord set value = ? WHERE name = 'lastday'", (time.strftime(timestr, time.localtime()),))
@@ -148,24 +148,45 @@ def createDB(config, log):
 		sqc.execute("insert into sord values (?,?)", ('lastday', '201000101'))
 		
 		sqc.execute("create table daily ( id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT, gday INTEGER )")
-		sqc.execute("insert into daily (data, gday) values (?,?)", ('{31}Welcome to {1}{37}S{0}{32}.{1}{37}O{0}{32}.{1}{37}R{0}{32}.{1}{37}D{0}{32}.', 1))
-		sqc.execute("insert into daily (data, gday) values (?,?)", ('{31}Despair covers the land - more bloody remains have been found today.', 1))
+		sqc.execute("insert into daily (data, gday) values (?,?)", ('`0Welcome to `%S`7a`8ga `%o`7f `%t`7h`8e `9R`1ed `%D`7r`8agon', 1))
+		sqc.execute("insert into daily (data, gday) values (?,?)", ('`1Despair covers the land - more bloody remains have been found today.', 1))
 		
 		sqc.execute("create table dhtpatrons (id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT, nombre TEXT)")
-		sqc.execute("insert into dhtpatrons (data, nombre) values (?, ?)", ('{34}Welcome to the {31}Dark Horse Tavern', 'Chance'))
-		
+		dhorse = [ ('`%Chance','`0Pull up a chair, friends.'),
+			('`%Barak','`0Ok - These chairs are light...probably because I\'m strong.'),
+			('`%Aragorn','`0I really doubt that...'),
+			('`%Barak','`0I could juggle these chairs I\'m such a stud!'),
+			('`%Aragorn','`0Chance, did you forget to give Barak his medicine?'),
+			('`%Chance','`0Whups.  I\'ll slip it in his ale...'),
+			('`%Aragorn','`0Why don\'t you move this pub to town?  More business there.'),
+			('`%Chance','`0Nah, I don\'t like towns.  Even though I do like that Violet.'),
+			('`%Barak','`0She\'s mine I say!  All mine!') ]
+		sqc.executemany("insert into dhtpatrons (nombre, data) values (?, ?)", dhorse)
+
 		sqc.execute("create table dirt (id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT, nombre TEXT)")
-		sqc.execute("insert into dirt (data, nombre) values (?, ?)", ('{32}Mighty quiet around here...', 'Jack the Ripper'))
+		sqc.execute("insert into dirt (data, nombre) values (?, ?)", ('`1Mighty quiet around here...', 'Jack the `9Ripper'))
 		
 		sqc.execute("create table flowers ( id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT, nombre TEXT )")
-		sqc.execute("insert into flowers (data, nombre) values (?, ?)", ('{34}Does this kimono make me look {31}fat?', 'Fairy #1'))
-		sqc.execute("insert into flowers (data, nombre) values (?, ?)", ('{36}No, just {1}ugly', 'Fairy #2'))
+		fairy = [ ('`%Fairy Tisha', '`0Oooh!  I love flowers!  And I love to kiss.'),
+			('`%Fairy Nolan', '`0Yes!  I\'m glad humans can\'t read our flowers!'),
+			('`%Fairy Glimmer', '`0Agreed.  They are all big dumb animals.')]
+		sqc.executemany("insert into flowers (nombre, data) values (?, ?)", fairy)
+
 		
 		sqc.execute("create table mail ( id INTEGER PRIMARY KEY AUTOINCREMENT, 'from' INTEGER, 'to' integer, message text, sent text)")
 		sqc.execute("create table online ( userid integer, whence text )")
 		
 		sqc.execute("create table patrons ( id INTEGER PRIMARY KEY, data text, nombre TEXT)" )
-		sqc.execute("insert into patrons (data, nombre) values (?, ?)", ('{34}Welcome to the {31}Red Dragon {34}Inn', 'The Bartender'))
+		pats = [ ('`%Violet', '`0Hey everyone.  Did you hear about that little boy Charles?'),
+			('`%Bartender', '`0Yeah.  He is missing.  It\'s a shame.  He was so young.'),
+			('`%Halder', '`0Someone has to do something about the Red Dragon!'),
+			('`%Aragorn', '`0Look. No one has seen the Red Dragon for 13 years.'),
+			('`%Sparhawk', '`0Yes it is. He never died... He is out there.  Somewhere.'),
+			('`%Halder', '`0Well lets find him!'),
+			('`%Barak', '`0Fine.  You go slay the Dragon then, tough guy.'),
+			('`%Halder', '`0Me?!?!  No way!   Let one of those new fools try it!  Haw!'),
+			('`%Bartender', '`0Yeah...Those new warriors in town are a joke.')]
+		sqc.executemany("insert into patrons (nombre, data) values (?, ?)", pats)
 		
 		sqc.execute(statssql)
 		sqc.execute("insert into users ( userid, username, password, fullname, used, spcld ) values (?, ?, ?, ?, ?, ?)", (1, config.gameadmin, config.gameadminpass, config.admin,1,1))

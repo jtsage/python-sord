@@ -25,11 +25,11 @@ def readmail(user):
 	db.execute("SELECT `id`, `from`, `message`, `sent` FROM mail WHERE `to` = ?", (user.thisUserID,))
 	try:
 		for (id, sender, message, sent) in db.fetchall():
-			thismail  = "\r\n  \x1b[1;37mNew Mail...\x1b[0m\r\n"
-			thismail += "\x1b[32m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\x1b[0m\r\n"
-			thismail += "\x1b[32m  From: \x1b[1m" + user.userGetName(sender) + "\x1b[0m\r\n"
-			thismail += "\x1b[32m  Date: \x1b[1m" + sent + "\x1b[0m\r\n"
-			thismail += "\x1b[32m  Message: " + func.colorcode(message) + "\x1b[0m\r\n\r\n"
+			thismail  = "\r\n  `%New Mail...`.\r\n"
+			thismail += "`2-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-`.\r\n"
+			thismail += "`2  From: `0" + user.userGetName(sender) + "`.\r\n"
+			thismail += "`2  Date: `0" + sent + "`.\r\n"
+			thismail += "`2  Message: `0" + message + "`.\r\n\r\n"
 			#if ( not isinstance(thismail, None) ):
 			user.write(thismail)
 			user.pause()
@@ -42,7 +42,7 @@ def readmail(user):
 def announce(user):
 	""" Make announcment """
 	user.write(func.casebold("\r\n  Your announcment? :-: ", 2))
-	ann = func.getLine(user.ntcon, True)
+	ann = "`2"+ user.thisFullname + "`% says: `2"+func.getLine(user.ntcon, True)
 	db = user.dbcon.cursor()
 	db.execute("SELECT value FROM sord WHERE name = ?", ('gdays',))
 	gday = db.fetchone()[0]
@@ -54,11 +54,11 @@ def announce(user):
 
 def sendmail(user):
 	""" Send in game mail to a user """
-	toid = finduser(user, "\r\n  \x1b[32mSend mail to which user?")
+	toid = finduser(user, "\r\n  `2Send mail to which user?`.")
 	if ( toid == 0 ):
 		return False
 	else:
-		user.write("\r\n  \x1b[32mYour message \x1b[1m:\x1b[0m ")
+		user.write("\r\n  `2Your message `0:`. ")
 		msg = func.getLine(user.ntcon, True)
 		user.dbcon.execute("INSERT INTO mail (`to`, `from`, `message`) VALUES ( ?, ?, ? )", (toid, user.thisUserID, msg))
 		user.dbcon.commit()
@@ -67,7 +67,7 @@ def sendmail(user):
 
 def finduser(user, prompter):
 	"""Find a user"""
-	user.write(prompter + " \x1b[1;32m:\x1b[0;32m-\x1b[1;32m:\x1b[0m ")
+	user.write(prompter + " `0:`2-`0:`. ")
 	name = func.getLine(user.ntcon, True)
 	db = user.dbcon.cursor()
 	db.execute("select userid, fullname FROM users WHERE 1")
@@ -84,7 +84,7 @@ def finduser(user, prompter):
 		elif ( thisoption[0] == user.thisUserID ):
 			pass
 		else:
-			user.write("\r\n  \x1b[32mDid you mean \x1b[1m" + thisoption[1] +"\x1b[0m \x1b[1;30m(Y/N)\x1b[0m\x1b[32m ?\x1b[0m ")
+			user.write("\r\n  `2Did you mean `0" + thisoption[1] +" `8(Y/N) `2[`8N`2] `0:`. ")
 			yesno = user.ntcon.recv(2)
 			if ( yesno[0] == "Y" or yesno[0] == "y" ):
 				user.write('Y')
@@ -96,36 +96,36 @@ def finduser(user, prompter):
 
 def viewstats(user):
 	""" View Player Stats """
-	output  = "\r\n\r\n\x1b[1m\x1b[37m"+user.thisFullname+"\x1b[0m\x1b[32m's Stats...\r\n"
+	output  = "\r\n\r\n  `%"+user.thisFullname+"`2's Stats...\r\n"
 	output += user.art.line()
-	output += "\x1b[32m Experience    : \x1b[1m"+str(user.exp)+"\x1b[0m\r\n"
-	output += "\x1b[32m Level         : \x1b[1m"+str(user.level)+"\x1b[0m" + func.padnumcol(str(user.level), 20) + "\x1b[32mHitPoints          : \x1b[1m"+str(user.hp)+" \x1b[22mof\x1b[1m "+str(user.hpmax)+"\x1b[0m\r\n"
-	output += "\x1b[32m Forest Fights : \x1b[1m"+str(user.ffight)+"\x1b[0m" + func.padnumcol(str(user.ffight), 20) + "\x1b[32mPlayer Fights Left : \x1b[1m"+str(user.pfight)+"\x1b[0m\r\n"
-	output += "\x1b[32m Gold In Hand  : \x1b[1m"+str(user.gold)+"\x1b[0m" + func.padnumcol(str(user.gold), 20) + "\x1b[32mGold In Bank       : \x1b[1m"+str(user.bank)+"\x1b[0m\r\n"
-	output += "\x1b[32m Weapon        : \x1b[1m"+data.weapon[user.weapon]+" ("+str(user.weapon)+")\x1b[0m" + func.padnumcol(data.weapon[user.weapon]+" ("+str(user.weapon)+")", 20) + "\x1b[32mAttack Strength    : \x1b[1m"+str(user.str)+"\x1b[0m\r\n"
-	output += "\x1b[32m Armor         : \x1b[1m"+data.armor[user.armor]+" ("+str(user.armor)+")\x1b[0m" + func.padnumcol(data.armor[user.armor]+" ("+str(user.weapon)+")", 20) + "\x1b[32mDefensive Strength : \x1b[1m"+str(user.defence)+"\x1b[0m\r\n"
-	output += "\x1b[32m Charm         : \x1b[1m"+str(user.charm)+"\x1b[0m" + func.padnumcol(str(user.charm), 20) + "\x1b[32mGems               : \x1b[1m"+str(user.gems)+"\x1b[0m\r\n\r\n"
+	output += " `2 Experience    : `0"+str(user.exp)+func.padnumcol(str(user.exp), 20)+"`2Player Kills       : `0"+str(user.pkill)+"`.\r\n"
+	output += " `2 Level         : `0"+str(user.level) + func.padnumcol(str(user.level), 20) + "`2HitPoints          : `0"+str(user.hp)+" `2of`0 "+str(user.hpmax)+"`.\r\n"
+	output += " `2 Forest Fights : `0"+str(user.ffight) + func.padnumcol(str(user.ffight), 20) + "`2Player Fights Left : `0"+str(user.pfight)+"`.\r\n"
+	output += " `2 Gold In Hand  : `0"+str(user.gold) + func.padnumcol(str(user.gold), 20) + "`2Gold In Bank       : `0"+str(user.bank)+"`.\r\n"
+	output += " `2 Weapon        : `0"+data.weapon[user.weapon]+" ("+str(user.weapon)+")" + func.padnumcol(data.weapon[user.weapon]+" ("+str(user.weapon)+")", 20) + "`2Attack Strength    : `0"+str(user.str)+"`.\r\n"
+	output += " `2 Armor         : `0"+data.armor[user.armor]+" ("+str(user.armor)+")" + func.padnumcol(data.armor[user.armor]+" ("+str(user.weapon)+")", 20) + "`2Defensive Strength : `0"+str(user.defence)+"`.\r\n"
+	output += " `2 Charm         : `0"+str(user.charm) + func.padnumcol(str(user.charm), 20) + "`2Gems               : `0"+str(user.gems)+"`.\r\n\r\n"
 	for skillnum in [1,2,3]:
 		if ( user.cls == skillnum or user.getSkillPoint(skillnum) > 0 ):
-			output += "\x1b[32m The "+data.classes[skillnum]+" Skills: \x1b[1m"
+			output += " `2 The "+data.classes[skillnum]+" Skills: `0"
 			if ( user.getSkillPoint(skillnum) > 0 ):
 				output +=  str(user.getSkillPoint(skillnum)) + func.padnumcol(str(user.getSkillPoint(skillnum)), 11)
 			else:
 				output += "NONE     "
 			output += func.padnumcol(data.classes[skillnum], 12)
-			output += "\x1b[0m\x1b[32mUses Today: (\x1b[1m"+str(user.getSkillUse(skillnum))+"\x1b[22m)\x1b[0m\r\n"
-	output += "\r\n \x1b[1;32mYou are currently interested in \x1b[37mThe "+data.classes[user.cls]+" \x1b[32mskills.\r\n\r\n";
+			output += " `2Uses Today: (`0"+str(user.getSkillUse(skillnum))+"`2)`.\r\n"
+	output += "\r\n  `0You are currently interested in `%The "+data.classes[user.cls]+" `2skills.`.\r\n\r\n";
 	return output
 	
 def who(user):
 	""" Who's Online """
 	db = user.dbcon.cursor()
 	db.execute("SELECT o.userid, fullname, whence FROM users u, online o WHERE o.userid = u.userid ORDER BY whence ASC")
-	output  = "\r\n\r\n\x1b[1;37m                     Warriors In The Realm Now\x1b[22;32m\x1b[0m\r\n"
+	output  = "\r\n\r\n`%                     Warriors In The Realm Now`.\r\n"
 	output += user.art.line()
 	for line in db.fetchall():
-		output += "  \x1b[1;32m" + line[1] + func.padnumcol(line[1], 28)
-		output += "\x1b[0m\x1b[32mArrived At             \x1b[1;37m" + str(line[2]) + "\x1b[0m\r\n"
+		output += "  `0" + line[1] + func.padnumcol(line[1], 28)
+		output += "`2Arrived At             `%" + str(line[2]) + "`.\r\n"
 	db.close()
 	return output + "\r\n"
 
@@ -137,35 +137,35 @@ def dailyhappen(noprmpt, user):
 	db.execute("SELECT value FROM sord WHERE name = ?", ('gdays',))
 	gday = db.fetchone()[0]
 	db.execute("SELECT data FROM (SELECT * FROM daily WHERE gday = "+str(gday)+" ORDER BY id DESC LIMIT 10) AS tbl ORDER BY tbl.id")
-	output  = "\r\n\r\n\x1b[1;37mToday's Happenings\033[22;32m....\x1b[0m\r\n"
-	output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+	output  = "\r\n\r\n`% Today's Happenings`2....`.\r\n"
+	output += "`2                                      -=-=-=-=-=-`.\r\n"
 	for line in db.fetchall():
-		output += "    " + func.colorcode(line[0])
-		output += "\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+		output += "    " + line[0]
+		output += "\r\n`2                                      -=-=-=-=-=-`.\r\n"
 	user.write(output)
 	if ( not noprmpt ) :
 		miniQuit = False
 		while ( not miniQuit ):
-			user.write("\r\n  \x1b[32m(\x1b[1;35mC\x1b[22;32m)ontinue  \x1b[32m(\x1b[1;35mT\x1b[22;32m)odays happenings again  \x1b[32m(\x1b[1;35mY\x1b[22;32m)esterdays happenings  \x1b[1;32m[\x1b[35mC\x1b[32m] \x1b[22m:-: ")
+			user.write("\r\n  `2(`#C`2)ontinue  (`#T`2)odays happenings again  (`#Y`2)esterdays happenings  `8[`#C`8] `2:`0-`2:`. ")
 			key = user.ntcon.recv(2)
 			if not key: break
 			elif ( key[0] == 't' or key[0] == 'T' ):
 				user.write('T')
 				db.execute("SELECT data FROM (SELECT * FROM daily WHERE gday = "+str(gday)+" ORDER BY id DESC LIMIT 10) AS tbl ORDER BY tbl.id")
-				output  = "\r\n\r\n\x1b[1;37mToday's Happenings\033[22;32m....\x1b[0m\r\n"
-				output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+				output  = "\r\n\r\n`% Today's Happenings`2....`.\r\n"
+				output += "`2                                      -=-=-=-=-=-`.\r\n"
 				for line in db.fetchall():
-					output += "    " + func.colorcode(line[0])
-					output += "\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+					output += "    " + line[0]
+					output += "\r\n`2                                      -=-=-=-=-=-`.\r\n"
 				user.write(output)
 			elif ( key[0] == 'y' or key[0] == 'Y' ):
 				user.write('Y')
 				db.execute("SELECT data FROM (SELECT * FROM daily WHERE gday = "+str(gday-1)+" ORDER BY id DESC LIMIT 10) AS tbl ORDER BY tbl.id")
-				output  = "\r\n\r\n\x1b[1;37mYesterday's Happenings\033[22;32m....\x1b[0m\r\n"
-				output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+				output  = "\r\n\r\n`% Yesterday's Happenings`2....`.\r\n"
+				output += "`2                                      -=-=-=-=-=-`.\r\n"
 				for line in db.fetchall():
-					output += "    " + func.colorcode(line[0])
-					output += "\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+					output += "    " + line[0]
+					output += "\r\n`2                                      -=-=-=-=-=-`.\r\n"
 				user.write(output)
 			else:
 				user.write('C')
@@ -176,67 +176,67 @@ def list(art, dbc):
 	""" Player List """
 	db = dbc.cursor()
 	db.execute("SELECT userid, fullname, exp, level, cls, spclm, spcld, spclt, sex, alive FROM users WHERE 1 ORDER BY exp DESC")
-	output = "\r\n\r\n\x1b[32m    Name                    Experience    Level    Mastered    Status\x1b[0m\r\n";
+	output = "\r\n\r\n`2    Name                    Experience    Level    Mastered    Status`.\r\n";
 	output += art.line()
 	for line in db.fetchall():
 		if ( line[8] == 2 ):
-			lineSex = "\x1b[1;35mF\x1b[0m "
+			lineSex = "`#F "
 		else:
 			lineSex = "  "
 			
 		if ( line[4] == 1 ):
-			lineClass = "\x1b[1;31mD \x1b[0m"
+			lineClass = "`9D "
 		elif ( line[4] == 2 ):
-			lineClass = "\x1b[1;31mM \x1b[0m"
+			lineClass = "`9M "
 		else:
-			lineClass = "\x1b[1;31mT \x1b[0m"
+			lineClass = "`9T "
 		
 		lineMaster = ""
 		if ( line[6] > 19 ):
 			if ( line[6] > 39 ):
-				lineMaster += "\x1b[1;37mD \x1b[0m"
+				lineMaster += "`%D "
 			else:
-				lineMaster += "\x1b[37mD \x1b[0m"
+				lineMaster += "`7D "
 		else:
 			lineMaster += "  "
 			
 		if ( line[5] > 19 ):
 			if ( line[5] > 39 ):
-				lineMaster += "\x1b[1;37mM \x1b[0m"
+				lineMaster += "`%M "
 			else:
-				lineMaster += "\x1b[37mM \x1b[0m"
+				lineMaster += "`7M "
 		else:
 			lineMaster += "  "
 						
 		if ( line[7] > 19 ):
 			if ( line[7] > 39 ):
-				lineMaster += "\x1b[1;37mT \x1b[0m"
+				lineMaster += "`%T "
 			else:
-				lineMaster += "\x1b[37mT \x1b[0m"
+				lineMaster += "`7T "
 		else:
 			lineMaster += "  "
 									
 		
 		if ( line[9] == 1 ):
-			lineStatus = "\x1b[1;32mAlive\x1b[0m"
+			lineStatus = "`0Alive"
 		else:
-			lineStatus = "\x1b[31m Dead\x1b[0m"
+			lineStatus = "`1 Dead"
 			
-		output += lineSex + lineClass + "\x1b[32m" + line[1] + func.padnumcol(str(line[1]), 24) + "\x1b[0;32m" + func.padright(str(line[2]), 10)
-		output += func.padright(str(line[3]), 9) + "       " + lineMaster + "    " + lineStatus + "\r\n"
+		output += lineSex + lineClass + "`2" + line[1] + func.padnumcol(str(line[1]), 24) + "`2" + func.padright(str(line[2]), 10)
+		output += func.padright(str(line[3]), 9) + "       " + lineMaster + "    " + lineStatus + "`.\r\n"
 	db.close()
 	return output + "\r\n"
 	
 def flowers(user):
 	""" The forest flowers """
-	output  = "\r\n\r\n  \x1b[1;37mStudy the forest flowers\x1b[22;32m....\x1b[0m\r\n"
-	output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+	output  = "\r\n\r\n  `%Study the forest flowers`2....`.\r\n"
+	output += "`2                                      -=-=-=-=-=-`.\r\n"
 	db = user.dbcon.cursor()
 	db.execute("SELECT data, nombre FROM (SELECT * FROM flowers ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id")
 	for (data, nombre) in db.fetchall():
-		output += "    \x1b[32m"+nombre+" \x1b[1;37msays... \x1b[0m\x1b[32m" + func.colorcode(data)
-		output += "\x1b[0m\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
-	output += "\r\n  \x1b[32mAdd to the conversation? (Y/N) \x1b[1m: \x1b[0m"
+		output += "    `2"+nombre+" `%says: `2" + data
+		output += "\r\n`2                                      -=-=-=-=-=-`.\r\n"
+	output += "\r\n  `2Add to the conversation? `8(Y/N) `2[`#N`2] `0: `."
 	db.close()
 	user.write(output)
 	yesno = user.ntcon.recv(2)
@@ -252,13 +252,13 @@ def flowers(user):
 
 def dirt(user):
 	""" The slaughter dirt """
-	output  = "\r\n\r\n  \x1b[1;37mExamine the dirt\x1b[22;32m....\x1b[0m\r\n"
-	output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+	output  = "\r\n\r\n  `%Examine the dirt`2....`.\r\n"
+	output += "`2                                      -=-=-=-=-=-`.\r\n"
 	db = user.dbcon.cursor()
 	db.execute("SELECT data, nombre FROM (SELECT * FROM dirt ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id")
 	for (data, nombre) in db.fetchall():
-		output += "    \x1b[32m"+nombre+" \x1b[1;37msays... \x1b[0m\x1b[32m" + func.colorcode(data)
-		output += "\x1b[0m\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+		output += "    `2"+nombre+" `%says: `2" + data
+		output += "\r\n`2                                      -=-=-=-=-=-`.\r\n"
 	user.write(output)
 	user.pause()
 

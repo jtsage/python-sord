@@ -52,27 +52,27 @@ class turgon():
 					thisUserExp   = user.exp
 					thisNeedExp   = data.masters[thisUserLevel][2] - thisUserExp
 					for thisWisdom in data.masters[thisUserLevel][3]:
-						user.write("\r\n  \x1b[32m"+thisWisdom+"\x1b[0m")
-					user.write("\r\n\r\n  \x1b[1;37m"+data.masters[thisUserLevel][0]+"\x1b[0;32m looks at you closely and says...\r\n")
+						user.write("\r\n  `2"+thisWisdom+"`0")
+					user.write("\r\n\r\n  `%"+data.masters[thisUserLevel][0]+"`2 looks at you closely and says...\r\n")
 					if ( thisNeedExp < 1 ):
-						user.write("\r\n  \x1b[32m"+data.masters[thisUserLevel][4]+"\x1b[0m\r\n")
+						user.write("\r\n  `2"+data.masters[thisUserLevel][4]+"`.\r\n")
 					else:
-						user.write("\r\n  \x1b[32mYou need about \x1b[1;37m"+str(thisNeedExp)+"\x1b[0;32m experience before you'll be as good as me.\x1b[0m\r\n")
+						user.write("\r\n  `2You need about `%"+str(thisNeedExp)+"`2 experience before you'll be as good as me.`.\r\n")
 				else:
-					user.write("\r\n  \x1b[32mYou have learned all that you can.  This place holds nothing more for you!\x1b[0m\r\n")
+					user.write("\r\n  `2You have learned all that you can.  This place holds nothing more for you!`.\r\n")
 				user.pause()
 			elif ( key[0] == 'v' or key[0] == 'V' ):
 				user.write('V')
 				db = user.dbcon.cursor()
 				db.execute("SELECT fullname, dkill FROM users WHERE dkill > 0 ORDER by dkill DESC")
-				user.write("\r\n\r\n  \x1b[32mUsers who have slain the dragon:\x1b[0m\r\n")
+				user.write("\r\n\r\n  `2Users who have slain the dragon:`.\r\n")
 				for row in db.fetchall():
 					if not row:
-						user.write("\r\n\r\n  \x1b[32mWhat a sad thing - there are no heroes in this realm.\x1b[0m\r\n")
+						user.write("\r\n\r\n  `2What a sad thing - there are no heroes in this realm.`.\r\n")
 						break
 					else:
 						for (nombre, xdata) in row:
-							user.write("  \x1b[32m"+nombre+func.padnumcol(nombre, 25)+"\x1b[1m"+str(xdata)+"\x1b[0m\r\n")
+							user.write("  `2"+nombre+func.padnumcol(nombre, 25)+" `0"+str(xdata)+"`.\r\n")
 				user.write("\r\n")
 				db.close()
 				user.pause()
@@ -83,9 +83,9 @@ class turgon():
 			elif ( key[0] == 'a' or key[0] == 'A' ):
 				user.write('A')
 				if ( user.level > 11 ):
-					user.write("\r\n\r\n  \x1b[32mThere is no master for you to attack stoopid!\x1b[0m\r\n")
+					user.write("\r\n\r\n  `2There is no master for you to attack stoopid!`.\r\n")
 				elif ( user.master ):
-					user.write("\r\n\r\n  \x1b[32mI'm sorry my son, you may only fight me once per game-day\x1b[0m\r\n")
+					user.write("\r\n\r\n  `2I'm sorry my son, you may only fight me once per game-day`.\r\n")
 				else:
 					self.fight()
 			else:
@@ -93,12 +93,12 @@ class turgon():
 
 	def menu(self, user, ehp, ename) : 
 		""" Forest Fight Menu """
-		thismenu  = "\r\n  \x1b[32mYour Hitpoints : \x1b[1m"+str(user.hp)+"\x1b[0m\r\n"
-		thismenu += "  \x1b[32m"+ename+"'s Hitpoints : \x1b[1m"+str(ehp)+"\x1b[0m\r\n\r\n"
+		thismenu  = "\r\n  `2Your Hitpoints : `0"+str(user.hp)+"`.\r\n"
+		thismenu += "  `2"+ename+"'s Hitpoints : `0"+str(ehp)+"`.\r\n\r\n"
 		thismenu += func.normmenu("(A)ttack")
 		thismenu += func.normmenu("(S)tats")
 		thismenu += func.normmenu("(R)un")
-		thismenu += "\r\n  \x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? [\x1b[1;35mA\x1b[0m\x1b[32m] : \x1b[0m"
+		thismenu += "\r\n  `2Your command, `0"+user.thisFullname+"`2? [`#A`2] `0:`2-`0: `."
 		return thismenu
 
 	def fight(self):
@@ -116,8 +116,8 @@ class turgon():
 		thisEnemyName    = data.masters[thisUserLevel][0]
 		thisEnemyWeapon  = data.masters[thisUserLevel][1]
 		
-		user.write("\r\n\r\n  \x1b[32m**\x1b[1;37mFIGHT\x1b[0m\x1b[32m**\r\n")
-		user.write("\r\n  \x1b[32mYou have encountered "+thisEnemyName+"!!\x1b[0m\r\n")
+		user.write("\r\n\r\n  `2**`%FIGHT`2**\r\n")
+		user.write("\r\n  `2You have encountered "+thisEnemyName+"!!`.\r\n")
 	
 		skipDisp = False
 		while ( user.hp > 0 and thisEnemyHP > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
@@ -140,25 +140,25 @@ class turgon():
 					ctrlDead = True
 					hisAttack = user.hp # No insult to injury
 				if ( hisAttack > 0 ): # He hit us
-					user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+					user.write("\r\n  `2"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for `9"+str(hisAttack)+"`2 damage`.\r\n")
 					user.hp -= hisAttack
 				else: 
-					user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
+					user.write("\r\n  `2"+thisEnemyName+" misses you completely`.\r\n")
 				if ( myAttack > 0 and not ctrlDead ): # We hit him!
-					user.write("\r\n  \x1b[32mYou hit "+thisEnemyName+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+					user.write("\r\n  `2You hit "+thisEnemyName+" for `9"+str(myAttack)+"`2 damage\r\n")
 					thisEnemyHP = thisEnemyHP - myAttack
 					if ( thisEnemyHP < 1 ): # We Win!
 						ctrlWin = True
-						user.write("\r\n  \x1b[31m"+data.masters[thisUserLevel][5]+"\x1b[0m\r\n")
+						user.write("\r\n  `1"+data.masters[thisUserLevel][5]+"`.\r\n")
 			elif ( key[0] == 'r' or key[0] == 'R' ): # Run Away
-				user.write("\r\n  \x1b[32mYou retire from the field before getting yourself killed.\x1b[0m\r\n")
+				user.write("\r\n  `2You retire from the field before getting yourself killed.`.\r\n")
 				user.hp = user.hpmax
 				user.master = 1
 				ctrlRan = True
 			elif ( key[0] == 'q' or key[0] == 'Q' ):
-				user.write("\r\n  \x1b[31mYou are in Combat!  Try Running!\x1b[0m\r\n")
+				user.write("\r\n  `1You are in Combat!  Try Running!`.\r\n")
 			elif ( key[0] == 'h' or key[0] == 'H' ):
-				user.write("\r\n  \x1b[32mYou are in combat, and they don't make house calls!\x1b[0m\r\n")
+				user.write("\r\n  `2You are in combat, and they don't make house calls!`.\r\n")
 			else:
 				skipDisp = True
 	
@@ -172,14 +172,14 @@ class turgon():
 			user.updateSkillPoint(user.cls, 1)
 			user.updateSkillUse(user.cls, 1)
 			user.hp = user.hpmax
-			user.write("\r\n  \x1b[32mYou have receieved \x1b[1m+"+str(data.masterwin[thisUserLevel][2])+"\x1b[22m vitality, \x1b[1m+"+str(data.masterwin[thisUserLevel][1])+"\x1b[22m strength, and \x1b[1m+"+str(data.masterwin[thisUserLevel][0])+"\x1b[22m hitpoints.\x1b[0m\r\n")
-			user.write("  \x1b[32mYou have gained \x1b[1m"+str(addExp)+"\x1b[22m experience, and are now level \x1b[1m"+str(user.level)+"\x1b[22m.\x1b[0m\r\n")
+			user.write("\r\n  `2You have receieved `0+"+str(data.masterwin[thisUserLevel][2])+"`2 vitality, `0+"+str(data.masterwin[thisUserLevel][1])+"`2 strength, and `0+"+str(data.masterwin[thisUserLevel][0])+"`2 hitpoints.`.\r\n")
+			user.write("  `2You have gained `0"+str(addExp)+"`2 experience, and are now level `0"+str(user.level)+"`2.`.\r\n")
 			user.pause()
 		if ( ctrlDead ) :
 			user.master = 1
 			user.hp = user.hpmax
-			user.write("\r\n  \x1b[31mTragically, you are horribly disfigured....  oh wait...\x1b[0m\r\n")
-			user.write("  \x1b[31mYou always looked like that you say?...  That's unfortunate...\x1b[0m\r\n")
-			user.write("  \x1b[32mAnyway, you lost.  Being the gracious master "+thisEnemyName+" is, he heals\r\n  you and sends you away for the day.\x1b[0m\r\n")
+			user.write("\r\n  `1Tragically, you are horribly disfigured....  oh wait...`.\r\n")
+			user.write("  `1You always looked like that you say?...  That's unfortunate...`.\r\n")
+			user.write("  `2Anyway, you lost.  Being the gracious master "+thisEnemyName+" is, he heals\r\n  you and sends you away for the day.`.\r\n")
 			user.pause()
 		

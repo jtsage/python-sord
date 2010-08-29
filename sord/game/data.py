@@ -140,7 +140,7 @@ enemies = [[],
 		['Silent Death', 'Pale Smoke', 113, 98, 4711, 230, 'Instead of spilling blood, the creature seems filled with only air.'],
 		['Bald Medusa', 'Glare Of Stone', 78, 120, 4000, 256, 'You are lucky you didnt look at her... Man was she ugly!'],
 		['Black Alligator', 'Extra Sharp Teeth', 65, 65, 3245, 123, 'With a single stroke, you sever the creatures head right off.'],
-		['Clancy, Son Of Emporor Len Spiked Bull Whip', 52, 324, 4764, 324, 'Its a pity so many new warriors get so proud.'],
+		['Clancy, Son Of Emporor Len', 'Spiked Bull Whip', 52, 224, 4764, 324, 'Its a pity so many new warriors get so proud.'],
 		['Black Sorcerer', 'Spell Of Lightning', 86, 25, 2838, 154, 'Thats the last spell this Sorcerer will ever cast!']
 	], [
 		['Iron Warrior', '3 Iron', 100, 253, 6542, 364, 'You have bent the Iron warriors Iron!'],

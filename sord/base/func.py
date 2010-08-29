@@ -23,7 +23,7 @@ def slowecho(connection, data, LINESPEED=0, NOISE=0):
 		( '`1', '\x1b[31m'), ( '`2', '\x1b[32m'), ( '`3', '\x1b[33m'), ( '`4', '\x1b[34m'),
 		( '`5', '\x1b[35m'), ( '`6', '\x1b[36m'), ( '`7', '\x1b[37m'), ( '`8', '\x1b[1;30m'),
 		( '`9', '\x1b[1;31m'), ( '`0', '\x1b[1;32m'), ( '`!', '\x1b[1;33m'), ( '`@', '\x1b[1;34m'), 
-		( '`#', '\x1b[1;35m'), ( '`\$', '\x1b[1;36m'), ( '`%', '\x1b[1;37m')]
+		( '`#', '\x1b[1;35m'), ( '`\$', '\x1b[1;36m'), ( '`%', '\x1b[1;37m'), ( '`\.', '')]
 	if ( LINESPEED == 0 ):
 		pause = 0.001
 	elif ( LINESPEED == 1 ):
@@ -51,6 +51,8 @@ def pauser(connection):
 		data = connection.recv(5)
 		if not data: break
 		pauser_quit = True
+		for i in xrange(1, 22):
+				slowecho(connection, "\x1b[1D \x1b[1D")
 		connection.send("\r\n")
 		
 
@@ -96,21 +98,13 @@ def casebold(text, boldcolor):
 	nclrstr = "\x1b[0m\x1b[3" + str(boldcolor) + "m"
 	return re.sub("([A-Z:*<>])", bclrstr + r"\1" + nclrstr, text) + "\x1b[0m"
 
-def colorcode(text):
-	""" Process user entered color codes. - Uses color codes contained in curly braces.  Standard ANSI codes work.
-	
-	@todo Add error correction and checking.  Could be used to hose other players.
-	@param string $text Text to convert to escape string """
-	return re.sub("\{(\d+)\}", "\x1b[" + r"\1" + "m" , text) + "\x1b[0m"
-
-
 def normmenu(text):
 	"""Return a standard colored menu entry.
 	
 	@param string $text Text to convert to menu entry """
-	bclrstr = "  \x1b[0m\x1b[32m(\x1b[1;35m"
-	nclrstr = "\x1b[0m\x1b[32m)"
-	return re.sub("\(([A-Z:<>])\)", bclrstr + r"\1" + nclrstr, text) + "\x1b[0m\r\n"
+	bclrstr = "  `2(`#"
+	nclrstr = "`2)"
+	return re.sub("\(([A-Z:<>])\)", bclrstr + r"\1" + nclrstr, text) + "`.\r\n"
 
 
 def menu_2col(text1, text2, col1, col2):
@@ -120,12 +114,12 @@ def menu_2col(text1, text2, col1, col2):
 	@param string $text2 Menu Option 2
 	@param int $col1 Option color for menu option 1
 	@param int $col2 Option color for menu option 2 """
-	nclrstr = "\x1b[0m\x1b[32m)"
-	bclrstr1 = "\x1b[0m\x1b[32m(\x1b[1;3"+str(col1)+"m"
-	bclrstr2 = "\x1b[0m\x1b[32m(\x1b[1;3"+str(col2)+"m"
+	nclrstr = "`2)"
+	bclrstr1 = "`2(\x1b[1;3"+str(col1)+"m"
+	bclrstr2 = "`2(\x1b[1;3"+str(col2)+"m"
 	text1col = re.sub("\(([A-Z:<>])\)", bclrstr1 + r"\1" + nclrstr, text1) + "\x1b[0m"
 	text2col = re.sub("\(([A-Z:<>])\)", bclrstr2 + r"\1" + nclrstr, text2) + "\x1b[0m"
-	return "  " + text1col + padnumcol(text1, 36) + text2col + "\x1b[0m\r\n"
+	return "  " + text1col + padnumcol(text1, 36) + text2col + "`.\r\n"
 
 def maketime(user):
 	""" Make a time since login string"""

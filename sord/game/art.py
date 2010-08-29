@@ -138,7 +138,7 @@ class sordArtwork():
 			thismsg += user.thisFullname + " `2" + charmsay[user.sex][user.charm]
 		except IndexError:
 			thismsg += "nothing at all."
-		thismsg += "\x1b[0m\r\n"
+		thismsg += "`.\r\n"
 		return thismsg
 
 	def banner(self):

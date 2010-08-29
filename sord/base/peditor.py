@@ -15,6 +15,7 @@ __date__ = "18 August 2010"
 __version__ = "2.0-pysqlite"
 __credits__ = "Seth Able Robinson, original game concept"
 
+import re
 from . import func
 from . import userlib
 from ..game import data
@@ -50,7 +51,7 @@ class editor():
 		thismsg += self.makeentry('O', 'Gold in Bank', 1, self.euser.bank) + self.makeentry('P', 'At The Inn', 2, self.euser.atinn) + "\r\n"
 		thismsg += self.makeentry('R', 'Has Horse', 1, self.euser.horse) + self.makeentry('S', 'Has Fairy', 2, self.euser.fairy) + "\r\n"
 		thismsg += self.makeentry('T', 'Player Alive', 1, self.euser.alive) + self.makeentry('U', 'Times Laid', 2, self.euser.fuck) + "\r\n"
-		thismsg += "\r\n  \x1b[32m(\x1b[1;35m$\x1b[0;32m) Edit Skills   \x1b[32m(\x1b[1;35m[\x1b[0;32m) Previous Player   \x1b[32m(\x1b[1;35m]\x1b[0;32m) Next Player   \x1b[32m(\x1b[1;35m#\x1b[0;32m) Jump to Player\r\n"
+		thismsg += "\r\n  `2(`#$`2) Edit Skills   (`#[`2) Previous Player   (`#]`2) Next Player   (`##`2) Jump to Player\r\n"
 		thismsg += self.makecenter("Input key to change / toggle, 'Q' to Quit", 7) + "\r\n"
 		return thismsg
 
@@ -483,14 +484,15 @@ class editor():
 		while ( ittr < fcol ):
 			retval += " "
 			ittr += 1
-		thisentry += "\x1b[32m(\x1b[1;35m"+str(option)+"\x1b[0;32m) "+text+retval+":\x1b[1"
+		thisentry += "`2(`#"+str(option)+"`2) "+text+retval+":\x1b[1"
 		if ( not editable ):
 			thisentry += ";30"
 		thisentry += "m"+str(value)
 		if ( col == 1 ):
-			xcol = 25 - len(str(value))
+			lvalue = re.sub('`.', '', value)
+			xcol = 25 - len(str(lvalue))
 			ittr = 0
 			while ( ittr < xcol ):
 				thisentry += " "
 				ittr += 1
-		return thisentry + "\x1b[0m"
+		return thisentry + "`."

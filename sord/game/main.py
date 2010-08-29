@@ -40,14 +40,14 @@ class other():
 			if ( not skipDisp ):
 				ptime = func.maketime(self.user)
 				optionslist = ""
-				self.user.write("\r\n\r\n\x1b[1;37m  Saga of the Red Dragon - \x1b[0m\x1b[32mOther Places\x1b[0m\r\n")
+				self.user.write("\r\n\r\n`%  Saga of the Red Dragon - `2Other Places`.\r\n")
 				self.user.write(self.user.art.line())
-				self.user.write("\x1b[32m  You see some odd places to go...\r\n\r\n")
+				self.user.write("`2  You see some odd places to go...`.\r\n\r\n")
 				for item in igm.igmlist:
 					optionslist += item[0] + ","
 					self.user.write(func.normmenu("("+item[0]+") "+item[2]))
-				self.user.write("\r\n  \x1b[1;35mOther Places\x1b[0m \x1b[1;30m("+optionslist+"Q)\x1b[0m\x1b[1;30m (? for menu)\x1b[0m\r\n")
-				self.user.write("  \x1b[32mYour command, \x1b[1m" + self.user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m")
+				self.user.write("\r\n  `#Other Places `8("+optionslist+"Q) (? for menu)`.\r\n")
+				self.user.write("  `2Your command, `0" + self.user.thisFullname + "`2? `%[`7"+ptime+"`%] `0:`2-`0: `.")
 			skipDisp = False
 			key = self.user.ntcon.recv(2)
 			if not key: break
@@ -256,7 +256,7 @@ class intro():
 			elif ( key == 'S' or key == 's' ):
 				func.slowecho(self.connection, "S\r\n")
 				for storyitem in data.story:
-					func.slowecho(self.connection, func.casebold("  \x1b[37m" + storyitem + "\r\n", 7), self.lineconfig[0], self.lineconfig[1])
+					func.slowecho(self.connection, func.casebold("  `7" + storyitem + "\r\n", 7), self.lineconfig[0], self.lineconfig[1])
 				func.pauser(self.connection)
 			elif ( key == 'I' or key == 'i' ):
 				instr = self.art.instruct().splitlines(1)
@@ -292,7 +292,7 @@ class abduls():
 			elif ( key[0] == 'b' or key[0] == 'B' ):
 				self.user.write('B')
 				self.user.write(self.user.art.armbuy())
-				self.user.write("\r\n\r\n\x1b[32mYour choice? \x1b[1m:\x1b[22m-\x1b[1m:\x1b[0m ")
+				self.user.write("\r\n\r\n`2Your choice? `0:`2-`0:`. ")
 				try:
 					number = int(func.getLine(self.user.ntcon, True))
 				except ValueError:
@@ -394,7 +394,7 @@ class heal():
 							canaffordtoheal = hptoheal
 						user.gold -= (canaffordtoheal * perhpgold)
 						user.hp += canaffordtoheal
-						user.write("\r\n  \x1b[32m\x1b[1m"+str(canaffordtoheal)+" \x1b[22mHitPoints are healed and you feel much better!\x1b[0m\r\n")
+						user.write("\r\n  `0"+str(canaffordtoheal)+" `2HitPoints are healed and you feel much better!`.\r\n")
 						user.pause()
 			elif ( key[0] == 'c' or key[0] == 'C' ):
 				user.write('C')
@@ -402,7 +402,7 @@ class heal():
 				if ( hptoheal < 1 ):
 					user.write(func.casebold("\r\n  You do NOT need healing!\r\n", 2))
 				else:
-					user.write("\r\n  \x1b[32mHow much to heal warror? \x1b[1m: \x1b[0m")
+					user.write("\r\n  `2How much to heal warror? `0:`2-`0: `.")
 					try:
 						number = int(func.getLine(user.ntcon, True))
 					except ValueError:
@@ -417,7 +417,7 @@ class heal():
 						else:
 							user.gold -= costforaction
 							user.hp += number
-							user.write("\r\n  \x1b[32m\x1b[1m"+str(number)+" \x1b[22mHitPoints are healed and you feel much better!\x1b[0m\r\n")
+							user.write("\r\n  `0"+str(number)+" `2HitPoints are healed and you feel much better!`.\r\n")
 							user.pause()
 			else:
 				skipDisp = True
@@ -443,7 +443,7 @@ class arthurs():
 			elif ( key[0] == 'b' or key[0] == 'B' ):
 				user.write('B')
 				user.write(user.art.wepbuy())
-				user.write("\r\n\r\n\x1b[32mYour choice? \x1b[1m:\x1b[22m-\x1b[1m:\x1b[0m ")
+				user.write("\r\n\r\n`2Your choice? `0:`2-`0:`. ")
 				try:
 					number = int(func.getLine(user.ntcon, True))
 				except ValueError:
@@ -472,7 +472,7 @@ class arthurs():
 									user.write(func.casebold("\r\nPleasure doing business with you!\r\n", 2))
 									user.pause()
 								else:
-									user.write(func.casebold("\r\nFine then...\r\n", 2))
+									user.write(func.casebold("N\r\nFine then...\r\n", 2))
 									user.pause()
 			elif ( key[0] == 's' or key[0] == 'S' ):
 				user.write('S')
@@ -491,7 +491,7 @@ class arthurs():
 						user.write(func.casebold("\r\nPleasure doing business with you!\r\n", 2))
 						user.pause()
 					else:
-						user.write(func.casebold("\r\nFine then...\r\n", 2))
+						user.write(func.casebold("N\r\nFine then...\r\n", 2))
 						user.pause()
 				else:
 					user.write(func.casebold("\r\nYou have nothing I want!\r\n", 1))
@@ -533,7 +533,7 @@ class bank():
 				thisQuit = True
 			elif ( key[0] == 'd' or key[0] == 'D' ):
 				user.write('D')
-				user.write("\r\n  \x1b[32mDeposit how much? \x1b[1;30m(1 for all) \x1b[1;32m:\x1b[0m ")
+				user.write("\r\n  `2Deposit how much? `8(1 for all) `0:`2-`0:`. ")
 				try:
 					number = int(func.getLine(user.ntcon, True))
 				except ValueError:
@@ -552,7 +552,7 @@ class bank():
 					pass
 			elif ( key[0] == 'w' or key[0] == 'W' ):
 				user.write('W')
-				user.write("\r\n  \x1b[32mWithdraw how much? \x1b[1;30m(1 for all) \x1b[1;32m:\x1b[0m ")
+				user.write("\r\n  `2Withdraw how much? `8(1 for all) `0:`2-`0:`. ")
 				try:
 					number = int(func.getLine(user.ntcon, True))
 				except ValueError:
@@ -571,9 +571,9 @@ class bank():
 					pass
 			elif ( key[0] == 't' or key[0] == 'T' ):
 				user.write('T')
-				touser = module_finduser(user, "\r\n  \x1b[32mTransfer to which player? \x1b[1;32m:\x1b[0m ")
+				touser = module_finduser(user, "\r\n  `2Transfer to which player? `0:`2-`0:`. ")
 				if ( touser > 0 ):
-					user.write("\r\n  \x1b[32mTransfer how much? \x1b[1;32m:\x1b[0m ")
+					user.write("\r\n  `2Transfer how much? `0:`2-`0:`. ")
 					try:
 						number = int(func.getLine(user.ntcon, True))
 					except ValueError:

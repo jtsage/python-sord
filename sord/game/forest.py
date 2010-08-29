@@ -129,8 +129,8 @@ class ffight():
 
 	def menu(self, user, enemy) : 
 		""" Forest Fight Menu """
-		thismenu  = "\r\n  \x1b[32mYour Hitpoints : \x1b[1m"+str(user.hp)+"\x1b[0m\r\n"
-		thismenu += "  \x1b[32m"+enemy.name+"'s Hitpoints : \x1b[1m"+str(enemy.hp)+"\x1b[0m\r\n\r\n"
+		thismenu  = "\r\n  `2Your Hitpoints : `0"+str(user.hp)+"`.\r\n"
+		thismenu += "  `2"+enemy.name+"'s Hitpoints : `0"+str(enemy.hp)+"`.\r\n\r\n"
 		thismenu += func.normmenu("(A)ttack")
 		thismenu += func.normmenu("(S)tats")
 		thismenu += func.normmenu("(R)un")
@@ -141,13 +141,13 @@ class ffight():
 			thismenu += func.normmenu("(M)ystical Powers ("+str(user.getSkillUse(2))+")")
 		if ( user.getSkillUse(3) > 0 ):
 			thismenu += func.normmenu("(T)heiving Sneak Attack ("+str(user.getSkillUse(3))+")")
-		thismenu += "\r\n  \x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? [\x1b[1;35mA\x1b[0m\x1b[32m] : \x1b[0m"
+		thismenu += "\r\n  `2Your command, `0"+user.thisFullname+"`2? [`#A`2] `0:`2-`0: `."
 		return thismenu
 		
 	def dmenu(self, user, ehp, ename) : 
 		""" Forest Fight Menu """
-		thismenu  = "\r\n  \x1b[32mYour Hitpoints : \x1b[1m"+str(user.hp)+"\x1b[0m\r\n"
-		thismenu += "  \x1b[32m"+ename+"'s Hitpoints : \x1b[1m"+str(ehp)+"\x1b[0m\r\n\r\n"
+		thismenu  = "\r\n  `2Your Hitpoints : `0"+str(user.hp)+"`.\r\n"
+		thismenu += "  `2The `9Red `2Dragon's Hitpoints : `0"+str(ehp)+"`2\r\n\r\n"
 		thismenu += func.normmenu("(A)ttack")
 		thismenu += func.normmenu("(S)tats")
 		thismenu += func.normmenu("(R)un")
@@ -158,7 +158,7 @@ class ffight():
 			thismenu += func.normmenu("(M)ystical Powers ("+str(user.getSkillUse(2))+")")
 		if ( user.getSkillUse(3) > 0 ):
 			thismenu += func.normmenu("(T)heiving Sneak Attack ("+str(user.getSkillUse(3))+")")
-		thismenu += "\r\n  \x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? [\x1b[1;35mA\x1b[0m\x1b[32m] : \x1b[0m"
+		thismenu += "\r\n  `2Your command, `0"+user.thisFullname+"`2? [`#A`2] `0:`2-`0: `."
 		return thismenu
 
 	def fight(self):
@@ -173,14 +173,14 @@ class ffight():
 		ctrlRan  = False
 		ctrlWin  = False
 		
-		user.write("\r\n\r\n  \x1b[32m**\x1b[1;37mFIGHT\x1b[0m\x1b[32m**\r\n")
-		user.write("\r\n  \x1b[32mYou have encountered "+enemy.name+"!!\x1b[0m\r\n")
+		user.write("\r\n\r\n  `2**`%FIGHT`2**\r\n")
+		user.write("\r\n  `2You have encountered `%"+enemy.name+"`2!!`.\r\n")
 	
 		if ( enemy.underdog ): # User is the underdog 
 			if ( user.horse == True and random.randint(1, 3) == 2 ): # Saved by the horse 
-				user.write("\r\n  \x1b[32m\"Prepare to die, fool!\" "+enemy.name+" screams.\r\n  He takes a Death Crystal from his cloak and throws it at you.\r\n  Your horse moves its huge body to intercept the crystal.\r\n")
-				user.write("\r\n  \x1b[1mYOUR HORSE IS VAPORIZED!\x1b[0;32m\r\n\r\n  Tears of anger flow down your cheeks.  Your valiant steed must be\r\n  avenged.\r\n")
-				user.write("\r\n  \x1b[1mYOU PUMMEL "+enemy.name+" WITH BLOWS!\x1b[0;32m\r\n\r\n  A few seconds later, your adversary is dead.\r\n  You bury your horse in a small clearing.  The best friend you ever\r\n  had.\r\n")
+				user.write("\r\n  `2\"Prepare to die, fool!\" "+enemy.name+" screams.\r\n  He takes a Death Crystal from his cloak and throws it at you.\r\n  Your horse moves its huge body to intercept the crystal.\r\n")
+				user.write("\r\n  `0YOUR HORSE IS VAPORIZED!`2\r\n\r\n  Tears of anger flow down your cheeks.  Your valiant steed must be\r\n  avenged.\r\n")
+				user.write("\r\n  `0YOU PUMMEL "+enemy.name+" WITH BLOWS!`2\r\n\r\n  A few seconds later, your adversary is dead.\r\n  You bury your horse in a small clearing.  The best friend you ever\r\n  had.\r\n")
 				enemy.hp = 0
 				ctrlWin = True
 				user.horse = 0
@@ -190,12 +190,12 @@ class ffight():
 					if ( hisAttack >= user.hp ):
 						ctrlDead = True
 						hisAttack = user.hp
-					user.write("\r\n  \x1b[32m"+enemy.name+" executes a sneak attach for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage!\x1b[0m\r\n")
+					user.write("\r\n  `2"+enemy.name+" executes a sneak attach for `0"+str(hisAttack)+"`2 damage!`.\r\n")
 					user.hp -= hisAttack
 				else:
-					user.write("\r\n  \x1b[32m"+enemy.name+" misses you completely!\x1b[0m\r\n")
+					user.write("\r\n  `2"+enemy.name+" misses you completely!`.\r\n")
 		else:
-			user.write("\r\n  \x1b[32mYour skill allows you to get the first strike.\x1b[0m\r\n")
+			user.write("\r\n  `2Your skill allows you to get the first strike.`.\r\n")
 	
 		skipDisp = False
 		while ( user.hp > 0 and enemy.hp > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
@@ -218,16 +218,16 @@ class ffight():
 					ctrlDead = True
 					hisAttack = user.hp # No insult to injury
 				if ( hisAttack > 0 ): # He hit us
-					user.write("\r\n  \x1b[32m"+enemy.name+" hits you with "+enemy.weapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+					user.write("\r\n  `2"+enemy.name+" hits you with "+enemy.weapon+" for `9"+str(hisAttack)+"`0 damage.`.\r\n")
 					user.hp -= hisAttack
 				else: 
-					user.write("\r\n  \x1b[32m"+enemy.name+" misses you completely\x1b[0m\r\n")
+					user.write("\r\n  `2"+enemy.name+" misses you completely.`.\r\n")
 				if ( myAttack > 0 and not ctrlDead ): # We hit him!
-					user.write("\r\n  \x1b[32mYou hit "+enemy.name+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+					user.write("\r\n  `2You hit "+enemy.name+" for `9"+str(myAttack)+"`2 damage.`.\r\n")
 					enemy.hp -= myAttack
 					if ( enemy.hp < 1 ): # We Win!
 						ctrlWin = True
-						user.write("\r\n  \x1b[31m"+enemy.win+"\x1b[0m\r\n")
+						user.write("\r\n  `1"+enemy.win+"`.\r\n")
 						
 			elif ( key[0] == 'd' or key[0] == 'D' ): # Death Knight Attack!
 				user.write("D\r\n")
@@ -242,18 +242,18 @@ class ffight():
 						ctrlDead = True
 						hisAttack = user.hp # No insult to injury
 					if ( hisAttack > 0 ): # He hit us
-						user.write("\r\n  \x1b[32m"+enemy.name+" hits you with "+enemy.weapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+						user.write("\r\n  `2"+enemy.name+" hits you with "+enemy.weapon+" for `9"+str(hisAttack)+"`2 damage.`.\r\n")
 						user.hp -= hisAttack
 					else: 
-						user.write("\r\n  \x1b[32m"+enemy.name+" misses you completely\x1b[0m\r\n")
+						user.write("\r\n  `2"+enemy.name+" misses you completely`.\r\n")
 					if ( myAttack > 0 and not ctrlDead ): # We hit him!
-						user.write("\r\n  \x1b[1;32mUltra Powerful Move!\x1b[0m\r\n  \x1b[32mYou hit "+enemy.name+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+						user.write("\r\n  `0Ultra Powerful Move!\r\n  `2You hit "+enemy.name+" for `9"+str(myAttack)+"`2 damage.`.\r\n")
 						enemy.hp -= myAttack
 						if ( enemy.hp < 1 ): # We Win!
 							ctrlWin = True
-							user.write("\r\n  \x1b[31m"+enemy.win+"\x1b[0m\r\n")
+							user.write("\r\n  `1"+enemy.win+"`.\r\n")
 				else:
-					user.write("\r\n  \x1b[32mYou have no Death Knight Skill Use Points!\x1b[0m\r\n\r\n")
+					user.write("\r\n  `2You have no Death Knight Skill Use Points!`.\r\n\r\n")
 					
 			elif ( key[0] == 't' or key[0] == 'T' ): # Thief Sneaky Attack!
 				user.write("T\r\n")
@@ -268,18 +268,18 @@ class ffight():
 						ctrlDead = True
 						hisAttack = user.hp # No insult to injury
 					if ( hisAttack > 0 ): # He hit us
-						user.write("\r\n  \x1b[32m"+enemy.name+" hits you with "+enemy.weapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+						user.write("\r\n  `2"+enemy.name+" hits you with "+enemy.weapon+" for `9"+str(hisAttack)+"`2 damage.`.\r\n")
 						user.hp -= hisAttack
 					else: 
-						user.write("\r\n  \x1b[32m"+enemy.name+" misses you completely\x1b[0m\r\n")
+						user.write("\r\n  `2"+enemy.name+" misses you completely`.\r\n")
 					if ( myAttack > 0 and not ctrlDead ): # We hit him!
-						user.write("\r\n  \x1b[1;32mUltra Sneaky Move!\x1b[0m\r\n  \x1b[32mYou hit "+enemy.name+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+						user.write("\r\n  `0Ultra Sneaky Move!\r\n  `2You hit "+enemy.name+" for `9"+str(myAttack)+"`2 damage.`.\r\n")
 						enemy.hp -= myAttack
 						if ( enemy.hp < 1 ): # We Win!
 							ctrlWin = True
-							user.write("\r\n  \x1b[31m"+enemy.win+"\x1b[0m\r\n")
+							user.write("\r\n  `1"+enemy.win+"`.\r\n")
 				else:
-					user.write("\r\n  \x1b[32mYou have no Thief Skill Use Points!\x1b[0m\r\n\r\n")
+					user.write("\r\n  `2You have no Thief Skill Use Points!`.\r\n\r\n")
 					
 			elif ( key[0] == 'r' or key[0] == 'R' ): # Run Away
 				if ( random.randint(1, 10) == 4 ): # Hit in the back.
@@ -288,21 +288,21 @@ class ffight():
 						ctrlDead = True
 						hisAttack = user.hp # No insult to injury
 					if ( hisAttack > 0 ): # He hit us
-						user.write("\r\n  \x1b[32m"+enemy.name+" hits you in the back with it's "+enemy.weapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\r\n")
+						user.write("\r\n  `2"+enemy.name+" hits you in the back with it's "+enemy.weapon+" for `9"+str(hisAttack)+"`2 damage.`.\r\n")
 						user.hp -= hisAttack
 						ctrlRan = True
 				else:
-					user.write("\r\n  \x1b[32mYou narrowly escape harm.\x1b[0m\r\n")
+					user.write("\r\n  `2You narrowly escape harm.`.\r\n")
 					ctrlRan = True
 			elif ( key[0] == 'q' or key[0] == 'Q' ):
-				user.write("\r\n  \x1b[31mYou are in Combat!  Try Running!\x1b[0m\r\n")
+				user.write("\r\n  `1You are in Combat!  Try Running!`.\r\n")
 			elif ( key[0] == 'h' or key[0] == 'H' ):
-				user.write("\r\n  \x1b[32mYou are in combat, and they don't make house calls!\x1b[0m\r\n")
+				user.write("\r\n  `2You are in combat, and they don't make house calls!`.\r\n")
 			elif ( key[0] == 'l' or key[0] == 'L' ):
-				user.write("\r\n  \x1b[32mWhat?!  You want to fight two at once?\x1b[0m\r\n")
+				user.write("\r\n  `2What?!  You want to fight two at once?`.\r\n")
 			elif ( key[0] == 'm' or key[0] == 'M' ): #Magic!
 				if ( user.getSkillUse(2) < 1 ):
-					user.write("\r\n  \x1b[32mYou have no Magical Use Points!\x1b[0m\r\n\r\n")
+					user.write("\r\n  `2You have no Magical Use Points!`0\r\n\r\n")
 				else:
 					user.write("\r\n" + func.normmenu("(N)evermind") + func.normmenu("(P)inch Real Hard (1)"))
 					if ( user.getSkillUse(2) > 3 ):
@@ -315,13 +315,13 @@ class ffight():
 									user.write(func.normmenu("(S)hatter (16)"))
 									if ( user.getSkillUse(2) > 19 ):
 										user.write(func.normmenu("(M)ind Heal (20)"))
-					user.write("\r\n  \x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? [\x1b[1;35mA\x1b[0m\x1b[32m] : \x1b[0m")
+					user.write("\r\n  `2Your command, `0"+user.thisFullname+"`2? [`#A`2] `0:`2-`0:`. ")
 					tinyQuit = False
 					while ( not tinyQuit ):
 						miniData = user.ntcon.recv(2)
 						if not miniData: break
 						elif ( minikey[0] == 'n' or minikey[0] == 'N' ): #Nothing
-							user.write("N\r\n  \x1b[32mSure thing boss.\x1b[0m\r\n")
+							user.write("N\r\n  `2Sure thing boss.`.\r\n")
 							tinyQuit = True
 						elif ( minikey[0] == 'p' or minikey[0] == 'P' ): #Pinch!
 							user.write("P")
@@ -336,18 +336,18 @@ class ffight():
 								ctrlDead = True
 								hisAttack = user.hp # No insult to injury
 							if ( hisAttack > 0 ): # He hit us
-								user.write("\r\n  \x1b[32m"+enemy.name+" hits you with "+enemy.weapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+								user.write("\r\n  `2"+enemy.name+" hits you with "+enemy.weapon+" for `9"+str(hisAttack)+"`2 damage.`.\r\n")
 								user.hp -= hisAttack
 							else: 
-								user.write("\r\n  \x1b[32m"+enemy.name+" misses you completely\x1b[0m\r\n")
+								user.write("\r\n  `2"+enemy.name+" misses you completely.`.\r\n")
 							if ( myAttack > 0 and not ctrlDead ): # We hit him!
-								user.write("\r\n  \x1b[32mYou pinch "+enemy.name+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+								user.write("\r\n  `2You pinch "+enemy.name+" for `9"+str(myAttack)+"`2 damage.`.\r\n")
 								enemy.hp -= myAttack
 								if ( enemy.hp < 1 ): # We Win!
 									ctrlWin = True
-									user.write("\r\n  \x1b[31m"+enemy.win+"\x1b[0m\r\n")
+									user.write("\r\n  `1"+enemy.win+".`.\r\n")
 						elif ( (minikey[0] == 'd' or minikey[0] == 'D') and ( user.getSkillUse(2) > 3 ) ): #Disappear
-							user.write("D\r\n  \x1b[32mYou disapper like a ghost!\x1b[0m\r\n")
+							user.write("D\r\n  `2You disapper like a ghost!`.\r\n")
 							user.updateSkillUse(2, -4)
 							tinyQuit = True
 							ctrlRan = True
@@ -364,18 +364,18 @@ class ffight():
 								ctrlDead = True
 								hisAttack = user.hp # No insult to injury
 							if ( hisAttack > 0 ): # He hit us
-								user.write("\r\n  \x1b[32m"+enemy.name+" hits you with "+enemy.weapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+								user.write("\r\n  `2"+enemy.name+" hits you with "+enemy.weapon+" for `9"+str(hisAttack)+"`2 damage.`.\r\n")
 								user.hp -= hisAttack
 							else: 
-								user.write("\r\n  \x1b[32m"+enemy.name+" misses you completely\x1b[0m\r\n")
+								user.write("\r\n  `2"+enemy.name+" misses you completely.`.\r\n")
 							if ( myAttack > 0 and not ctrlDead ): # We hit him!
-								user.write("\r\n  \x1b[32mYou blast "+enemy.name+" with Heat Wave for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+								user.write("\r\n  `2You blast "+enemy.name+" with Heat Wave for `9"+str(myAttack)+"`2 damage.`.\r\n")
 								enemy.hp -= myAttack
 								if ( enemy.hp < 1 ): # We Win!
 									ctrlWin = True
-									user.write("\r\n  \x1b[31m"+enemy.win+"\x1b[0m\r\n")
+									user.write("\r\n  `1"+enemy.win+"`.\r\n")
 						elif ( (minikey[0] == 'l' or minikey[0] == 'L') and ( user.getSkillUse(2) > 11 ) ): #Light Shield
-							user.write("L\r\n  \x1b[32mYou feel a bit odd.  You dig in a feel better defended\x1b[0m\r\n")
+							user.write("L\r\n  `2You feel a bit odd.  You dig in a feel better defended.`.\r\n")
 							user.updateSkillUse(2, -12)
 							udef = udef * 2
 							tinyQuit = True
@@ -392,23 +392,23 @@ class ffight():
 								ctrlDead = True
 								hisAttack = user.hp # No insult to injury
 							if ( hisAttack > 0 ): # He hit us
-								user.write("\r\n  \x1b[32m"+enemy.name+" hits you with "+enemy.weapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+								user.write("\r\n  `2"+enemy.name+" hits you with "+enemy.weapon+" for `9"+str(hisAttack)+"`2 damage.`.\r\n")
 								user.hp -= hisAttack
 							else: 
-								user.write("\r\n  \x1b[32m"+enemy.name+" misses you completely\x1b[0m\r\n")
+								user.write("\r\n  `2"+enemy.name+" misses you completely.`.\r\n")
 							if ( myAttack > 0 and not ctrlDead ): # We hit him!
-								user.write("\r\n  \x1b[32mYou Shatter "+enemy.name+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+								user.write("\r\n  `2You Shatter "+enemy.name+" for `9"+str(myAttack)+"`2 damage.`.\r\n")
 								enemy.hp -= myAttack
 								if ( enemy.hp < 1 ): # We Win!
 									ctrlWin = True
-									user.write("\r\n  \x1b[31m"+enemy.win+"\x1b[0m\r\n")
+									user.write("\r\n  `1"+enemy.win+"`.\r\n")
 						elif ( (minikey[0] == 'm' or minikey[0] == 'M') and ( user.getSkillUse(2) > 19 ) ): #Mind Heal
-							user.write("M\r\n  \x1b[32mYou feel much better!\x1b[0m\r\n")
+							user.write("M\r\n  `2You feel much better!`.\r\n")
 							user.updateSkillUse(2, -20)
 							hptoadd = user.hpmax - user.hp
 							user.hp = user.hpmax
 							if ( hptoadd < 5 ):
-								user.write("\r\n  \x1b[32mThough, you are likely clinicly retarded.\x1b[0m\r\n")
+								user.write("\r\n  `2Though, you are likely clinicly retarded.`.\r\n")
 							tinyQuit = True
 			else: #Catch non-options
 				skipDisp = True
@@ -416,7 +416,7 @@ class ffight():
 		if ( ctrlWin ) :
 			user.exp += enemy.exp
 			user.gold += enemy.gold
-			user.write("\r\n  \x1b[32mYou have recieved \x1b[1m"+str(enemy.gold)+"\x1b[22m gold and \x1b[1m"+str(enemy.exp)+"\x1b[22m experience\x1b[0m\r\n")
+			user.write("\r\n  `2You have recieved `0"+str(enemy.gold)+"`2 gold and `0"+str(enemy.exp)+"`2 experience.`.\r\n")
 			user.pause()
 		if ( ctrlDead ) :
 			if ( user.fairy == True ):
@@ -450,61 +450,61 @@ class ffight():
 		if ( happening == 1 ):   # Find Gems GOOD!
 			thisfind = random.randint(1, 4)
 			user.write(user.art.line())
-			user.write("  \x1b[32mFortune Smiles Upon You.  You find \x1b[1;37m"+str(thisfind)+"\x1b[0m\x1b[32m gems!\x1b[0m\r\n")
+			user.write("  `2Fortune Smiles Upon You.  You find `%"+str(thisfind)+"`2 gems!`.\r\n")
 			user.write(user.art.line())
 			user.pause()
 			user.gems += thisfind
 		elif ( happening == 2 ): # Find Gold  GOOD!
 			thisfind = random.randint(1, 4) * 200 * user.level
 			user.write(user.art.line())
-			user.write("  \x1b[32mFortune Smiles Upon You.  You find a sack full of \x1b[1;37m"+str(thisfind)+"\x1b[0m\x1b[32m gold!\x1b[0m\r\n")
+			user.write("  `2Fortune Smiles Upon You.  You find a sack full of `%"+str(thisfind)+"`2 gold!`.\r\n")
 			user.write(user.art.line())
 			user.pause()
 			user.gold += thisfind
 		elif ( happening == 3 ): # Hammerstone (attack str++)  GOOD!
 			user.write(user.art.line())
-			user.write("  \x1b[32mYou find a hammer stone.  You quickly hit it as hard as possible.\r\n\r\n  \x1b[1mYour attack strength is raised by 1!\x1b[0m\r\n")
+			user.write("  `2You find a hammer stone.  You quickly hit it as hard as possible.\r\n\r\n  `0Your attack strength is raised by 1!`.\r\n")
 			user.write(user.art.line())
 			user.pause()
 			user.str += 1
 		elif ( happening == 4 ): # Merry Men (hp = hpmax)
 			user.write(user.art.line())
-			user.write("  \x1b[32mYou stumble across a group of merry men.\r\n  They offer you ale you can't resist.\r\n  \x1b[1mYou feel refreshed!\x1b[0m\r\n")
+			user.write("  `2You stumble across a group of merry men.\r\n  They offer you ale you can't resist.\r\n  `0You feel refreshed!`.\r\n")
 			user.write(user.art.line())
 			user.pause()
 			user.hp = user.hpmax
 		elif ( happening == 5 ): # Old Man (gold + (lvl * 500) && charm +1 on help) (costs 1 fight) GOOD!
 			user.write(user.art.line())
-			user.write("  \x1b[32mYou come upon an old man wandering around.\r\n  He asks you for help back to town.\x1b[0m\r\n\r\n")
+			user.write("  `2You come upon an old man wandering around.\r\n  He asks you for help back to town.`.\r\n\r\n")
 			user.write(func.normmenu("(H)elp the old man"))
 			user.write(func.normmenu("(I)gnore him"))
-			user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
+			user.write("\r\n  `2Your command, `0"+user.thisFullname+"`2? `0:`2-`0: `.")
 			miniQuit = False
 			while ( not miniQuit ):
 				key = user.ntcon.recv(2)
 				if ( key[0] == 'h' or key[0] == 'H' ):
 					user.write('H')
 					goldtoadd = user.level * 500
-					user.write("\r\n\r\n  \x1b[32mYou help the old gentleman home.\r\n  \x1b[1mHe gives you "+str(goldtoadd)+" gold and 1 charm!.\x1b[0m\r\n")
+					user.write("\r\n\r\n  `2You help the old gentleman home.\r\n  `0He gives you "+str(goldtoadd)+" gold and 1 charm!.`.\r\n")
 					user.gold += goldtoadd
 					user.charm += 1
 					user.ffight -= 1
 					miniQuit = True
 				elif ( key[0] == 'i' or key[0] == 'I' ):
 					user.write('I')
-					user.write("\r\n  \x1b[31mYou just really \x1b[1mSUCK\x1b[0;31m, don't you?\x1b[0m\r\n")
+					user.write("\r\n  `1You just really `9SUCK`1, don't you?`.\r\n")
 					miniQuit = True
 				else:
 					pass
 			user.pause()
 		elif ( happening == 6 ): # Ugly (33%) and Pretty (66%) stick GOOD!
 			user.write(user.art.line())
-			user.write("  \x1b[32mA demented penguin jumps from the bushes and whacks you with a")
+			user.write("  `2A demented penguin jumps from the bushes and whacks you with a")
 			sticktype = random.randint(1, 3)
 			if ( sticktype == 2 ):
-				user.write("\x1b[1;31m ugly \x1b[0;32m")
+				user.write("`9 ugly `2")
 			else:
-				user.write("\x1b[1m pretty \x1b[0;32m")
+				user.write("`0 pretty `2")
 			user.write("stick!\r\n  Your charm is ")
 			if ( sticktype == 2 ):
 				user.write("lowered")
@@ -513,33 +513,33 @@ class ffight():
 			else:
 				user.write("raised")
 				user.charm += 1
-			user.write(" by 1!!\x1b[0m\r\n")
+			user.write(" by 1!!`.\r\n")
 			user.pause()
 		elif ( happening == 7 ): # Old Hag GOOD!
 			user.write(user.art.line())
-			user.write("  \x1b[32mYou come across an old hag.\r\n\r\n  \x1b[1m\"Give me a gem my pretty, and I will completely heal you!\"\x1b[0;32m\r\n  She screeches!\x1b[0m\r\n\r\n")
+			user.write("  `2You come across an old hag.\r\n\r\n  `0\"Give me a gem my pretty, and I will completely heal you!\"`2\r\n  She screeches!`.\r\n\r\n")
 			user.write(func.normmenu("(G)ive her a gem"))
 			user.write(func.normmenu("(K)ick her and run"))
 			user.write(func.normmenu("(L)eave polietly"))
 			miniQuit = False
 			while ( not miniQuit ):
-				user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
+				user.write("\r\n  `2Your command, `0"+user.thisFullname+"`2? `0:`2-`0: `.")
 				key = user.ntcon.recv(2)
 				if ( key[0] == 'l' or key[0] == 'L' ):
-					user.write("L\r\n\r\n  \x1b[32mThe old hag begins following you like a lost puppy.\x1b[0m\r\n")
+					user.write("L\r\n\r\n  `2The old hag begins following you like a lost puppy.`.\r\n")
 				elif ( key[0] == 'k' or key[0] == 'K' ):
-					user.write("K\r\n\r\n  \x1b[32mYou hate to be rude to your elders, but sometimes deperate times call for\r\n  deperate measures.  You which the old hag in the shin and run for it.\x1b[0m\r\n")
+					user.write("K\r\n\r\n  `2You hate to be rude to your elders, but sometimes deperate times call for\r\n  deperate measures.  You which the old hag in the shin and run for it.`.\r\n")
 					miniQuit = True
 				elif ( key[0] == 'g' or key[0] == 'G' ):
 					user.write('G')
 					if ( user.gems > 0 ):
-						user.write("\r\n\r\n  \x1b[1;32m\"Thank you\"\x1b[0;32m she cackles.\r\n  \x1b[1mYou feel refreshed and renewed\x1b[0m\r\n")
+						user.write("\r\n\r\n  `0\"Thank you\"`2 she cackles.\r\n  `0You feel refreshed and renewed.`.\r\n")
 						user.hpmax += 1
 						user.hp = user.hpmax
 						user.gems -= 1
 						miniQuit = True
 					else:
-						user.write("\r\n\r\n  \x1b[1;32m\"You don't have any gems you stinky cow-pox pustule!\"\[33[0;32m she yells.\r\n  \x1b[1mCome to think of it, you feel rather like a cow-pie.\x1b[0m\r\n")
+						user.write("\r\n\r\n  `0\"You don't have any gems you stinky cow-pox pustule!\"`2 she yells.\r\n  `0Come to think of it, you feel rather like a cow-pie.`.\r\n")
 						user.hp = 1
 						miniQuit = True
 				else: 
@@ -547,16 +547,16 @@ class ffight():
 			user.pause()
 		elif ( happening == 8 ): # Flowers in the forest. GOOD!
 			user.write(user.art.line())
-			user.write("  \x1b[32mYou come across a grove of flowers, and decide to inspect them closer...\r\n  \x1b[1mThere is something written here!\x1b[0m\r\n")
+			user.write("  `2You come across a grove of flowers, and decide to inspect them closer...\r\n  `0There is something written here!`.\r\n")
 			user.pause()
 			util.flowers(user)
 		elif ( happening == 9 ): # rescue man/maiden GOOD!
 			user.write(user.art.line())
-			user.write("  \x1b[32mYou come upon a dead bird.  While gross, you begin to put it out of your\r\n  mind when you notice a scroll attached to it's leg\r\n\r\n")
-			user.write("  \x1b[1mTo Whome It May Concern:\r\n    I have been locked in this terrible tower for many cycles.\r\n    Please save me soon!\n        ~ Elora\r\n\r\n")
+			user.write("  `2You come upon a dead bird.  While gross, you begin to put it out of your\r\n  mind when you notice a scroll attached to it's leg\r\n\r\n")
+			user.write("  `0To Whome It May Concern:\r\n    I have been locked in this terrible tower for many cycles.\r\n    Please save me soon!\n        ~ Elora\r\n\r\n")
 			user.write(func.normmenu("(S)eek the maiden"))
 			user.write(func.normmenu("(I)gnore her plight"))
-			user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
+			user.write("\r\n  `2Your command, `0"+user.thisFullname+"`2? `0:`2-`0:`. ")
 			miniQuit = False
 			while ( not miniQuit ):
 				key = user.ntcon.recv(2)
@@ -568,13 +568,13 @@ class ffight():
 					user.ffight -= 1
 					thisMiniQuit = False
 					thisTower = 0
-					user.write("\r\n\r\n  \x1b[32mWhere do you wish to seek the maiden?\x1b[0m\r\n")
+					user.write("\r\n\r\n  `2Where do you wish to seek the maiden?`.\r\n")
 					user.write(func.normmenu("(K)eep of Hielwain"))
 					user.write(func.normmenu("(S)tarbucks Seattle Spaceneedle"))
 					user.write(func.normmenu("(C)astle Morbidia"))
 					user.write(func.normmenu("(S)ty of Pigashia"))
 					user.write(func.normmenu("(B)logshares Brutal Belfry"))
-					user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
+					user.write("\r\n  `2Your command, `0"+user.thisFullname+"`2? `0:`2-`0:`. ")
 					while ( not thisMiniQuit ):
 						miniData = user.ntcon.recv(2)
 						if ( miniData[0] == 'k' or miniData[0] == 'K' ):
@@ -602,18 +602,18 @@ class ffight():
 					user.write(user.art.tower())
 					user.pause()
 					if ( thisTower == random.randint(1, 5) ): # Correct Choice
-						user.write("\r\n  \x1b[32mYou have choosen \x1b[1mwisely.\x1b[0m\r\n")
-						user.write("  \x1b[32mElora gasps in suprise, saunters over, and thanks you 'properly'\r\n  \x1b[1mYou feel smarter, more gem laden, and -erm- 'satisfied'\x1b[0m\r\n")
+						user.write("\r\n  `2You have choosen `0wisely.`.\r\n")
+						user.write("  `2Elora gasps in suprise, saunters over, and thanks you 'properly'\r\n  `0You feel smarter, more gem laden, and -erm- 'satisfied'`.\r\n")
 						user.gems += 5
 						user.gold += (user.level * 500)
 					else: # WRONG
 						if ( random.randint(1, 2) == 1 ): # REALLY, REALLY WRONG
-							user.write("\r\n  \x1b[32mYou have choosen \x1b[1mpoorly.  really poorly.\x1b[0m\r\n\r\n")
-							user.write("  \x1b[32mYou hear a strange groan and out pops Ken the Magnificent,\r\n  the disfigured midget (er, 'little person').\r\n  Sadly, 'little person' doesn't refer to all of him.\r\n\r\n  \x1b[1mYou feel terrible, both physically and mentally\x1b[0m\r\n")
+							user.write("\r\n  `2You have choosen `1poorly.  `9really poorly.`.\r\n\r\n")
+							user.write("  `2You hear a strange groan and out pops Ken the Magnificent,\r\n  the disfigured midget (er, 'little person').\r\n  Sadly, 'little person' doesn't refer to all of him.\r\n\r\n  `0You feel terrible, both physically and mentally`.\r\n")
 							user.hp = 1
 						else: # NOT SO BAD
-							user.write("\r\n  \x1b[32mYou have choosen \x1b[1mpoorly.\x1b[0m\r\n")
-							user.write("  \x1b[32mYou run like hell before anything bad happens.\x1b[0m\r\n")
+							user.write("\r\n  `2You have choosen `1poorly.`.\r\n")
+							user.write("  `2You run like hell before anything bad happens.`.\r\n")
 					miniQuit = True
 			user.pause()
 		elif ( happening == 10 or happening > 12 ): # lessons DKNIGHT GOOD, 
@@ -639,12 +639,12 @@ class ffight():
 		user = self.user
 		user.write(user.art.fairies())
 		user.pause()
-		user.write("  \x1b[32mYou glance at the fairies, trying to decide what to do.\r\n\r\n")
+		user.write("  `2You glance at the fairies, trying to decide what to do.\r\n\r\n")
 		user.write(func.normmenu("(A)sk for a Blessing"))
 		user.write(func.normmenu("(T)ry and catch one"))
 		miniQuit = False
 		while ( not miniQuit ):
-			user.write("\r\n  \x1b[0m\x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
+			user.write("\r\n  `2Your command, `0"+user.thisFullname+"`2? `0:`2-`0:`. ")
 			miniData = user.ntcon.recv(2)
 			if ( miniData[0] == 'a' or miniData[0] == 'A' ):
 				user.write('A')
@@ -654,117 +654,117 @@ class ffight():
 					# Trap for already has a horse!
 					blessingIs = 2
 				if ( blessingIs == 1 ): # A Kiss
-					user.write("\r\n\r\n  \x1b[32mYou recieve a kiss from Teesha and feel better!\x1b[0m\r\n\r\n")
+					user.write("\r\n\r\n  `2You recieve a kiss from Teesha and feel better!`.\r\n\r\n")
 					user.hp = user.hpmax
 				elif ( blessingIs == 2 ): # Sad Stories
-					user.write("\r\n\r\n  \x1b[32mThe fairies tell you sad stories.\r\n  \x1b[1mYou're tears turn into gems!\x1b[0m\r\n\r\b")
+					user.write("\r\n\r\n  `2The fairies tell you sad stories.\r\n  `0You're tears turn into gems!`.\r\n\r\b")
 					user.gems += 2
 				elif ( blessingIs == 3 ): # Fairy lore.
-					user.write("\r\n\r\n  \x1b[32mThe fairies tell you secret fairly lore.\r\n  \x1b[1mYou feel smarter\x1b[0m\r\n\r\b")
+					user.write("\r\n\r\n  `2The fairies tell you secret fairly lore.\r\n  `0You feel smarter.`.\r\n\r\b")
 					user.exp += ( user.level * 20 )
 				elif ( blessingIs == 4 ): # The Horse
-					user.write("\r\n\r\n  \x1b[32mThe fairys bless you with a new companion!\r\n  Please remember, horses are for riding, not, er... \x1b[1m*riding*\x1b[0m\r\n\r\n")
+					user.write("\r\n\r\n  `2The fairys bless you with a new companion!\r\n  Please remember, horses are for riding, not, er... `0*riding*`.\r\n\r\n")
 					user.horse = 1
 				else:
-					user.write("\r\n\r\n  \x1b[1;37mWTF?\x1b[0m\r\n\r\n")
+					user.write("\r\n\r\n  `%WTF?`.\r\n\r\n")
 			if ( miniData[0] == 't' or miniData[0] == 'T' ):
 				user.write('T')
 				miniQuit = True
 				caughtIt = random.randint(1, 3)
 				if ( caughtIt == 3 ):  # Grabbed One!
-					user.write("\r\n\r\n  \x1b[32mYou managed to grab one!\r\n  You place it in your pocket for later.\x1b[0m\r\n")
+					user.write("\r\n\r\n  `2You managed to grab one!\r\n  You place it in your pocket for later.`.\r\n")
 					user.fairy = 1
 				else:
-					user.write("\r\n\r\n  \x1b[32mYou MISS!  And grab a thornberry bush instead!\x1b[0m\r\n")
+					user.write("\r\n\r\n  `2You `0MISS`2!  And grab a thornberry bush instead!`.\r\n")
 					user.hp = 1
 	
 	def lesson_d(self) :
 		""" Learn to be a death kniofht"""
 		user = self.user
 		user.write(user.art.line())
-		user.write("\r\n  \x1b[32mYou come upon a group of warriors, they carry the look of a proud people.\x1b[0m\r\n")
-		user.write("\r\n   \x1b[1;32mDeath Knight #1: \x1b[0;32mWe shall teach you the ways of the death knights weakling.\x1b[0m\r\n\r\n")
-		user.write("   \x1b[1;32mDeath Knight #2: \x1b[0;32mAye.  But you must prove your wisdom first.\r\n                    This man is guilty of a crime.\x1b[0m\r\n\r\n")
-		user.write("   \x1b[1;32mDeath Knight #1: \x1b[0;32mYup.  Or he's completely innocent.  Decide wisely.!\x1b[0m\r\n\r\n")
+		user.write("\r\n  `2You come upon a group of warriors, they carry the look of a proud people.`.\r\n")
+		user.write("\r\n   `3Death Knight #1: `2We shall teach you the ways of the death knights weakling.`.\r\n\r\n")
+		user.write("   `3Death Knight #2: `2Aye.  But you must prove your wisdom first.\r\n                    This man is guilty of a crime.\r\n\r\n")
+		user.write("   `3Death Knight #1: `2Yup.  Or he's completely innocent.  Decide wisely.!\r\n\r\n")
 		user.write(func.normmenu("(K)ill Him"))
 		user.write(func.normmenu("(F)ree him as an innocent"))
-		user.write("\r\n  \x1b[0m\x1b[32mYour choice, \x1b[1m"+user.thisFullname+"\x1b[22m? (K,F) \x1b[0m\x1b[32m:-: \x1b[0m")
+		user.write("\r\n  `2Your choice, `0"+user.thisFullname+"`2? `8(K,F) `0:`2-`0:`. ")
 		miniQuit = False
 		while ( not miniQuit ):
 			key = user.ntcon.recv(2)
 			if not key: break
 			elif ( key[0] == 'k' or key[0] == 'K' ):
 				user.write('K')
-				user.write("\r\n  \x1b[32mYou draw your weapon, and ram it as hard as you can through his midsection.\x1b[0m\r\n")
+				user.write("\r\n  `2You draw your weapon, and ram it as hard as you can through his midsection.`.\r\n")
 				thisChoice = 1
 				miniQuit = True
 			elif ( key[0] == 'f' or key[0] == 'F' ):
 				user.write('F')
-				user.write("\r\n  \x1b[32mYou consider a moment, and shout \"Let him live!  He's done nothing wrong!\"\x1b[0m\r\n")
+				user.write("\r\n  `2You consider a moment, and shout \"Let him live!  He's done nothing wrong!\"`.\r\n")
 				thisChoice = 2
 				miniQuit = True
 	
-		user.write("\r\n  \x1b[1;37m...")
+		user.write("\r\n  `%...")
 		time.sleep(1)
-		user.write("\x1b[31mAND\x1b[37m")
+		user.write("`1AND`%")
 		time.sleep(1)
-		user.write("...\x1b[0m")
+		user.write("...`.\r\n")
 		
 		if ( thisChoice == random.randint(1,2) ):
-			user.write("\r\n   \x1b[1;32mDeath Knight #1: \x1b[0;32mWell spotted young warrior.\r\n                    We shall teach you!\x1b[0m\r\n\r\n")
-			user.write("  \x1b[32mYou recieve \x1b[1m1\x1b[0;32m use point")
+			user.write("\r\n   `3Death Knight #1: `2Well spotted young warrior.\r\n                    We shall teach you!`.\r\n\r\n")
+			user.write("  `2You recieve `01`2 use point")
 			user.updateSkillUse(1, 1)
 			user.hp = user.hpmax
 			if ( user.getSkillPoint(1) < 40 ):
 				user.updateSkillPoint(1, 1)
-				user.write(" and \x1b[1m1\x1b[0;32m skill point")
-			user.write(".\x1b[0m\r\n")
+				user.write(" and `01`2 skill point")
+			user.write(".`.\r\n")
 		else:
-			user.write("\r\n   \x1b[1;32mDeath Knight #3: \x1b[0;32mOh god no!  That wasn't right at all!\r\n                    Somebody get a mop and a bandaid!\x1b[0m\r\n\r\n")
+			user.write("\r\n   `3Death Knight #3: `2Oh god no!  That wasn't right at all!\r\n                    Somebody get a mop and a bandaid!`.\r\n\r\n")
 	
 	def lesson_t(self) :
 		""" LEarn to be a thief """
 		user = self.user
 		user.write(user.art.line())
-		user.write("\r\n  \x1b[32mYou come upon a gathering of the theives guild, they kinda smell bad.\x1b[0m\r\n")
-		user.write("\r\n   \x1b[1;32mThief #1: \x1b[0;32mWe can make you a better thief.  Just cost ya a gem.\x1b[0m\r\n")
+		user.write("\r\n  `2You come upon a gathering of the theives guild, they kinda smell bad.`.\r\n")
+		user.write("\r\n   `3Thief #1: `2We can make you a better thief.  Just cost ya a gem.`.\r\n")
 		user.write(func.normmenu("(G)ive him the gem"))
 		user.write(func.normmenu("(S)pit on him and walk away"))
 		user.write(func.normmenu("(M)utter incoherantly, hoping he'll leave"))
-		user.write("\r\n  \x1b[0m\x1b[32mYour choice, \x1b[1m"+user.thisFullname+"\x1b[22m? (G,S,M) \x1b[0m\x1b[32m:-: \x1b[0m")
+		user.write("\r\n  `2Your choice, `0"+user.thisFullname+"`2? `8(G,S,M) `0:`2-`0:`. ")
 		miniQuit = False
 		while ( not miniQuit ):
 			key = user.ntcon.recv(2)
 			if not data: break
 			elif ( key[0] == 's' or key[0] == 'S' ):
-				user.write("S\r\n  \x1b[32mAs you spit on him, the thief looks at you closely.  He almost looks proud.\x1b[0m\r\n")
+				user.write("S\r\n  `2mAs you spit on him, the thief looks at you closely.  He almost looks proud.`.\r\n")
 				miniQuit = True
 			elif ( key[0] == 'm' or key[0] == 'M' ):
-				user.write("M\r\n  \x1b[32mAs the thief leaves, you distincly hear the words \"nutjob\" and \"jackass\".  Oh well.\x1b[0m\r\n")
+				user.write("M\r\n  `2As the thief leaves, you distincly hear the words \"nutjob\" and \"jackass\".  Oh well.`.\r\n")
 				miniQuit = True
 			elif ( key[0] == 'g' or key[0] == 'G' ):
 				user.write('G')
 				if ( user.gems > 0 ):
 					user.updateSkillUse(3, 1)
-					user.write("\r\n  \x1b[32mYou recieve \x1b[1m1\x1b[0;32m use point")
+					user.write("\r\n  `2You recieve `01`2 use point")
 					if ( user.getSkillPoint(3) < 40 ):
 						user.updateSkillPoint(3, 1)
-						user.write(" and \x1b[1m1\x1b[0;32m skill point")
-					user.write(".\x1b[0m\n")
+						user.write(" and `01`2 skill point")
+					user.write(".`.\n")
 					user.gems -= 1
 				else:
-					user.write("\r\n  \x1b[1;32mThief #1: \x1b[0;32mYou don't have any gems dumbass.\x1b[0m\r\n")
+					user.write("\r\n  `3Thief #1: `2You don't have any gems dumbass.`.\r\n")
 				miniQuit = True
 	
 	def lesson_m(self) :
 		""" Learn about magic """
 		user = self.user
 		user.write(user.art.line())
-		user.write("\r\n  \x1b[32mYou come upon an old house.  You sense an old mage might live here.\x1b[0m\r\n")
+		user.write("\r\n  `2You come upon an old house.  You sense an old mage might live here.`.\r\n")
 		user.write(func.normmenu("(K)nock on the door"))
 		user.write(func.normmenu("(B)ang on the door"))
 		user.write(unc_normmenu("(L)eave"))
-		user.write("\r\n  \x1b[0m\x1b[32mYour choice, \x1b[1m"+user.thisFullname+"\x1b[22m? (K,B,L) \x1b[0m\x1b[32m:-: \x1b[0m")
+		user.write("\r\n  `2Your choice, `0"+user.thisFullname+"`2? `8(K,B,L) `0:`2-`0:`. ")
 		miniQuit1 = False
 		miniQuit2 = False
 		
@@ -773,29 +773,29 @@ class ffight():
 			if not key: break
 			elif ( key[0] == 'k' or key[0] == 'K' ):
 				user.write('K')
-				user.write("\r\n  \x1b[32mYou knock polietly on the door.\x1b[0m\n")
+				user.write("\r\n  `2You knock polietly on the door.`.\r\n")
 				miniQuit1 = True
 			elif ( key[0] == 'b' or key[0] == 'B' ):
 				user.write('B')
-				user.write("\r\n  \x1b[32mYou bang wildly on the door.\x1b[0m\n")
+				user.write("\r\n  `2You bang wildly on the door.`.\r\n")
 				miniQuit1 = True
 			elif ( key[0] == 'l' or key[0] == 'L' ):
 				user.write('L')
-				user.write("\n  \x1b[32mYou leave, confident in finding better things to do.\x1b[0m\n")
+				user.write("\r\n  `2You leave, confident in finding better things to do.`.\r\n")
 				miniQuit1 = True
 				miniQuit2 = True
 	
 		if ( not miniQuit2 ):
 			if ( random.randint(1, 5) == 2 ):
-				user.write("\r\n  \x1b[32mNothing happens, and you leave.\x1b[0m\r\n")
+				user.write("\r\n  `2Nothing happens, and you leave.`.\r\n")
 			else:
-				user.write("\r\n  \x1b[32mThe old man rips open the door and screams \"WHAT?!?\"\x1b[0m\r\n")
-				user.write("  \x1b[32mHe then gazes at you and says \"I'll teach you magic if you can guess\r\n  the number I'm thinking of.  It's between 1 and 100\x1b[0m\r\n")
+				user.write("\r\n  `2The old man rips open the door and screams `!\"WHAT?!?\"`.\r\n")
+				user.write("  `2He then gazes at you and says \"I'll teach you magic if you can guess\r\n  the number I'm thinking of.  It's between 1 and 100`.\r\n")
 				magicNumber  = random.randint(1, 100)
 				magicCorrect = False
 				magicGuess   = 0
 				while ( magicGuess < 7 ):
-					user.write("\r\n  \x1b[0m\x1b[32mYour guess, \x1b[1m"+user.thisFullname+"\x1b[22m? \x1b[0m\x1b[32m:-: \x1b[0m")
+					user.write("\r\n  `2Your guess, `0"+user.thisFullname+"`2? `0:`2-`0:`. ")
 					try: 
 						thisGuess = int(func.getLine(user.ntcon, True))
 					except ValueError:
@@ -805,21 +805,21 @@ class ffight():
 						magicCorrect = True
 					else:
 						if ( thisGuess < magicNumber ):
-							user.write("\r\n  \x1b[32mHigher!\x1b[0m\r\n")
+							user.write("\r\n  `2Higher!`.\r\n")
 						if ( thisGuess > magicNumber ):
-							user.write("\r\n  \x1b[32mLower!\x1b[0m\r\n")
+							user.write("\r\n  `2Lower!`.\r\n")
 					magicGuess += 1
 	
 				if ( magicCorrect ):
-					user.write("\r\n  \x1b[32mWell Done young mage!\x1b[0m\r\n")
+					user.write("\r\n  `2Well Done young mage!`0\r\n")
 					user.updateSkillUse(2, 1)
-					user.write("  \x1b[32mYou recieve \x1b[1m1\x1b[0;32m use point")
+					user.write("  `2You recieve `01`2 use point")
 					if ( user.getSkillPoint(2) < 40 ):
 						user.updateSkillPoint(2, 1)
-						user.write(" and \x1b[1m1\x1b[0;32m skill point")
-					user.write(".\x1b[0m\r\n")
+						user.write(" and `01`2 skill point")
+					user.write(".`.\r\n")
 				else:
-					user.write("\r\n  \x1b[32mBetter luck next time!\x1b[0m\r\n")
+					user.write("\r\n  `2Better luck next time!`.\r\n")
 
 	def dragon(self):
 		""" Forest Fight System """
@@ -835,10 +835,10 @@ class ffight():
 		thisEnemyName   = "The Red Dragon"
 		thisEnemyWeapon = "Set Later."
 		
-		user.write("\r\n\r\n  \x1b[32m**\x1b[1;37mFIGHT\x1b[0m\x1b[32m**\r\n")
-		user.write("\r\n  \x1b[32mYou have encountered "+thisEnemyName+"!!\x1b[0m\r\n")
+		user.write("\r\n\r\n  `2**`%FIGHT`2**\r\n")
+		user.write("\r\n  `2You have encountered "+thisEnemyName+"!!`.\r\n")
 	
-		user.write("\r\n  \x1b[32mYour skill allows you to get the first strike.\x1b[0m\r\n")
+		user.write("\r\n  `2Your skill allows you to get the first strike.`.\r\n")
 	
 		skipDisp = False
 		while ( user.hp > 0 and thisEnemyHP > 0 and not ctrlDead and not ctrlRan ): # FIGHT LOOP
@@ -874,12 +874,12 @@ class ffight():
 					ctrlDead = True
 					hisAttack = user.hp # No insult to injury
 				if ( hisAttack > 0 ): # He hit us
-					user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+					user.write("\r\n  `2"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for `9"+str(hisAttack)+"`2 damage.`.\r\n")
 					user.hp -= hisAttack
 				else: 
-					user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
+					user.write("\r\n  `2"+thisEnemyName+" misses you completely.`.\r\n")
 				if ( myAttack > 0 and not ctrlDead ): # We hit him!
-					user.write("\r\n  \x1b[32mYou hit "+thisEnemyName+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+					user.write("\r\n  `2You hit "+thisEnemyName+" for `9"+str(myAttack)+"`2 damage.`.\r\n")
 					thisEnemyHP = thisEnemyHP - myAttack
 					if ( thisEnemyHP < 1 ): # We Win!
 						ctrlWin = True
@@ -896,17 +896,17 @@ class ffight():
 						ctrlDead = True
 						hisAttack = user.hp # No insult to injury
 					if ( hisAttack > 0 ): # He hit us
-						user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+						user.write("\r\n  `2"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for `9"+str(hisAttack)+"`2 damage.`.\r\n")
 						user.hp -= hisAttack
 					else: 
-						user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
+						user.write("\r\n  `2"+thisEnemyName+" misses you completely.`.\r\n")
 					if ( myAttack > 0 and not ctrlDead ): # We hit him!
-						user.write("\r\n  \x1b[1;32mUltra Powerful Move!\x1b[0m\r\n  \x1b[32mYou hit "+thisEnemyName+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+						user.write("\r\n  `0Ultra Powerful Move!\r\n  `2You hit "+thisEnemyName+" for `9"+str(myAttack)+"`2 damage.`.\r\n")
 						thisEnemyHP = thisEnemyHP - myAttack
 						if ( thisEnemyHP < 1 ): # We Win!
 							ctrlWin = True
 				else:
-					user.write("\r\n  \x1b[32mYou have no Death Knight Skill Use Points!\x1b[0m\r\n\r\n")
+					user.write("\r\n  `2You have no Death Knight Skill Use Points!`.\r\n\r\n")
 			elif ( key[0] == 't' or key[0] == 'T' ): # Attack!
 				user.write("T\r\n")
 				if ( user.getSkillUse(3) > 0 ):
@@ -920,17 +920,17 @@ class ffight():
 						ctrlDead = True
 						hisAttack = user.hp # No insult to injury
 					if ( hisAttack > 0 ): # He hit us
-						user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+						user.write("\r\n  `2"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for `9"+str(hisAttack)+"`2 damage.`.\r\n")
 						user.hp -= hisAttack
 					else: 
-						user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
+						user.write("\r\n  `2"+thisEnemyName+" misses you completely.`.\r\n")
 					if ( myAttack > 0 and not ctrlDead ): # We hit him!
-						user.write("\r\n  \x1b[1;32mUltra Sneaky Move!\x1b[0m\r\n  \x1b[32mYou hit "+thisEnemyName+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+						user.write("\r\n  `0Ultra Sneaky Move!\r\n  `2You hit "+thisEnemyName+" for `9"+str(myAttack)+"`2 damage.`.\r\n")
 						thisEnemyHP = thisEnemyHP - myAttack
 						if ( thisEnemyHP < 1 ): # We Win!
 							ctrlWin = True
 				else:
-					user.write("\r\n  \x1b[32mYou have no Thief Skill Use Points!\x1b[0m\r\n\r\n")
+					user.write("\r\n  `2You have no Thief Skill Use Points!`.\r\n\r\n")
 			elif ( key[0] == 'r' or key[0] == 'R' ): # Run Away
 				if ( random.randint(1, 10) == 4 ): # Hit in the back.
 					hisAttack = ( thisEnemyHit + random.randint(0, thisEnemyHit)) - thisUserDefense
@@ -938,21 +938,21 @@ class ffight():
 						ctrlDead = True
 						hisAttack = user.hp # No insult to injury
 					if ( hisAttack > 0 ): # He hit us
-						user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you in the back with it's "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\r\n")
+						user.write("\r\n  `2"+thisEnemyName+" hits you in the back with it's "+thisEnemyWeapon+" for `9"+str(hisAttack)+"`2 damage.`.\r\n")
 						user.hp -= hisAttack
 						ctrlRan = True
 				else:
-					user.write("\r\n  \x1b[32mYou narrowly escape harm.\x1b[0m\r\n")
+					user.write("\r\n  `2You narrowly escape harm.`.\r\n")
 					ctrlRan = True
 			elif ( key[0] == 'q' or key[0] == 'Q' ):
-				user.write("\r\n  \x1b[31mYou are in Combat!  Try Running!\x1b[0m\r\n")
+				user.write("\r\n  `1You are in Combat!  Try Running!`.\r\n")
 			elif ( key[0] == 'h' or key[0] == 'H' ):
-				user.write("\r\n  \x1b[32mYou are in combat, and they don't make house calls!\x1b[0m\r\n")
+				user.write("\r\n  `2You are in combat, and they don't make house calls!`.\r\n")
 			elif ( key[0] == 'l' or key[0] == 'L' ):
-				user.write("\r\n  \x1b[32mWhat?!  You want to fight two at once?\x1b[0m\r\n")
+				user.write("\r\n  `2What?!  You want to fight two at once?`.\r\n")
 			elif ( key[0] == 'm' or key[0] == 'M' ): #Magic!
 				if ( user.getSkillUse(2) < 1 ):
-					user.write("\r\n  \x1b[32mYou have no Magical Use Points!\x1b[0m\r\n\r\n")
+					user.write("\r\n  `2You have no Magical Use Points!`.\r\n\r\n")
 				else:
 					user.write("\r\n" + func.normmenu("(N)evermind") + func.normmenu("(P)inch Real Hard (1)"))
 					if ( user.getSkillUse(2) > 3 ):
@@ -965,13 +965,13 @@ class ffight():
 									user.write(func.normmenu("(S)hatter (16)"))
 									if ( user.getSkillUse(2) > 19 ):
 										user.write(func.normmenu("(M)ind Heal (20)"))
-					user.write("\r\n  \x1b[32mYour command, \x1b[1m"+user.thisFullname+"\x1b[22m? [\x1b[1;35mA\x1b[0m\x1b[32m] : \x1b[0m")
+					user.write("\r\n  `2Your command, `0"+user.thisFullname+"`2? [`#A`2] `0:`2-`0:`. ")
 					tinyQuit = False
 					while ( not tinyQuit ):
 						miniData = user.ntcon.recv(2)
 						if not miniData: break
 						elif ( miniData[0] == 'n' or miniData[0] == 'N' ): #Nothing
-							user.write("N\r\n  \x1b[32mSure thing boss.\x1b[0m\r\n")
+							user.write("N\r\n  `2Sure thing boss.`.\r\n")
 							tinyQuit = True
 						elif ( miniData[0] == 'p' or miniData[0] == 'P' ): #Pinch!
 							user.write("P")
@@ -986,17 +986,17 @@ class ffight():
 								ctrlDead = True
 								hisAttack = user.hp # No insult to injury
 							if ( hisAttack > 0 ): # He hit us
-								user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+								user.write("\r\n  `2"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for `9"+str(hisAttack)+"`2 damage.`.\r\n")
 								user.hp -= hisAttack
 							else: 
-								user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
+								user.write("\r\n  `2"+thisEnemyName+" misses you completely.`.\r\n")
 							if ( myAttack > 0 and not ctrlDead ): # We hit him!
-								user.write("\r\n  \x1b[32mYou pinch "+thisEnemyName+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+								user.write("\r\n  `2You pinch "+thisEnemyName+" for `9"+str(myAttack)+"`2 damage.`.\r\n")
 								thisEnemyHP = thisEnemyHP - myAttack
 								if ( thisEnemyHP < 1 ): # We Win!
 									ctrlWin = True
 						elif ( (miniData[0] == 'd' or miniData[0] == 'D') and ( user.getSkillUse(2) > 3 ) ): #Disappear
-							user.write("D\r\n  \x1b[32mYou disapper like a ghost!\x1b[0m\r\n")
+							user.write("D\r\n  `2You disapper like a ghost!`.\r\n")
 							user.updateSkillUse(2, -4)
 							tinyQuit = True
 							ctrlRan = True
@@ -1013,17 +1013,17 @@ class ffight():
 								ctrlDead = True
 								hisAttack = user.hp # No insult to injury
 							if ( hisAttack > 0 ): # He hit us
-								user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+								user.write("\r\n  `2"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for `9"+str(hisAttack)+"`2 damage.`.\r\n")
 								user.hp -= hisAttack
 							else: 
-								user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
+								user.write("\r\n  `2"+thisEnemyName+" misses you completely.`.\r\n")
 							if ( myAttack > 0 and not ctrlDead ): # We hit him!
-								user.write("\r\n  \x1b[32mYou blast "+thisEnemyName+" with Heat Wave for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+								user.write("\r\n  `2You blast "+thisEnemyName+" with Heat Wave for `9"+str(myAttack)+"`2 damage.`.\r\n")
 								thisEnemyHP = thisEnemyHP - myAttack
 								if ( thisEnemyHP < 1 ): # We Win!
 									ctrlWin = True
 						elif ( (miniData[0] == 'l' or miniData[0] == 'L') and ( user.getSkillUse(2) > 11 ) ): #Light Shield
-							user.write("L\r\n  \x1b[32mYou feel a bit odd.  You dig in a feel better defended\x1b[0m\r\n")
+							user.write("L\r\n  `2You feel a bit odd.  You dig in a feel better defended.`.\r\n")
 							user.updateSkillUse(2, -12)
 							thisUserDefense = thisUserDefense * 2
 							tinyQuit = True
@@ -1040,22 +1040,22 @@ class ffight():
 								ctrlDead = True
 								hisAttack = user.hp # No insult to injury
 							if ( hisAttack > 0 ): # He hit us
-								user.write("\r\n  \x1b[32m"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for \x1b[1;31m"+str(hisAttack)+"\x1b[0m\x1b[32m damage\x1b[0m\r\n")
+								user.write("\r\n  `2"+thisEnemyName+" hits you with "+thisEnemyWeapon+" for `9"+str(hisAttack)+"`2 damage.`.\r\n")
 								user.hp -= hisAttack
 							else: 
-								user.write("\r\n  \x1b[32m"+thisEnemyName+" misses you completely\x1b[0m\r\n")
+								user.write("\r\n  `."+thisEnemyName+" misses you completely.`.\r\n")
 							if ( myAttack > 0 and not ctrlDead ): # We hit him!
-								user.write("\r\n  \x1b[32mYou Shatter "+thisEnemyName+" for \x1b[1;31m"+str(myAttack)+"\x1b[0m\x1b[32m damage\r\n")
+								user.write("\r\n  `2You Shatter "+thisEnemyName+" for `9"+str(myAttack)+"`2 damage.`.\r\n")
 								thisEnemyHP = thisEnemyHP - myAttack
 								if ( thisEnemyHP < 1 ): # We Win!
 									ctrlWin = True
 						elif ( (miniData[0] == 'm' or miniData[0] == 'M') and ( user.getSkillUse(2) > 19 ) ): #Mind Heal
-							user.write("M\r\n  \x1b[32mYou feel much better!\x1b[0m\r\n")
+							user.write("M\r\n  `2You feel much better!`.\r\n")
 							user.updateSkillUse(2, -20)
 							hptoadd = user.hpmax - user.hp
 							user.hp = user.hpmax
 							if ( hptoadd < 5 ):
-								user.write("\r\n  \x1b[32mEven though you are clearly a fuck-tard...\x1b[0m\r\n")
+								user.write("\r\n  `2Even though you are clearly a fuck-tard...`.\r\n")
 							tinyQuit = True
 			else: #Catch non-options
 				skipDisp = True
@@ -1076,22 +1076,22 @@ class ffight():
 			user.weapon = 1
 			user.armor = 1
 			
-			lamentThis = "{32}{1}"+user.thisFullname+" {0}{32}Decimated {0}{31}{1}The Red Dragon!!! {0}{32}Rejoice!!!{0}"
+			lamentThis = "`0"+user.thisFullname+" `9Decimated `2The `1Red `2Dragon!!! `%Rejoice!!!`."
 			user.dbcon.execute("INSERT INTO daily ( `data` ) VALUES ( ? )", (lamentThis,))
 			user.dbcon.commit()
 			user.write(func.casebold("\r\n\r\n  You have defeated the Dragon, and saved the town.  Your stomach\r\n", 2))
-			user.write(func.casebold("\x1b[32m  churns at the site of stacks of clean white bones - Bones of small\r\n", 2))
-			user.write(func.casebold("\x1b[32m  children.\r\n\r\n", 2))
+			user.write(func.casebold("  churns at the site of stacks of clean white bones - Bones of small\r\n", 2))
+			user.write(func.casebold("  children.\r\n\r\n", 2))
 			user.write(func.casebold("  THANKS TO YOU, THE HORROR HAS ENDED!\r\n\r\n", 2))
 			user.pause()
 			for myline in data.endstory[user.cls]:
-				user.write("\x1b[32m"+myline+"\x1b[0m\r\n")
+				user.write("`2"+myline+"`0\r\n")
 			user.pause()
 			user.write(func.casebold("                  ** YOUR QUEST IS NOT OVER **\r\n\r\n", 2))
 			user.write(func.casebold("  You are a hero.  Bards will sing of your deeds, but that doesn't\r\n", 2))
-			user.write(func.casebold("\x1b[32m  mean your life doesn't go on.\r\n", 2))
+			user.write(func.casebold("  mean your life doesn't go on.\r\n", 2))
 			user.write(func.casebold("  YOUR CHARACTER WILL NOW BE RESET.  But you will keep a few things\r\n", 2))
-			user.write(func.casebold("\x1b[32m  you have earned.  Like the following.\r\n", 2))
+			user.write(func.casebold("  you have earned.  Like the following.\r\n", 2))
 			user.write(func.casebold("  ALL SPECIAL SKILLS.\r\n  CHARM.\r\n  A FEW OTHER THINGS.\r\n", 2))			
 			user.pause()
 			
@@ -1103,11 +1103,11 @@ class ffight():
 			else:
 				user.alive = 0
 				#exception handles, do it later. user.logout()
-				lamentThis = "{31}{1}The Red Dragon{0}{32} Decimated "+user.thisFullname+"{0}"
+				lamentThis = "`2The `1Red `2Dragon `9Decimated `2"+user.thisFullname+"`."
 				user.dbcon.execute("INSERT INTO daily ( `data` ) VALUES ( ? )", (lamentThis,))
 				user.dbcon.commit()
 				user.write(func.casebold("\r\n\r\n  The Dragon pauses to look at you, then snorts in a Dragon laugh, and\r\n", 1))
-				user.write(func.casebold("\x1b[31m  delicately rips your head off, with the finess only a Dragon well\r\n", 1))
-				user.write(func.casebold("\x1b[31m  practiced in the art could do.\r\n", 1))
+				user.write(func.casebold("  delicately rips your head off, with the finess only a Dragon well\r\n", 1))
+				user.write(func.casebold("  practiced in the art could do.\r\n", 1))
 				raise Exception('normal', "User is DOA.  Bummer.")
 	

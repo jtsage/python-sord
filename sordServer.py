@@ -116,7 +116,7 @@ class eachClient(threading.Thread):
 					sord.base.func.slowecho(connection, sord.base.func.casebold("\r\n\r\nDisconnecting - Too Many Login Attempts\r\n", 1), lineconfig[0], lineconfig[1])
 					log.add('  !!! Too Many Login Attemtps::' + str(thisClientAddress))
 					raise Exception, "Too many bad logins!"
-				sord.base.func.slowecho(connection, sord.base.func.casebold("\r\n\r\nWelcome Warrior!  Enter Your Login Name (OR '\x1b[1m\x1b[31mnew\x1b[32m') :-: ", 2), lineconfig[0], lineconfig[1])
+				sord.base.func.slowecho(connection, sord.base.func.casebold("\r\n\r\nWelcome Warrior!  Enter Your Login Name (OR '`9new`2') :-: ", 2), lineconfig[0], lineconfig[1])
 				username = sord.base.func.getLine(connection, True)
 				currentUser = sord.base.userlib.sorduser(username, sqc, connection, art, config, log, lineconfig[0], lineconfig[1])
 				if ( currentUser.thisUserID > 0 ):

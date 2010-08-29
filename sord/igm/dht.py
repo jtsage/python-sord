@@ -60,13 +60,13 @@ class dht():
 	def main_menu(self):
 		""" DHT :: Main Menu"""
 		user = self.user
-		thismsg  = "\r\n\r\n\x1b[32m                          Dark Cloak Tavern\r\n"
+		thismsg  = "\r\n\r\n`2                          Dark Cloak Tavern`.\r\n"
 		thismsg += user.art.line()
-		thismsg += "  \x1b[32mA blazing fire warms your heart as well as your body in this fragrant.\x1b[0m\r\n"
-		thismsg += "  \x1b[32mroadhouse.  Many a wary traveler has had the good fortune to find this\x1b[0m\r\n"
-		thismsg += "  \x1b[32mcozy hostel, to escape the harsh reality of the dense forest for a few\x1b[0m\r\n"
-		thismsg += "  \x1b[32mmoments.  You notice someone has etched something in the table you are\x1b[0m\r\n"
-		thismsg += "  \x1b[32msitting at.\x1b[0m\r\n\r\n"
+		thismsg += "  `2A blazing fire warms your heart as well as your body in this fragrant.\r\n"
+		thismsg += "  `2roadhouse.  Many a wary traveler has had the good fortune to find this\r\n"
+		thismsg += "  `2cozy hostel, to escape the harsh reality of the dense forest for a few\r\n"
+		thismsg += "  `2moments.  You notice someone has etched something in the table you are\r\n"
+		thismsg += "  `2sitting at.`.\r\n\r\n"
 		thismsg += func.menu_2col("(C)onverse With The Patrons", "(D)aily News", 5, 5)
 		thismsg += func.menu_2col("(E)xamine Etchings In Table", "(Y)our Stats", 5, 5)
 		thismsg += func.menu_2col("(T)alk with Bartender", "(R)eturn to Forest", 5, 5)
@@ -76,9 +76,9 @@ class dht():
 		""" DHT :: Main User Prompt"""
 		user = self.user
 		ptime = func.maketime(user)
-		thismenu  = "\r\n  \x1b[1;35mThe Dark Cloak Tavern\x1b[0m\x1b[1;30m (? for menu)\x1b[0m\r\n"
-		thismenu += "  \x1b[1;30m(C,D,E,Y,T,R)\x1b[0m\r\n\r\n"
-		thismenu += "  \x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
+		thismenu  = "\r\n  `#The Dark Cloak Tavern`8 (? for menu)`.\r\n"
+		thismenu += "  `8(C,D,E,Y,T,R)`.\r\n\r\n"
+		thismenu += "  `2Your command, `0" + user.thisFullname + "`2? `%[`7"+ptime+"`%] `0:`2-`0: `."
 		return thismenu
 
 	def run(self, user):
@@ -116,14 +116,14 @@ class dht():
 				user.write('E')
 				db = user.dbcon.cursor()
 				db.execute("SELECT fullname, fuck FROM users WHERE fuck > 0 ORDER by fuck DESC")
-				user.write("\r\n\r\n  \x1b[32mUsers who have gotten lucky:\x1b[0m\r\n")
+				user.write("\r\n\r\n  `2Users who have gotten lucky:`.\r\n")
 				
 				for row in db.fetchall():
 					if not row:
-						user.write("\r\n\r\n  \x1b[32mWhat a sad thing - there are no carvings here after all.\x1b[0m\r\n")
+						user.write("\r\n\r\n  `2What a sad thing - there are no carvings here after all.`.\r\n")
 					else:
 						for (nombre, data) in row:
-							user.write("  \x1b[32m"+nombre+padnumcol(nombre, 25)+"\x1b[1m"+str(data)+"\x1b[0m\r\n")
+							user.write("  `2"+nombre+padnumcol(nombre, 25)+"`0"+str(data)+"`.\r\n")
 				user.write("\r\n")
 				db.close()
 				user.pause()
@@ -136,14 +136,14 @@ class dht():
 	def converse(self):
 		""" DHT :: Converse with the patrons """
 		user = self.user
-		output  = "\r\n\r\n  \x1b[1;37mConverse with the Patrons\x1b[22;32m....\x1b[0m\r\n"
-		output += "\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
+		output  = "\r\n\r\n  `%Converse with the Patrons`2....`.\r\n"
+		output += "`2                                      -=-=-=-=-=-`.\r\n"
 		db = user.dbcon.cursor()
 		db.execute("SELECT data, nombre FROM (SELECT * FROM dhtpatrons ORDER BY id ASC LIMIT 10) AS tbl ORDER by tbl.id")
 		for (data, nombre) in db.fetchall():
-			output += "    \x1b[32m"+nombre+" \x1b[1;37msays... \x1b[0m\x1b[32m" + func.colorcode(data)
-			output += "\x1b[0m\r\n\x1b[32m                                      -=-=-=-=-=-\x1b[0m\r\n"
-		output += "\r\n  \x1b[32mAdd to the conversation? \x1b[1m: \x1b[0m"
+			output += "    `2"+nombre+" `%says: `2" + data
+			output += "\r\n`2                                      -=-=-=-=-=-`0\r\n"
+		output += "\r\n  `2Add to the conversation? `8(Y/N) `2[`#N`2] `0: `."
 		user.write(output)
 		db.close()
 		yesno = user.ntcon.recv(2)
@@ -154,6 +154,8 @@ class dht():
 			user.dbcon.commit()
 			user.write(func.casebold("\r\n  Wisdom added!\r\n", 2))
 			user.pause()
+		else: 
+			user.write('N')
 			
 	def chance_menu(self):
 		""" DHT :: Chance the Bartender - Menu """
@@ -163,16 +165,16 @@ class dht():
 		thismenu += func.normmenu("(L)earn About Your Enemies")
 		thismenu += func.normmenu("(T)alk About Colors")
 		thismenu += func.normmenu("(R)eturn to Tavern")
-		thismenu += "\r\n  \x1b[32mYour command, \x1b[1m" + user.thisFullname + "\x1b[22m? \x1b[1;37m[\x1b[22m"+ptime+"\x1b[1m] \x1b[0m\x1b[32m:-: \x1b[0m"
+		thismenu += "\r\n  `2Your command, `0" + user.thisFullname + "`2? `%[`7"+ptime+"`%] `0:`2-`0: `."
 		return thismenu
 	
 	def chance(self):
 		""" DHT :: Chance the bartender run logic """
 		user = self.user
-		header = "\r\n\r\n  \x1b[32m              Talking To Chance\x1b[0m\r\n"
-		header += "\x1b[32m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\x1b[0m\r\n"
-		header += "  \x1b[32mYou seat yourself next to the bartender,\x1b[0m\r\n"
-		header += "  \x1b[32mfor some reason you like him.          \x1b[0m\r\n\r\n"
+		header = "\r\n\r\n  `2              Talking To Chance`.\r\n"
+		header += "`2-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-`.\r\n"
+		header += "  `2You seat yourself next to the bartender,`.\r\n"
+		header += "  `2for some reason you like him.          `.\r\n\r\n"
 		thisQuit = False
 		skipDisp = False
 		while ( not thisQuit ):
@@ -187,20 +189,20 @@ class dht():
 				thisQuit = True
 			elif ( key[0] == 't' or key[0] == 'T' ):
 				user.write('T')
-				user.write("\r\n\r\n  \x1b[32mColors are easy my friend!\r\n\r\n  Just use a ` character followed by one\r\n  of the following:\r\n    `11`22`33`44`55`66`77`88`99`00`!!`@@`##`$$`%%\x1b[0m\r\n")
+				user.write("\r\n\r\n  `2Colors are easy my friend!\r\n\r\n  Just use a ` character followed by one\r\n  of the following:\r\n    `11 `22 `33 `44 `55 `66 `77 `88\r\n    `99 `00 `!! `@@ `## `$$ `%%`.\r\n")
 				user.pause()
 			elif ( key[0] == 'l' or key[0] == 'L' ):
 				user.write('L')
-				whoid = util.finduser(user, "\r\n  \x1b[32mGet information on who?")
+				whoid = util.finduser(user, "\r\n  `2Get information on who?")
 				if ( whoid > 0 ):
 					whoName = user.userGetLogin(whoid)
 					whoCost = user.level * 100
-					user.write("\r\n  \x1b[32mThat will be \x1b[1m"+str(whoCost)+"\x1b[0;32m gold.  Ok? ")
+					user.write("\r\n  `2That will be `0"+str(whoCost)+"`2 gold.  Ok? ")
 					yesno = user.ntcon.recv(2)
 					if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 						user.write('Y')
 						if ( user.gold < whoCost ):
-							user.write("\r\n  \x1b[32mYou don't have enough gold jackass!\x1b[0m\r\n")
+							user.write("\r\n  `2You don't have enough gold jackass!`.\r\n")
 						else:
 							usertoSee = userlib.sorduser(whoName, user.dbcon, user.ntcon, user.art)
 							user.gold -= whoCost
@@ -209,9 +211,9 @@ class dht():
 							user.pause()
 					else:
 						user.write('N')
-						user.write("\r\n  \x1b[32mOk.  You got it.\x1b[0m\r\n")
+						user.write("\r\n  `2Ok.  You got it.`.\r\n")
 				else: 
-					user.write("\r\n  \x1b[32mOk.  Nevermind.\x1b[0m\r\n")
+					user.write("\r\n  `2Ok.  Nevermind.`.\r\n")
 			elif ( key[0] == 'c' or key[0] == 'C' ):
 				user.write('C')
 				user.write(func.casebold("\r\n  Pick that which best describes your childhood.\r\n  From an early age, you remember:\r\n\r\n", 2))
