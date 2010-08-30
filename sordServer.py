@@ -115,7 +115,7 @@ class eachClient(threading.Thread):
 				if ( ittr > 3 ):
 					sord.base.func.slowecho(connection, sord.base.func.casebold("\r\n\r\nDisconnecting - Too Many Login Attempts\r\n", 1), lineconfig[0], lineconfig[1])
 					log.add('  !!! Too Many Login Attemtps::' + str(thisClientAddress))
-					raise Exception, "Too many bad logins!"
+					raise Exception('normal', "Too many bad logins!")
 				sord.base.func.slowecho(connection, sord.base.func.casebold("\r\n\r\nWelcome Warrior!  Enter Your Login Name (OR '`9new`2') :-: ", 2), lineconfig[0], lineconfig[1])
 				username = sord.base.func.getLine(connection, True)
 				currentUser = sord.base.userlib.sorduser(username, sqc, connection, art, config, log, lineconfig[0], lineconfig[1])
@@ -144,10 +144,10 @@ class eachClient(threading.Thread):
 			log.add('   ** User Logged in::' + currentUser.thisFullname + ' ' + str(thisClientAddress))
 	
 			if ( currentUser.alive == 0 ) :
-				currentUser.write(sord.base.func.casebold("\r\nI'm Afraid You Are DEAD Right Now.  Sorry\r\n", 1))
+				currentUser.write(sord.base.func.casebold("\r\n\r\n  I'm Afraid You Are DEAD Right Now.  Sorry\r\n", 1))
 				raise Exception('normal', "User is DOA.  Bummer for them.")
 			elif ( currentUser.alive == 2 ) :
-				currentUser.write(sord.base.func.casebold("\r\nYou feel like shit! (you were dead - much better not though\r\n", 1))
+				currentUser.write(sord.base.func.casebold("\r\n\r\n  You feel like shit! (you were dead - much better now though\r\n", 1))
 				currentUser.alive = 1
 			
 			if ( not config.fulldebug ):

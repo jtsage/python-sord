@@ -208,10 +208,10 @@ class killer():
 			user.write("\r\n  `2You have gained `0"+str(addExp)+"`2 experience, `0"+str(addGems)+"`2 gems, and `0"+str(addGold)+"`2 gold.`.\r\n")
 			lamentTop = len(data.killerwin) - 1
 			lamentThis = data.killerwin[random.randint(0, lamentTop)]
-			lamentThis = re.sub("`n", "\r\n", lamentThis)
+			lamentThis = re.sub("`n", "\r\n    ", lamentThis)
 			lamentThis = re.sub("`g", user.thisFullname, lamentThis)
 			lamentThis = re.sub("`e", usertokill.thisFullname, lamentThis)
-			user.dbcon.execute("INSERT INTO daily ( `data` ) VALUES ( ? )", (lamentThis,))
+			user.dbcon.execute("INSERT INTO daily ( `data`, `gday` ) VALUES ( ?, ? )", (lamentThis,user.getgday()))
 			user.dbcon.commit()
 			user.pause()
 		if ( ctrlDead ) :
@@ -235,10 +235,10 @@ class killer():
 			#exception handles, do it later. user.logout()
 			lamentTop = len(data.killerlose) - 1
 			lamentThis = data.killerlose[random.randint(0, lamentTop)]
-			lamentThis = re.sub("`n", "\r\n", lamentThis)
+			lamentThis = re.sub("`n", "\r\n    ", lamentThis)
 			lamentThis = re.sub("`g", user.thisFullname, lamentThis)
 			lamentThis = re.sub("`e", usertokill.thisFullname, lamentThis)
-			user.dbcon.execute("INSERT INTO daily ( `data` ) VALUES ( ? )", (lamentThis,))
+			user.dbcon.execute("INSERT INTO daily ( `data`, `gday` ) VALUES ( ?, ? )", (lamentThis,user.getgday()))
 			user.dbcon.commit()
 			user.write(func.casebold("  Tragically, you died.  Returning to the mundane world for the day...\r\n", 1))
 			raise Exception('normal', "User is DOA.  Bummer.")

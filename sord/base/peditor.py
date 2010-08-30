@@ -489,7 +489,10 @@ class editor():
 			thisentry += ";30"
 		thisentry += "m"+str(value)
 		if ( col == 1 ):
-			lvalue = re.sub('`.', '', value)
+			try:
+				lvalue = re.sub('`.', '', value)
+			except:
+				lvalue = value
 			xcol = 25 - len(str(lvalue))
 			ittr = 0
 			while ( ittr < xcol ):

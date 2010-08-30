@@ -114,7 +114,7 @@ class ffight():
 				user.write('T')
 				if ( user.horse == True ):
 					thismod = dht.dht()
-					thismod.run()
+					thismod.run(user)
 					del thismod
 				else:
 					user.write(func.casebold("\r\n  Your Thieving skills cannot help your here.\r\n", 2))
@@ -429,10 +429,10 @@ class ffight():
 				#exception handles, do it later. user.logout()
 				lamentTop = len(data.forestdie) - 1
 				lamentThis = data.forestdie[random.randint(0, lamentTop)]
-				lamentThis = re.sub("`n", "\r\n", lamentThis)
+				lamentThis = re.sub("`n", "\r\n    ", lamentThis)
 				lamentThis = re.sub("`g", user.thisFullname, lamentThis)
 				lamentThis = re.sub("`e", enemy.name, lamentThis)
-				user.dbcon.execute("INSERT INTO daily ( `data` ) VALUES ( ? )", (lamentThis,))
+				user.dbcon.execute("INSERT INTO daily ( `data`, `gday` ) VALUES ( ?, ? )", (lamentThis,user.getgday()))
 				user.dbcon.commit()
 				user.write(func.casebold("  Tragically, you died.  Returning to the mundane world for the day...\n", 1))
 				raise Exception('normal', "User is DOA.  Bummer.")
@@ -1077,7 +1077,7 @@ class ffight():
 			user.armor = 1
 			
 			lamentThis = "`0"+user.thisFullname+" `9Decimated `2The `1Red `2Dragon!!! `%Rejoice!!!`."
-			user.dbcon.execute("INSERT INTO daily ( `data` ) VALUES ( ? )", (lamentThis,))
+			user.dbcon.execute("INSERT INTO daily ( `data`, `gday` ) VALUES ( ?, ? )", (lamentThis,user.getgday()))
 			user.dbcon.commit()
 			user.write(func.casebold("\r\n\r\n  You have defeated the Dragon, and saved the town.  Your stomach\r\n", 2))
 			user.write(func.casebold("  churns at the site of stacks of clean white bones - Bones of small\r\n", 2))
@@ -1104,7 +1104,7 @@ class ffight():
 				user.alive = 0
 				#exception handles, do it later. user.logout()
 				lamentThis = "`2The `1Red `2Dragon `9Decimated `2"+user.thisFullname+"`."
-				user.dbcon.execute("INSERT INTO daily ( `data` ) VALUES ( ? )", (lamentThis,))
+				user.dbcon.execute("INSERT INTO daily ( `data`, `gday` ) VALUES ( ?, ? )", (lamentThis,user.getgday()))
 				user.dbcon.commit()
 				user.write(func.casebold("\r\n\r\n  The Dragon pauses to look at you, then snorts in a Dragon laugh, and\r\n", 1))
 				user.write(func.casebold("  delicately rips your head off, with the finess only a Dragon well\r\n", 1))

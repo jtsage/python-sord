@@ -145,7 +145,7 @@ class sorduser(object):
 
 	def pause(self):
 		""" Send pause string and wait for input """
-		self.write("\r\n    `0:`2-`0: P`2ress `0A`2mny `0K`2ey `0:`2-`0:")
+		self.write("\r\n    `0:`2-`0: P`2ress `0A`2ny `0K`2ey `0:`2-`0:")
 		pauser_quit = False
 		while ( not pauser_quit ):
 			data = self.ntcon.recv(5)
@@ -154,7 +154,14 @@ class sorduser(object):
 			for i in xrange(1, 23):
 				self.write("\x1b[1D \x1b[1D")
 			self.ntcon.send("\r\n")
-			
+	
+	def getgday(self):
+		db = self.dbcon.cursor()
+		db.execute("SELECT value FROM sord WHERE name = ?", ('gdays',))
+		gday = db.fetchone()[0]
+		db.close()
+		return gday
+		
 	def login(self):
 		""" Process user login """
 		self.dbcon.execute("UPDATE users SET last = ?, atinn = 0 WHERE userid = ?", (time.strftime('%Y%j', time.localtime()),self.thisUserID))

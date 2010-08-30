@@ -332,7 +332,7 @@ class rdi():
 			if ( thisScrew ):
 				vd = ['herpes', 'crabs', 'ghonnereah']
 				vdc = random.randint(0, 2)
-				user.dbcon.execute("INSERT INTO daily ( `data` ) VALUES ( ? )", ("{32}{1}"+user.thisFullname+"{0}{32} got a little somethin somethin today.  {34}And "+vd[vdc]+".'", ))
+				user.dbcon.execute("INSERT INTO daily ( `data`, `gday` ) VALUES ( ?, ? )", ("`9"+user.thisFullname+"`2 got a little somethin somethin today.  `4And "+vd[vdc]+".'", user.getgday()))
 				user.dbcon.commit()
 
 	def flirt_violet(self):
@@ -402,7 +402,7 @@ class rdi():
 			if ( thisScrew ):
 				vd = ['herpes', 'crabs', 'ghonnereah']
 				vdc = random.randint(0, 2)
-				user.dbcon.execute("INSERT INTO daily ( `data` ) VALUES ( ? )", ("{32}{1}"+user.thisFullname+"{0}{32} got a little somethin somethin today.  {34}And "+vd[vdc]+".'", ))
+				user.dbcon.execute("INSERT INTO daily ( `data`, `gday` ) VALUES ( ?, ? )", ("`0"+user.thisFullname+"`2 got a little somethin somethin today.  `4And "+vd[vdc]+".'", user.getgday()))
 				user.dbcon.commit()
 
 	def menu_bartend(self):
