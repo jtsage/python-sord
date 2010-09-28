@@ -243,7 +243,7 @@ def flowers(user):
 	if ( yesno[0] == 'y' or yesno[0] == 'Y' ):
 		user.write(func.casebold("Y\r\n  What!? What do you want? :-: ", 2))
 		ann = func.getLine(user.ntcon, True)
-		user.dbcon.execute("INSERT INTO flowers ( `data`, `nombre` ) VALUES ( ?, ? )", (safeann, user.thisFullname))
+		user.dbcon.execute("INSERT INTO flowers ( `data`, `nombre` ) VALUES ( ?, ? )", (ann, user.thisFullname))
 		user.dbcon.commit()
 		user.write(func.casebold("\r\n  Idiocy added!\r\n", 2))
 		user.pause()
