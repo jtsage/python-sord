@@ -25,7 +25,7 @@ from . import rdi
 from . import forest
 from . import pfights
 from . import turgon
-from ..sord import igm
+from .. import igm
 
 class other():
 	""" Other Places (IGMs) """
