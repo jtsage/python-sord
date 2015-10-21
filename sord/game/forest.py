@@ -763,7 +763,7 @@ class ffight():
 		user.write("\r\n  `2You come upon an old house.  You sense an old mage might live here.`.\r\n")
 		user.write(func.normmenu("(K)nock on the door"))
 		user.write(func.normmenu("(B)ang on the door"))
-		user.write(unc_normmenu("(L)eave"))
+		user.write(func.normmenu("(L)eave"))
 		user.write("\r\n  `2Your choice, `0"+user.thisFullname+"`2? `8(K,B,L) `0:`2-`0:`. ")
 		miniQuit1 = False
 		miniQuit2 = False
