@@ -18,10 +18,12 @@ __date__ = "18 August 2010"
 __version__ = "2.0-pysqlite"
 __credits__ = "Seth Able Robinson, original game concept"
 
-import threading, time, sys, traceback, random, socket, sqlite3, os, optparse
+import threading, time, sys, traceback, random, socket, sqlite3, os, optparse, locale
 import sord
 from functools import partial
 from BaseHTTPServer import HTTPServer
+
+#locale.setlocale(locale.LC_ALL, '')
 
 p = optparse.OptionParser(version=__version__,description="Saga of the Red Dragon :: "+__version__,epilog="A blatent rip off of Seth Able Robinson's BBS Door Masterpiece.  All attempts were made to be as close to the original as possible, including some original artwork, the original fight equations, and most especially the original spelling and punctuation mistakes.  Enjoy.")
 
@@ -75,11 +77,21 @@ class eachClient(threading.Thread):
 			loggedin = False
 			time.sleep(1)
 			thisClientAddress = connection.getpeername()
+			
 			connection.send(chr(255) + chr(253) + chr(34)) # drop to character mode.
 			connection.send(chr(255) + chr(251) + chr(1))  # no local echo (client side)
-			data = connection.recv(1024) # dump garbage.
-	
+			connection.send(chr(255) + chr(253) + chr(39))
+			connection.send(chr(255) + chr(250) + chr(39) + chr(1) + chr(255) + chr(240))
 			connection.send("Welcome to SORD\r\n")
+			data = connection.recv(4096) # dump garbage.
+			data_chars = map(lambda x:x, data)
+			data_string = "";
+			for char in data_chars:
+				data_string = data_string + " " + str(ord(char))
+			log.add(data_string)
+			connection.send(data_string)
+			data = connection.recv(4096) # dump garbage.
+				
 			connection.settimeout(120)
 			sqc = sord.base.dbase.getDB(config)
 			art = sord.game.art.sordArtwork(config, sqc)
@@ -87,6 +99,8 @@ class eachClient(threading.Thread):
 			
 			""" Line speed and noise options """
 			sord.base.func.pauser(connection)
+			
+			
 			if ( not config.fulldebug ):
 				lineconfig = sord.base.func.getclientconfig(connection, log)
 			else:

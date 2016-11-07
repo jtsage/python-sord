@@ -41,6 +41,8 @@ class sordConfig():
 
 		self.port = 6969
 		self.webport = 6980 # Set to False to disable web server.
+
+		self.useunicode = False # When False, use ascii.
 		
 		self.fulldebug = False
 		self.ansiskip = False

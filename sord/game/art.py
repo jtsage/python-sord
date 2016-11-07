@@ -41,15 +41,27 @@ class sordArtwork():
 		self.sqc = sqc
 		self.config = config
 		
-		self.A176 = unichr(9617).encode('UTF-8')
-		self.A177 = unichr(9618).encode('UTF-8')
-		self.A178 = unichr(9619).encode('UTF-8')
-		self.A219 = unichr(9608).encode('UTF-8')
-		self.A220 = unichr(9604).encode('UTF-8')
-		self.A221 = unichr(9612).encode('UTF-8')
-		self.A222 = unichr(9616).encode('UTF-8')
-		self.A223 = unichr(9600).encode('UTF-8')
-		self.A254 = unichr(9642).encode('UTF-8')
+		if ( self.config.useunicode ) :
+			self.A176 = unichr(9617).encode('UTF-8')
+			self.A177 = unichr(9618).encode('UTF-8')
+			self.A178 = unichr(9619).encode('UTF-8')
+			self.A219 = unichr(9608).encode('UTF-8')
+			self.A220 = unichr(9604).encode('UTF-8')
+			self.A221 = unichr(9612).encode('UTF-8')
+			self.A222 = unichr(9616).encode('UTF-8')
+			self.A223 = unichr(9600).encode('UTF-8')
+			self.A254 = unichr(9642).encode('UTF-8')
+		else:
+			self.A176 = unichr(176).encode('latin-1')
+			self.A177 = unichr(177).encode('latin-1')
+			self.A178 = unichr(178).encode('latin-1')
+			self.A219 = unichr(219).encode('latin-1')
+			self.A220 = unichr(220).encode('latin-1')
+			self.A221 = unichr(221).encode('latin-1')
+			self.A222 = unichr(222).encode('latin-1')
+			self.A223 = unichr(223).encode('latin-1')
+			self.A254 = unichr(254).encode('latin-1')
+
 		self.ESC = "\x1b["
 	
 	def instruct(self):

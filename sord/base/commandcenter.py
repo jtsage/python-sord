@@ -76,7 +76,7 @@ class sordCommandCenter():
 		chars = [
 			[curses.ACS_BTEE, [(self.totalY-1,24), (self.totalY-1,44), (self.totalY-1,60)]],
 			[curses.ACS_TTEE, [(self.totalY-3,24), (self.totalY-3,44), (self.totalY-3,60)]],
-			[curses.ACS_VLINE, [(self.totalY-2,24), (self.totalY-2,44), (self.totalY-2,60)]],
+			["|", [(self.totalY-2,24), (self.totalY-2,44), (self.totalY-2,60)]],
 			[curses.ACS_LTEE, [(self.totalY-3,0), (2,0)]],
 			[curses.ACS_RTEE, [(self.totalY-3,self.totalX-1), (2,self.totalX-1)]]]
 		
