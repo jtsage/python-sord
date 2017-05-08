@@ -37,7 +37,7 @@ class sordWebserver(BaseHTTPRequestHandler):
 			self.send_header('content-type', 'image/png')
 			self.end_headers()
 			self.wfile.write(binascii.a2b_base64(self.dragonimg()))
-		elif ( key == "" or key == "index.html" ):
+		elif ( key == "/" or  key == "" or key == "index.html" ):
 			self.send_response(200)
 			self.send_header('content-type', 'text/html')
 			self.end_headers()
@@ -97,9 +97,9 @@ class sordWebserver(BaseHTTPRequestHandler):
    most especially the original spelling and punctuation mistakes.  Enjoy.</span>
 <span style="color: darkgreen">-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-</span>
 
-    <a href="/stats"><span style="color: darkgreen">(</span><span style="color: magenta">L</span><span style="color: darkgreen">)ist Players</span></a>
-    <a href="/conf"><span style="color: darkgreen">(</span><span style="color: magenta">C</span><span style="color: darkgreen">)onfiguration of this Server</span></a>
-    <a href="/play"><span style="color: darkgreen">(</span><span style="color: magenta">P</span><span style="color: darkgreen">)lay the game</span></a>
+    <a href="./stats"><span style="color: darkgreen">(</span><span style="color: magenta">L</span><span style="color: darkgreen">)ist Players</span></a>
+    <a href="./conf"><span style="color: darkgreen">(</span><span style="color: magenta">C</span><span style="color: darkgreen">)onfiguration of this Server</span></a>
+    <a href="./play"><span style="color: darkgreen">(</span><span style="color: magenta">P</span><span style="color: darkgreen">)lay the game</span></a>
 </pre></font></body></html>"""
 		return ret
 		
